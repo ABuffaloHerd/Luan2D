@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Luan (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Luan (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

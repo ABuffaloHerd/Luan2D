@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>LuanSC</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="SadConsole" />
+    <Using Include="SadRogue.Primitives" />
+    <Using Include="SadConsole.Console" Alias="Console" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4.1" />
+    <PackageReference Include="SadConsole.Debug.MonoGame" Version="10.7.0" />
+    <PackageReference Include="SadConsole.Host.MonoGame" Version="10.7.0" />
+    <PackageReference Include="SadConsole.Extended" Version="10.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\Font\" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(ProjectDir)Resources&quot; &quot;$(TargetDir)Resources&quot; /E /I /Y&#xD;&#xA;" />
+  </Target>
+
+</Project>
