@@ -38,8 +38,30 @@ namespace LuanSC.Scene
                 GameRoot.sceneManger.ChangeScene(manager => new TestScene(manager));
             };
 
+            Button b3 = new(20, 1)
+            {
+                Text = "Visual Novel Scene",
+                Position = new(controls.Width / 2 - 10, 9)
+            };
+            b3.Click += (s, e) =>
+            {
+                GameRoot.sceneManger.ChangeScene(manager => new VisualNovelScene(manager));
+            };
+
+            Button b4 = new(20, 1)
+            {
+                Text = "Combat Scene",
+                Position = new(controls.Width / 2 - 10, 11)
+            };
+            b4.Click += (s, e) =>
+            {
+                GameRoot.sceneManger.ChangeScene(manager => new CombatScene(manager, null));
+            };
+
             controls.Controls.Add(b);
             controls.Controls.Add(b2);
+            controls.Controls.Add(b3);
+            controls.Controls.Add(b4);
 
             surface.Children.Add(controls);
 

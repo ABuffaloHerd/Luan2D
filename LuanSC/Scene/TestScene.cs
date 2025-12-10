@@ -1,5 +1,6 @@
 ﻿using SadConsole.Input;
 using SadConsole.UI;
+using SadConsole.UI.Controls;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,16 +22,28 @@ namespace LuanSC.Scene
             surface.UseKeyboard = false;
             surface.IsFocused = false;
 
-            controls = new(10, 10);
+            controls = new(20, 10);
             controls.Position = new(surface.Width / 2, surface.Height / 2);
+            controls.IsFocused = false;
+            controls.UseKeyboard = false;
+            controls.FocusOnMouseClick = false;
+
+
+            Border.BorderParameters borderParams = Border.BorderParameters.GetDefault();
+            borderParams.AddTitle("Chara");
+            borderParams.TitleAlignment = HorizontalAlignment.Center;
+
+            Border b = new(controls, borderParams);
+
+            ProgressBar pb = new(10, 1, HorizontalAlignment.Left);
+            pb.Position = new(0, 0);
+            pb.BarColor = SadRogue.Primitives.Color.Red;
+            pb.Progress = 0.5f;
+
+            controls.Controls.Add(pb);
 
             surface.Children.Add(controls);
             Children.Add(surface);
-
-            Border.BorderParameters borderParams = Border.BorderParameters.GetDefault();
-             
-            Border b = new(controls, borderParams);
-
         }
 
         public override bool ProcessKeyboard(Keyboard keyboard)

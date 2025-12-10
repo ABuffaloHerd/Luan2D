@@ -5,10 +5,9 @@ using System.Runtime.CompilerServices;
 
 Settings.WindowTitle = "Luan 2D";
 
-// Fix: Use a lambda to match EventHandler<GameHost> signature
 Builder startup = new Builder()
     .SetWindowSizeInCells(GameSettings.GAME_WIDTH, GameSettings.GAME_HEIGHT)
-    .ConfigureFonts("Resources\\Font\\Bisasam.font")
+    .ConfigureFonts(GameSettings.FONT)
     .OnStart((sender, args) => GameRoot.Initialize(sender, args))
     .EnableImGuiDebugger(SadConsole.Input.Keys.F12);
 
