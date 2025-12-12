@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LuanSC.Scene
+namespace LuanSC.Scenes
 {
     public class TestScene : Scene
     {

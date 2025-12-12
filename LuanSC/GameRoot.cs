@@ -1,4 +1,4 @@
-﻿using LuanSC.Scene;
+﻿using LuanSC.Scenes;
 using System;
 using System.Collections.Generic;
 using System.Text;

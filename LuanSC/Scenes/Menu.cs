@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace LuanSC.Scene
+namespace LuanSC.Scenes
 {
     public class Menu : Scene
     {

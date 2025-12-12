@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Text;
 using LuanSC.Data.Components;
 
-namespace LuanSC
+namespace LuanSC.Objects
 {
-    public class GameObject : Entity
+    public abstract class GameObject : Entity
     {
         public HashSet<IComponent> Components { get; } = new HashSet<IComponent>();
         public GameObject(Animated appearance, int zIndex) : base(appearance, zIndex)
@@ -24,5 +24,7 @@ namespace LuanSC
             component.SetOwner(this);
             Components.Add(component);
         }
+
+        public T GetComponent<T>() where T : IComponent => Components.OfType<T>().FirstOrDefault();
     }
 }

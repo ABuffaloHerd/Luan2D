@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LuanSC.Objects;
+using System;
 using System.Collections.Generic;
 using System.Text;
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace LuanSC.Scene
+namespace LuanSC.Scenes
 {
     public abstract class Scene : ScreenObject
     {

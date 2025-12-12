@@ -1,9 +1,11 @@
-﻿using SadConsole.Entities;
+﻿using LuanSC.Objects;
+using LuanSC.Objects.Weapons;
+using SadConsole.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LuanSC.Scene
+namespace LuanSC.Scenes
 {
     public partial class CombatScene
     {
@@ -13,7 +15,7 @@ namespace LuanSC.Scene
 
         private EntityManager entityManager = new();
 
-        private GameObject testObject = null;
+        private PlayerGameObject testObject = null;
 
         private void Init()
         {
@@ -21,6 +23,7 @@ namespace LuanSC.Scene
 
             // Create test game object
             testObject = new(new ColoredGlyph(Color.Red, Color.Transparent, 'H'), 1);
+            testObject.Weapon = WeaponRegistry.Katana();
             entityManager.Add(testObject);
         }
     }

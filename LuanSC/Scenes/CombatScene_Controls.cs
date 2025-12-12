@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LuanSC.Scene
+namespace LuanSC.Scenes
 {
     public partial class CombatScene
     {
@@ -36,6 +36,37 @@ namespace LuanSC.Scene
             if (keyboard.IsKeyPressed(Keys.Right))
             {
                 testObject.Position += new Point(1, 0);
+                return true;
+            }
+
+            if (keyboard.IsKeyPressed(Keys.H))
+            {
+                overlay.IsVisible = !overlay.IsVisible;
+                return true;
+            }
+
+            // Directional Changes
+            if (keyboard.IsKeyPressed(Keys.W))
+            {
+                testObject.Direction = Data.Direction.UP;
+                return true;
+            }
+
+            if (keyboard.IsKeyPressed(Keys.S))
+            {
+                testObject.Direction = Data.Direction.DOWN;
+                return true;
+            }
+
+            if (keyboard.IsKeyPressed(Keys.A))
+            {
+                testObject.Direction = Data.Direction.LEFT;
+                return true;
+            }
+
+            if (keyboard.IsKeyPressed(Keys.D))
+            {
+                testObject.Direction = Data.Direction.RIGHT;
                 return true;
             }
 

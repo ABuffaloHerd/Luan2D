@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace LuanSC.Scene
+namespace LuanSC.Scenes
 {
     public class VisualNovelScene : Scene
     {

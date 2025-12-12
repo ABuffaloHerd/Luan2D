@@ -1,5 +1,5 @@
 ﻿using LuanSC;
-using LuanSC.Scene;
+using LuanSC.Scenes;
 using SadConsole.Configuration;
 using System.Runtime.CompilerServices;
 
