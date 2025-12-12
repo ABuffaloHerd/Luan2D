@@ -18,32 +18,42 @@ namespace LuanSC.Scenes
         private ControlsConsole hud;
 
         private CombatSettings settings;
+        private FightFeed fightFeed;
         public CombatScene(SceneManager manager, CombatSettings? settings) : base(manager)
         {
             // Set up surfaces and borders
             this.settings = settings;
 
-            /// Test text
+
+            /// Main surface for game objects. Has the entity manager attached to it.
             surface = new(43, 43);
             surface.Position = new(1, 1);
-            //surface.Fill(Color.White, Color.Black, 2);
+
+            /// Test text
             surface.Print(0, 0, "Combat Scene");
             surface.Print(0, 1, "Press ESC to return to menu");
-            Children.Add(surface);
 
-            /// Overlay surface
+            Border.BorderParameters parameters = Border.BorderParameters.GetDefault();
+            ShapeParameters shapeParams = ShapeParameters.CreateStyledBoxThick(Color.White);
+            parameters.ChangeBorderStyle(shapeParams);
+            parameters.AddTitle("Arena");
+            parameters.TitleBackground = Color.White;
+            parameters.TitleForeground = Color.DarkRed;
+            parameters.ChangeBorderForegroundColor(Color.Gray);
+            new Border(surface, parameters);
+
+            Children.Add(surface);
+            /// Overlay surface for effects and cursor and range patterns
             overlay = new(43, 43);
             overlay.Position = new(1, 1);
             //overlay.Fill(Color.Yellow, Color.Transparent, 'X');
 
             Children.Add(overlay);
 
-            Border.BorderParameters parameters = Border.BorderParameters.GetDefault();
-            parameters.AddTitle("Arena");
-            new Border(surface, parameters);
 
+            // CONTROLS
             controls = new(21, 20);
-            controls.Position = new(45, GameSettings.GAME_HEIGHT / 2);
+            controls.Position = new(46, GameSettings.GAME_HEIGHT / 2 + 2);
 
             parameters = Border.BorderParameters.GetDefault();
             parameters.AddTitle("Controls");
@@ -51,11 +61,27 @@ namespace LuanSC.Scenes
 
             Children.Add(controls);
 
+            // HUD
+            hud = new(21, 20);
+            hud.Position = new(46, 1);
+            parameters = Border.BorderParameters.GetDefault();
+            parameters.AddTitle("HUD");
+            new Border(hud, parameters);
+
+            Children.Add(hud);
+
+            // FIGHT FEED
+            fightFeed = new FightFeed(20, 20);
+            fightFeed.Position = new(controls.Position.X + controls.Width + 2, 1); // y is 1 to accomodate border
+
+            Children.Add(fightFeed);
+
             // make sure that only the scene itself is focused
-            foreach (ScreenObject child in Children)
+            foreach (ScreenSurface child in Children)
             {
                 child.UseKeyboard = false;
                 child.IsFocused = false;
+                child.FocusOnMouseClick = false;
             }
 
             // REALLY make sure this scene is focused

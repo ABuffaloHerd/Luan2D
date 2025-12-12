@@ -7,6 +7,7 @@ namespace LuanSC.Scenes
 {
     public partial class CombatScene
     {
+        private static int testint = 0;
         public override bool ProcessKeyboard(Keyboard keyboard)
         {
             if (keyboard.IsKeyPressed(SadConsole.Input.Keys.Escape))
@@ -68,6 +69,11 @@ namespace LuanSC.Scenes
             {
                 testObject.Direction = Data.Direction.RIGHT;
                 return true;
+            }
+
+            if (keyboard.IsKeyPressed(Keys.E))
+            {
+                fightFeed.AddLine($"Testint {testint++}");
             }
 
             return base.ProcessKeyboard(keyboard);
