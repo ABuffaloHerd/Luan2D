@@ -1,4 +1,5 @@
-﻿using SadConsole.Input;
+﻿using LuanSC.Data.Components;
+using SadConsole.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,25 +19,25 @@ namespace LuanSC.Scenes
 
             if (keyboard.IsKeyPressed(Keys.Up))
             {
-                testObject.Position += new Point(0, -1);
+                currentControlledGameObject.Position += new Point(0, -1);
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.Down))
             {
-                testObject.Position += new Point(0, 1);
+                currentControlledGameObject.Position += new Point(0, 1);
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.Left))
             {
-                testObject.Position += new Point(-1, 0);
+                currentControlledGameObject.Position += new Point(-1, 0);
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.Right))
             {
-                testObject.Position += new Point(1, 0);
+                currentControlledGameObject.Position += new Point(1, 0);
                 return true;
             }
 
@@ -49,31 +50,40 @@ namespace LuanSC.Scenes
             // Directional Changes
             if (keyboard.IsKeyPressed(Keys.W))
             {
-                testObject.Direction = Data.Direction.UP;
+                currentControlledGameObject.Direction = Data.Direction.UP;
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.S))
             {
-                testObject.Direction = Data.Direction.DOWN;
+                currentControlledGameObject.Direction = Data.Direction.DOWN;
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.A))
             {
-                testObject.Direction = Data.Direction.LEFT;
+                currentControlledGameObject.Direction = Data.Direction.LEFT;
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.D))
             {
-                testObject.Direction = Data.Direction.RIGHT;
+                currentControlledGameObject.Direction = Data.Direction.RIGHT;
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.E))
             {
                 fightFeed.AddLine($"Testint {testint++}");
+                return true;
+            }
+
+            if (keyboard.IsKeyPressed(Keys.Space))
+            {
+                currentControlledGameObject.Blink();
+                currentControlledGameObject.GetComponent<HPComponent>().Current += 10;
+
+                return true;
             }
 
             return base.ProcessKeyboard(keyboard);

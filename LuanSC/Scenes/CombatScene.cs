@@ -1,4 +1,5 @@
 ﻿using LuanSC.Data;
+using LuanSC.Data.Components;
 using SadConsole.UI;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace LuanSC.Scenes
         private ScreenSurface overlay;
 
         private ControlsConsole controls;
-        private ControlsConsole hud;
+        private HUD hud;
 
         private CombatSettings settings;
         private FightFeed fightFeed;
@@ -89,6 +90,7 @@ namespace LuanSC.Scenes
 
             // Set up game objects and entities
             Init();
+
         }
 
         public override void Update(TimeSpan delta)
@@ -100,6 +102,9 @@ namespace LuanSC.Scenes
             {
                 UpdateOverlay();
             }
+
+
+            hud.UpdateHP(currentControlledGameObject.GetComponent<HPComponent>());
         }
 
         private void UpdateOverlay()
@@ -111,11 +116,11 @@ namespace LuanSC.Scenes
 
             // TODO: Check that it is controllable object's turn
 
-            var pattern = testObject.Weapon.Range;
-            foreach (var cell in pattern.GetRotated(testObject.Direction))
+            var pattern = currentControlledGameObject.Weapon.Range;
+            foreach (var cell in pattern.GetRotated(currentControlledGameObject.Direction))
             {
-                int drawX = testObject.Position.X + cell.X;
-                int drawY = testObject.Position.Y + cell.Y;
+                int drawX = currentControlledGameObject.Position.X + cell.X;
+                int drawY = currentControlledGameObject.Position.Y + cell.Y;
                 if (drawX >= 0 && drawX < overlay.Width && drawY >= 0 && drawY < overlay.Height)
                 {
                     overlay.SetCellAppearance(drawX, drawY, new ColoredGlyph(Color.Yellow, Color.Transparent, 'X'));

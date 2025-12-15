@@ -29,7 +29,7 @@ namespace LuanSC.Data.Components.Attacks
             }
 
             GameObject target = targets[0];
-            HealthComponent healthy = target.GetComponent<HealthComponent>();
+            HPComponent healthy = target.GetComponent<HPComponent>();
 
             if (healthy is null)
                 return new CombatRecord

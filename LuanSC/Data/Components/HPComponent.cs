@@ -8,25 +8,17 @@ namespace LuanSC.Data.Components
     /// <summary>
     /// Can the owner take damage?
     /// </summary>
-    public class HealthComponent : IComponent
+    public class HPComponent : StatComponent
     {
-        public string Name => "HealthComponent";
-
-        public int MaxHealth { get; set; }
-        public int CurrentHealth { get; set; }
+        public override string Name => "HealthComponent";
         public int DEF { get; set; } = 0; // Physical Defense
         public int RES { get; set; } = 0; // Magical Resistance
         public GameObject Owner { get; private set; }
 
-        public void SetOwner(GameObject owner)
+        public HPComponent(int maxHealth = 100)
         {
-            this.Owner = owner;
-        }
-
-        public HealthComponent(int maxHealth = 100)
-        {
-            MaxHealth = maxHealth;
-            CurrentHealth = maxHealth;
+            Max = maxHealth;
+            Current = maxHealth;
         }
         
         /// <summary>
@@ -47,7 +39,7 @@ namespace LuanSC.Data.Components
                 _ => damage.Amount,
             };
 
-            CurrentHealth = Math.Max(0, taken);
+            Current -= taken;
             return taken;
         }
     }
