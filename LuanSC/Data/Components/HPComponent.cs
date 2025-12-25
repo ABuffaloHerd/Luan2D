@@ -10,9 +10,22 @@ namespace LuanSC.Data.Components
     /// </summary>
     public class HPComponent : StatComponent
     {
-        public override string Name => "HealthComponent";
+        public override string Name => "HP Component";
         public int DEF { get; set; } = 0; // Physical Defense
         public int RES { get; set; } = 0; // Magical Resistance
+
+        // Alias for clarity
+        public int MaxHP 
+        { 
+            get => Max;
+            set => Max = value;
+        }
+        public int CurrentHP 
+        { 
+            get => Current;
+            set => Current = value;
+        }
+
         public GameObject Owner { get; private set; }
 
         public HPComponent(int maxHealth = 100)
@@ -33,13 +46,23 @@ namespace LuanSC.Data.Components
 
             int taken = damage.Type switch
             {
-                DamageType.PHYSICAL => damage.Amount - DEF, // Flat reduction
-                DamageType.MAGIC => (int)(damage.Amount * (1 - RES / 100f)), // Percentage reduction   
-                DamageType.TRUE => damage.Amount,     // fuck that's gotta hurt
-                _ => damage.Amount,
+                DamageType.PHYSICAL => damage.Amount - DEF,                     // Flat reduction
+                DamageType.MAGIC    => (int)(damage.Amount * (1 - RES / 100f)), // Percentage reduction   
+                DamageType.TRUE     => damage.Amount,                           // fuck that's gotta hurt
+                _                   => damage.Amount,                           // how did we get here
             };
 
             Current -= taken;
+
+            // notify damage listeners
+            if (Owner is not null)
+            {
+                foreach (IDamageListener listener in Owner.Components)
+                {
+                    listener.OnDamageTaken(taken);
+                }
+            }
+
             return taken;
         }
     }

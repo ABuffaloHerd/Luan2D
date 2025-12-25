@@ -15,8 +15,18 @@ namespace LuanSC.Objects
     /// </summary>
     public class PlayerGameObject : GameObject
     {
-        public Direction Direction = Direction.RIGHT;
-        public Weapon Weapon { get; set; }
+        public Weapon Weapon 
+        { 
+            get
+            {
+                return GetComponent<WeaponComponent>().Weapon;
+            }
+            set
+            {
+                GetComponent<WeaponComponent>().Weapon = value;
+            }
+        }
+
         public PlayerGameObject(Animated appearance, int zIndex) : base(appearance, zIndex)
         {
             InitializePlayer();
@@ -24,20 +34,6 @@ namespace LuanSC.Objects
         public PlayerGameObject(ColoredGlyphBase coloredGlyphBase, int zIndex) : base(coloredGlyphBase, zIndex)
         {
             InitializePlayer();
-        }
-
-        public void Blink()
-        {
-            Blinker b = new();
-            b.BlinkCount = 3;
-            b.BlinkSpeed = TimeSpan.FromMilliseconds(500);
-            b.RestoreCellOnRemoved = true;
-            b.RemoveOnFinished = true;
-
-            if (IsSingleCell)
-                b.BlinkOutBackgroundColor = AppearanceSingle.Appearance.Foreground;
-
-            AppearanceSingle?.Effect = b;
         }
 
         private void InitializePlayer()
@@ -49,6 +45,10 @@ namespace LuanSC.Objects
             Components.Add(new SPComponent(50));
             Components.Add(new CollisionComponent());
             Components.Add(new SpeedComponent(150));
+            Components.Add(new ControllableComponent());
+            Components.Add(new ODComponent());
+
+            Components.Add(new WeaponComponent(WeaponRegistry.Katana()));
 
 
             foreach(var component in Components)

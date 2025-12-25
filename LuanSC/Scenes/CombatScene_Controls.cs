@@ -1,8 +1,10 @@
 ﻿using LuanSC.Data.Components;
 using SadConsole.Input;
+using Direction = LuanSC.Data.Direction;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using LuanSC.Data;
 
 namespace LuanSC.Scenes
 {
@@ -19,25 +21,33 @@ namespace LuanSC.Scenes
 
             if (keyboard.IsKeyPressed(Keys.Up))
             {
-                currentControlledGameObject.Position += new Point(0, -1);
+                Point newPos = Direction.UP.ToVector();
+                if (BoundsCheck(currentControlledGameObject.Position + newPos))
+                    currentControlledGameObject.Position += newPos;
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.Down))
             {
-                currentControlledGameObject.Position += new Point(0, 1);
+                Point newPos = Direction.DOWN.ToVector();
+                if (BoundsCheck(currentControlledGameObject.Position + newPos))
+                    currentControlledGameObject.Position += newPos;
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.Left))
             {
-                currentControlledGameObject.Position += new Point(-1, 0);
+                Point newPos = Direction.LEFT.ToVector();
+                if (BoundsCheck(currentControlledGameObject.Position + newPos))
+                    currentControlledGameObject.Position += newPos;
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.Right))
             {
-                currentControlledGameObject.Position += new Point(1, 0);
+                Point newPos = Direction.RIGHT.ToVector();
+                if (BoundsCheck(currentControlledGameObject.Position + newPos))
+                    currentControlledGameObject.Position += newPos;
                 return true;
             }
 
@@ -80,10 +90,15 @@ namespace LuanSC.Scenes
 
             if (keyboard.IsKeyPressed(Keys.Space))
             {
-                currentControlledGameObject.Blink();
-                currentControlledGameObject.GetComponent<HPComponent>().Current += 10;
-
+                StartNextTurn();
                 return true;
+            }
+
+            // Attack key L
+            if (keyboard.IsKeyPressed(Keys.L))
+            {
+                // Run attack function
+                Attack(currentControlledGameObject);
             }
 
             return base.ProcessKeyboard(keyboard);

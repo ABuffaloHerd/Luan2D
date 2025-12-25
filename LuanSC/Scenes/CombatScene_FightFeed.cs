@@ -23,9 +23,14 @@ namespace LuanSC.Scenes
                 parameters.AddTitle("Fight Feed");
                 new Border(this, parameters);
 
+                // if it isn't constructed with 20, it just doesn't work and i don't know why
+                Resize(width * 2, height * 2, true);
+
                 this.UseKeyboard = false;
                 this.IsFocused = false;
                 this.FocusOnMouseClick = false;
+
+                this.FontSize = new(10, 10);
             }
 
             public void AddLine(string line)
@@ -47,7 +52,7 @@ namespace LuanSC.Scenes
                 {
                     if (i >= feedLines.Count)
                         break;
-                    this.Print(0, Height - i, feedLines.ElementAt(i));
+                    this.Print(0, Height - i - 1, feedLines.ElementAt(i));
                 }
             }
         }

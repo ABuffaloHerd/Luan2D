@@ -5,14 +5,23 @@ using System.Text;
 
 namespace LuanSC.Data.Components
 {
-    public class SPComponent : IComponent
+    public class SPComponent : StatComponent
     {
-        public string Name => "SP Component";
+        public override string Name => "SP Component";
 
         public GameObject Owner { get; private set; }
 
-        public int MaxSP { get; set; }
-        public int CurrentSP { get; set; }
+        // alias for clarity
+        public int MaxSP 
+        { 
+            get => Max;
+            set => Max = value;
+        }
+        public int CurrentSP 
+        { 
+            get => Current;
+            set => Current = value;
+        }
 
         public void SetOwner(GameObject owner)
         {

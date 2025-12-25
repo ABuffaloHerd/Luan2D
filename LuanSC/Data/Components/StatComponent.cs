@@ -26,7 +26,7 @@ namespace LuanSC.Data.Components
             set
             {
                 max = value;
-                current = Math.Min(value, max);
+                current = Math.Min(current, max);
             }
         }
 

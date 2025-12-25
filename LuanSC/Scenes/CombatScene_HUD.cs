@@ -17,6 +17,12 @@ namespace LuanSC.Scenes
             private ProgressBar odBar;
             private ProgressBar gbBar;
 
+            private Label hplabel;
+            private Label mplabel;
+            private Label splabel;
+            private Label odlabel;
+            private Label gblabel;
+
             public HUD(int width, int height) : base(width, height)
             {
                 Rebuild();
@@ -56,7 +62,13 @@ namespace LuanSC.Scenes
                 hpBar.Progress = 1.0f;
                 hpBar.BarColor = Color.Red;
 
+                hplabel = new(this.Width - hpBar.Width);
+                hplabel.Position = new(0, hpBar.Position.Y);
+                hplabel.DisplayText = "HP :";
+                hplabel.TextColor = Color.Red;
+
                 Controls.Add(hpBar);
+                Controls.Add(hplabel);
 
                 // MP bar
                 mpBar = new(this.Width - 5, 1, HorizontalAlignment.Left);
@@ -64,13 +76,57 @@ namespace LuanSC.Scenes
                 mpBar.Progress = 1.0f;
                 mpBar.BarColor = Color.Blue;
 
+                mplabel = new(this.Width - mpBar.Width);
+                mplabel.Position = new(0, mpBar.Position.Y);
+                mplabel.DisplayText = "MP :";
+                mplabel.TextColor = Color.LightBlue;
+
                 Controls.Add(mpBar);
+                Controls.Add(mplabel);
 
                 // SP bar
                 spBar = new(this.Width - 5, 1, HorizontalAlignment.Left);
                 spBar.Position = new(this.Width - spBar.Width, 4);
                 spBar.Progress = 1.0f;
                 spBar.BarColor = Color.Yellow;
+                spBar.DisplayTextColor = Color.Black;
+
+                splabel = new(this.Width - spBar.Width);
+                splabel.Position = new(0, spBar.Position.Y);
+                splabel.DisplayText = "SP :";
+                splabel.TextColor = Color.Yellow;
+
+                Controls.Add(spBar);
+                Controls.Add(splabel);
+
+                // OD bar
+                odBar = new(this.Width - 5, 1, HorizontalAlignment.Left);
+                odBar.Position = new(this.Width - odBar.Width, 6);
+                odBar.Progress = 1.0f; // placeholder
+                odBar.BarColor = Color.Purple;
+
+                odlabel = new(this.Width - odBar.Width);
+                odlabel.Position = new(0, odBar.Position.Y);
+                odlabel.DisplayText = $"OD{(char)224}:";
+                odlabel.TextColor = Color.Purple;
+
+                Controls.Add(odBar);
+                Controls.Add(odlabel);
+
+                // GB bar
+                gbBar = new(this.Width - 5, 1, HorizontalAlignment.Left);
+                gbBar.Position = new(this.Width - gbBar.Width, 8);
+                gbBar.Progress = 1.0f; // placeholder
+                gbBar.BarColor = Color.Gold;
+                gbBar.DisplayTextColor = Color.DarkGray;
+
+                gblabel = new(this.Width - gbBar.Width);
+                gblabel.Position = new(0, gbBar.Position.Y);
+                gblabel.DisplayText = $"GB{(char)225}:";
+                gblabel.TextColor = Color.DarkGray;
+
+                Controls.Add(gbBar);
+                Controls.Add(gblabel);
             }
 
             public void UpdateHP(HPComponent component)
@@ -85,6 +141,8 @@ namespace LuanSC.Scenes
 
                 hpBar.Progress = val;
                 hpBar.DisplayText = $"{current} / {max}";
+
+                // put a label
             }
 
             public void UpdateMP(MPComponent component)
@@ -96,17 +154,61 @@ namespace LuanSC.Scenes
                 float val = current / max;
 
                 mpBar.Progress = val;
-                mpBar.DisplayText = $"{current} m / {max}";
+                mpBar.DisplayText = $"{current} / {max}";
             }
 
             public void UpdateSP(SPComponent component)
             {
-                if (component is null) return;
+                if (component is null)
+                {
+                    spBar.IsVisible = false;
+                    splabel.IsVisible = false;
+                    return;
+                }
+                else
+                {
+                    spBar.IsVisible = true;
+                    splabel.IsVisible = true;
+                }
+
                 int max = component.MaxSP;
                 int current = component.CurrentSP;
+
                 float val = current / max;
+
                 spBar.Progress = val;
                 spBar.DisplayText = $"{current} / {max}";
+            }
+
+            public void UpdateOD(ODComponent component)
+            {
+                if (component is null)
+                {
+                    odBar.IsVisible = false;
+                    odlabel.IsVisible = false;
+
+                    gbBar.IsVisible = false;
+                    gblabel.IsVisible = false;
+                    return;
+
+                }
+                else
+                {
+                    odBar.IsVisible = true;
+                    odlabel.IsVisible = true;
+
+                    gbBar.IsVisible = true;
+                    gblabel.IsVisible = true;
+                }
+
+                float val = component.CurrentOD / 100f;
+
+                odBar.Progress = val;
+                odBar.DisplayText = $"{component.CurrentOD}%";
+
+                float gbval = component.CurrentGB / 100f;
+                gbBar.Progress = gbval;
+                gbBar.DisplayText = $"{component.CurrentGB}%";
             }
         }
     }

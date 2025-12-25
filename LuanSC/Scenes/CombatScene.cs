@@ -15,12 +15,15 @@ namespace LuanSC.Scenes
         // overlay is where effects and the cursor is drawn
         private ScreenSurface overlay;
 
+        // Controls
         private ControlsConsole controls;
         private HUD hud;
 
         private CombatSettings settings;
         private FightFeed fightFeed;
-        public CombatScene(SceneManager manager, CombatSettings? settings) : base(manager)
+        private ScreenSurface order;
+
+        public CombatScene(SceneManager manager, CombatSettings settings) : base(manager)
         {
             // Set up surfaces and borders
             this.settings = settings;
@@ -29,10 +32,6 @@ namespace LuanSC.Scenes
             /// Main surface for game objects. Has the entity manager attached to it.
             surface = new(43, 43);
             surface.Position = new(1, 1);
-
-            /// Test text
-            surface.Print(0, 0, "Combat Scene");
-            surface.Print(0, 1, "Press ESC to return to menu");
 
             Border.BorderParameters parameters = Border.BorderParameters.GetDefault();
             ShapeParameters shapeParams = ShapeParameters.CreateStyledBoxThick(Color.White);
@@ -53,8 +52,8 @@ namespace LuanSC.Scenes
 
 
             // CONTROLS
-            controls = new(21, 20);
-            controls.Position = new(46, GameSettings.GAME_HEIGHT / 2 + 2);
+            controls = new(21, 21);
+            controls.Position = new(46, GameSettings.GAME_HEIGHT / 2 + 1);
 
             parameters = Border.BorderParameters.GetDefault();
             parameters.AddTitle("Controls");
@@ -73,9 +72,19 @@ namespace LuanSC.Scenes
 
             // FIGHT FEED
             fightFeed = new FightFeed(20, 20);
-            fightFeed.Position = new(controls.Position.X + controls.Width + 2, 1); // y is 1 to accomodate border
+            fightFeed.Position = new((controls.Position.X + controls.Width) * 2 + 4, 2); // y is 1 to accomodate border, x*2 to accommodate half font size
 
             Children.Add(fightFeed);
+
+            // TURN ORDER
+            order = new(20, 21);
+            order.Position = new(hud.Position.X + order.Width + 3, hud.Position.Y + order.Height + 1);
+            parameters = Border.BorderParameters.GetDefault();
+            parameters.AddTitle("Turn Order");
+            new Border(order, parameters);
+
+            Children.Add(order);
+
 
             // make sure that only the scene itself is focused
             foreach (ScreenSurface child in Children)
@@ -89,7 +98,7 @@ namespace LuanSC.Scenes
             this.IsFocused = true;
 
             // Set up game objects and entities
-            Init();
+            Init(settings);
 
         }
 
@@ -97,14 +106,18 @@ namespace LuanSC.Scenes
         {
             base.Update(delta);
 
+            if (currentControlledGameObject is null) return;
+
             // Refresh the overlay if it's visible and is dirty
             if (overlay.IsVisible)
             {
                 UpdateOverlay();
             }
 
-
             hud.UpdateHP(currentControlledGameObject.GetComponent<HPComponent>());
+            hud.UpdateMP(currentControlledGameObject.GetComponent<MPComponent>());
+            hud.UpdateSP(currentControlledGameObject.GetComponent<SPComponent>());
+            hud.UpdateOD(currentControlledGameObject.GetComponent<ODComponent>());
         }
 
         private void UpdateOverlay()
@@ -114,9 +127,15 @@ namespace LuanSC.Scenes
             // This is only used for pattern rendering for now
             // Get current pattern from active controllable object.
 
-            // TODO: Check that it is controllable object's turn
+            // Check that it is controllable object's turn
+            if(currentControlledGameObject.GetComponent<ControllableComponent>() is null) return;
 
-            var pattern = currentControlledGameObject.Weapon.Range;
+            // check for a weapon component
+            if (currentControlledGameObject is null) return;
+            WeaponComponent w = currentControlledGameObject.GetComponent<WeaponComponent>();
+            if (w == null) return;
+
+            var pattern = w.Weapon.Range;
             foreach (var cell in pattern.GetRotated(currentControlledGameObject.Direction))
             {
                 int drawX = currentControlledGameObject.Position.X + cell.X;

@@ -12,6 +12,18 @@ namespace LuanSC.Data.Components
     {
         public override string Name => "MPComponent";
 
+        // alias for clarity
+        public int MaxMP 
+        { 
+            get => Max;
+            set => Max = value;
+        }
+        public int CurrentMP 
+        { 
+            get => Current;
+            set => Current = value;
+        }
+
         public GameObject Owner { get; private set; }
 
         public MPComponent(int maxMana = 100)

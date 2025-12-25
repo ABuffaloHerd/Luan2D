@@ -1,4 +1,5 @@
-﻿using SadConsole.Input;
+﻿using LuanSC.Data;
+using SadConsole.Input;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
 using System;
@@ -55,7 +56,7 @@ namespace LuanSC.Scenes
             };
             b4.Click += (s, e) =>
             {
-                GameRoot.sceneManger.ChangeScene(manager => new CombatScene(manager, null));
+                GameRoot.sceneManger.ChangeScene(manager => new CombatScene(manager, CombatSettings.GetTestSettings()));
             };
 
             controls.Controls.Add(b);

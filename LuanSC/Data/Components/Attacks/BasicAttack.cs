@@ -7,7 +7,7 @@ using System.Text;
 
 namespace LuanSC.Data.Components.Attacks
 {
-    public class SlashingAttack : IAttackComponent
+    public class BasicAttack : IAttackComponent
     {
         public string Name => "Slashing Attack";
 
