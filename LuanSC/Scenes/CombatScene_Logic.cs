@@ -27,7 +27,7 @@ namespace LuanSC.Scenes
         /// <summary>
         /// In the future this will consume the combatsettings object to produce a gaming scene.
         /// </summary>
-        private void Init(CombatSettings settings)
+        private void InitObjects(CombatSettings settings)
         {
             surface.SadComponents.Add(entityManager);
 
@@ -96,7 +96,7 @@ namespace LuanSC.Scenes
             }
 
             if (targetPos.X < 0 || targetPos.Y < 0) return false;
-            if (targetPos.X > surface.Width || targetPos.Y > surface.Height) return false;
+            if (targetPos.X >= surface.Width || targetPos.Y >= surface.Height) return false;
 
             return true;
         }

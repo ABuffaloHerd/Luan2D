@@ -26,8 +26,6 @@ namespace LuanSC.Data.Components
             set => Current = value;
         }
 
-        public GameObject Owner { get; private set; }
-
         public HPComponent(int maxHealth = 100)
         {
             Max = maxHealth;
@@ -57,7 +55,7 @@ namespace LuanSC.Data.Components
             // notify damage listeners
             if (Owner is not null)
             {
-                foreach (IDamageListener listener in Owner.Components)
+                foreach (IDamageListener listener in Owner.Components.OfType<IDamageListener>())
                 {
                     listener.OnDamageTaken(taken);
                 }

@@ -14,6 +14,12 @@ namespace LuanSC.Data
     {
         public List<GameObject> GameObjects = new();
 
+        // default arena size
+        public int Width = 43;
+        public int Height = 43;
+
+        public float FontScale = 1;
+
         public CombatSettings() { }
         public void AddGameObject(GameObject thing)
         {
@@ -57,6 +63,9 @@ namespace LuanSC.Data
             mariah.Position = new Point(3, 3);
             settings.AddGameObject(mariah);
 
+            settings.Width = 21;
+            settings.Height = 21;
+            settings.FontScale = 1.9f;
 
             return settings;
         }

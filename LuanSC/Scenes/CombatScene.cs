@@ -1,5 +1,6 @@
 ﻿using LuanSC.Data;
 using LuanSC.Data.Components;
+using SadConsole.Renderers;
 using SadConsole.UI;
 using System;
 using System.Collections.Generic;
@@ -28,10 +29,19 @@ namespace LuanSC.Scenes
             // Set up surfaces and borders
             this.settings = settings;
 
-
             /// Main surface for game objects. Has the entity manager attached to it.
-            surface = new(43, 43);
+            surface = new(settings.Width, settings.Height);
             surface.Position = new(1, 1);
+            surface.FontSize *= settings.FontScale;
+
+            surface.Resize(settings.Width, settings.Height, false);
+
+            /// Overlay surface for effects and cursor and range patterns
+            overlay = new(settings.Width, settings.Height);
+            overlay.Position = new(1, 1);
+            overlay.FontSize *= settings.FontScale;
+            overlay.Resize(settings.Width, settings.Height, false);
+            Children.Add(overlay);
 
             Border.BorderParameters parameters = Border.BorderParameters.GetDefault();
             ShapeParameters shapeParams = ShapeParameters.CreateStyledBoxThick(Color.White);
@@ -43,12 +53,6 @@ namespace LuanSC.Scenes
             new Border(surface, parameters);
 
             Children.Add(surface);
-            /// Overlay surface for effects and cursor and range patterns
-            overlay = new(43, 43);
-            overlay.Position = new(1, 1);
-            //overlay.Fill(Color.Yellow, Color.Transparent, 'X');
-
-            Children.Add(overlay);
 
 
             // CONTROLS
@@ -98,7 +102,7 @@ namespace LuanSC.Scenes
             this.IsFocused = true;
 
             // Set up game objects and entities
-            Init(settings);
+            InitObjects(settings);
 
         }
 
@@ -142,7 +146,8 @@ namespace LuanSC.Scenes
                 int drawY = currentControlledGameObject.Position.Y + cell.Y;
                 if (drawX >= 0 && drawX < overlay.Width && drawY >= 0 && drawY < overlay.Height)
                 {
-                    overlay.SetCellAppearance(drawX, drawY, new ColoredGlyph(Color.Yellow, Color.Transparent, 'X'));
+                    ColoredGlyph g = new(Color.Yellow, Color.Transparent, 'X');
+                    overlay.SetCellAppearance(drawX, drawY, g);
                 }
             }
         }
