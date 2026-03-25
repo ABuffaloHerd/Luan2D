@@ -33,11 +33,13 @@ namespace LuanSC.Objects
 
         public void Blink()
         {
-            Blinker b = new();
-            b.BlinkCount = 3;
-            b.BlinkSpeed = TimeSpan.FromMilliseconds(500);
-            b.RestoreCellOnRemoved = true;
-            b.RemoveOnFinished = true;
+            Blinker b = new()
+            {
+                BlinkCount = 3,
+                BlinkSpeed = TimeSpan.FromMilliseconds(500),
+                RestoreCellOnRemoved = true,
+                RemoveOnFinished = true
+            };
 
             if (IsSingleCell)
                 b.BlinkOutBackgroundColor = AppearanceSingle.Appearance.Foreground;

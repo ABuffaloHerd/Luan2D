@@ -111,6 +111,7 @@ namespace LuanSC.Scenes
             base.Update(delta);
 
             if (currentControlledGameObject is null) return;
+            // if there is an AI component run that instead
 
             // Refresh the overlay if it's visible and is dirty
             if (overlay.IsVisible)

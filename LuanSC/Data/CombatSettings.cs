@@ -51,6 +51,7 @@ namespace LuanSC.Data
             minako.GetComponent<HPComponent>().Max = 100;
             minako.GetComponent<MPComponent>().Max = 50;
             minako.GetComponent<SpeedComponent>().Speed = 90;
+            minako.GetComponent<SPComponent>().Max = 75;
             minako.Position = new Point(2, 2);
             settings.AddGameObject(minako);
 
@@ -58,6 +59,7 @@ namespace LuanSC.Data
             mariah.Name = "Mariah";
             mariah.GetComponent<HPComponent>().Max = 150;
             mariah.GetComponent<MPComponent>().Max = 200;
+            mariah.GetComponent<MPComponent>().Current = 75;
             mariah.GetComponent<SpeedComponent>().Speed = 80;
             mariah.GetComponent<WeaponComponent>().Weapon = WeaponRegistry.Stick();
             mariah.Position = new Point(3, 3);

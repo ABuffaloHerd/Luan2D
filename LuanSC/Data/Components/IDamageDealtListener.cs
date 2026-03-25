@@ -5,10 +5,10 @@ using System.Text;
 namespace LuanSC.Data.Components
 {
     /// <summary>
-    /// Listens for events when damage is taken.
+    /// Listens for events when damage is dealt.
     /// </summary>
-    public interface IDamageListener
+    public interface IDamageDealtListener
     {
-        void OnDamageTaken(int amount);
+        void OnDamageDealt(int amount);
     }
 }

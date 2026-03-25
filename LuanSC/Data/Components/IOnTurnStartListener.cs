@@ -5,10 +5,10 @@ using System.Text;
 namespace LuanSC.Data.Components
 {
     /// <summary>
-    /// Listens for events when damage is taken.
+    /// Listens for the start of a turn. Used in effects.
     /// </summary>
-    public interface IDamageListener
+    public interface IOnTurnStartListener
     {
-        void OnDamageTaken(int amount);
+        void OnTurnStart();
     }
 }

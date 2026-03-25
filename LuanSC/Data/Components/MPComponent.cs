@@ -24,8 +24,6 @@ namespace LuanSC.Data.Components
             set => Current = value;
         }
 
-        public GameObject Owner { get; private set; }
-
         public MPComponent(int maxMana = 100)
         {
             Max = maxMana;

@@ -18,28 +18,14 @@ namespace LuanSC.Data.Components.Attacks
             // attack first target in targets
             if (targets.Count == 0)
             {
-                return new CombatRecord
-                {
-                    DamageRecords = new List<DamageRecord>(),
-                    Metadata = new Dictionary<string, object>
-                    {
-                        { "Result", "No targets" }
-                    }
-                };
+                return new CombatRecord(owner.Name);
             }
 
             GameObject target = targets[0];
             HPComponent healthy = target.GetComponent<HPComponent>();
 
             if (healthy is null)
-                return new CombatRecord
-                {
-                    DamageRecords = new List<DamageRecord>(),
-                    Metadata = new Dictionary<string, object>
-                    {
-                        {"Result", "No damageable targets." }
-                    }
-                };
+                return new CombatRecord(owner.Name);
 
             // TODO: Owner's effects that boost damage go here
             int damage = weapon.Damage;
@@ -67,6 +53,7 @@ namespace LuanSC.Data.Components.Attacks
             result.Metadata["attacker"] = owner.Name;
             result.Metadata["weapon"] = weapon.Name;
             result.Metadata["target"] = target.Name;
+            result.Metadata["result"] = true;
 
             return result;
         }
