@@ -1,4 +1,5 @@
 ﻿using LuanSC.Data.Components;
+using LuanSC.Data.Components.Effects;
 using LuanSC.Objects;
 using LuanSC.Objects.Weapons;
 using System;
@@ -68,6 +69,10 @@ namespace LuanSC.Data
             settings.Width = 21;
             settings.Height = 21;
             settings.FontScale = 1.9f;
+
+            // Poison hirina
+            PoisonEffect poison = new(10, 10);
+            hirina.GetComponent<EffectComponent>().Apply(poison);
 
             return settings;
         }

@@ -5,12 +5,11 @@ using System.Text;
 
 namespace LuanSC.Data.Components.Effects;
 
-public interface IEffect
+public interface IEffect : IComponent
 {
-    string Name { get; set; }
     int Duration { get; set; } // duration in turns. -1 = permanant, 0 = expired
 
-    bool Expired => Duration == 0;
+    bool IsExpired => Duration == 0;
 
     // if implemented, this will be called when the effect is applied to the owner. This allows the effect to hurt the owner, heal the owner, or do anything else it wants when applied.
     void OnApply(GameObject owner);
@@ -25,5 +24,6 @@ public interface IEffect
     void OnTurnEnd(GameObject owner);
 
     // if implemented, this will be called before damage is applied to the owner. This allows the effect to modify or negate the damage.
-    void OnIncomingDamage(GameObject owner, DamageRecord damage);
+    // if not implemented, the damage will be applied as normal.
+    DamageRecord OnIncomingDamage(GameObject owner, DamageRecord damage) => damage;
 }

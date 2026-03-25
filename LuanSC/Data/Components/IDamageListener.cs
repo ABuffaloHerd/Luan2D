@@ -9,6 +9,6 @@ namespace LuanSC.Data.Components
     /// </summary>
     public interface IDamageListener
     {
-        void OnDamageTaken(int amount);
+        void OnDamageTaken(DamageRecord damage);
     }
 }

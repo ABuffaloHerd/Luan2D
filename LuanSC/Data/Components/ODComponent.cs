@@ -61,8 +61,9 @@ namespace LuanSC.Data.Components
             Owner = owner;
         }
 
-        public void OnDamageTaken(int amount)
+        public void OnDamageTaken(DamageRecord damage)
         {
+            int amount = damage.Amount;
             int odGain = (int)(amount * OD_MULTIPLIER);
             CurrentOD += odGain; // this automatically handles overflow to GB
         }

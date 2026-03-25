@@ -47,9 +47,9 @@ namespace LuanSC.Objects
             Components.Add(new SpeedComponent(150));
             Components.Add(new ControllableComponent());
             Components.Add(new ODComponent());
+            Components.Add(new EffectComponent());
 
             Components.Add(new WeaponComponent(WeaponRegistry.Katana()));
-
 
             foreach(var component in Components)
             {

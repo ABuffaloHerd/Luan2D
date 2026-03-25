@@ -76,6 +76,10 @@ namespace LuanSC.Scenes
                 order.Print(0, y++, ColoredString.Parser.Parse(obj.Name));
             }
 
+            // effect processing
+            var effects = currentControlledGameObject.GetComponent<EffectComponent>();
+            effects?.Tick();
+
             // report to the fight feed
             fightFeed.AddLine($"{currentControlledGameObject.Name}'s turn.");
         }
