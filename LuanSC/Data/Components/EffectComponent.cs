@@ -18,14 +18,14 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
     {
         effects.Add(effect);
         effect.SetOwner(Owner);
-        effect.OnApply(Owner);
+        effect.OnApply();
     }
 
     public void Remove(IEffect effect)
     {
         if (effects.Remove(effect))
         {
-            effect.OnRemove(Owner);
+            effect.OnRemove();
         }
     }
 
@@ -55,7 +55,7 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
         DamageRecord modifiedDamage = damage;
         foreach (var effect in effects)
         {
-            modifiedDamage = effect.OnIncomingDamage(Owner, modifiedDamage);
+            modifiedDamage = effect.OnIncomingDamage(modifiedDamage);
         }
         return modifiedDamage;
     }
@@ -63,31 +63,32 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
     /// <summary>
     /// Runs on turn start, ticks down durations, and removes expired effects. This should be called by the scene or some other external system that manages turns.
     /// </summary>
-    public void Tick()
+    public void Tick(Action<string> report = null)
     {
         foreach(var effect in effects.ToList())
         {
 #if DEBUG
             Debug.Print("Ticking effect: " + effect.Name + " with duration " + effect.Duration);
 #endif
-            effect.Duration--;
 
             if (effect.IsExpired)
             {
+                report?.Invoke($"{effect.Name} has expired.");
                 Remove(effect);
             }
             else
             {
-                effect.OnTurnStart(Owner);
+                effect.OnTurnStart(report);
             }
         }
     }
 
-    public void TickEnd()
+    public void TickEnd(Action<string> report = null)
     {
         foreach (var effect in effects.ToList())
         {
-            effect.OnTurnEnd(Owner);
+            effect.OnTurnEnd();
+            effect.Duration--;
         }
     }
 }

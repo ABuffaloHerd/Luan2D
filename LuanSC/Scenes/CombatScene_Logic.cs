@@ -48,7 +48,7 @@ namespace LuanSC.Scenes
         {
             // objects in gameObjects sorted by speed
             List<GameObject> ordered = gameObjects
-                .Where(e => e.GetComponent<SpeedComponent>() != null)
+                .Where(e => e.GetComponent<SpeedComponent>() is not null)
                 .OrderByDescending(e => e.GetComponent<SpeedComponent>().Speed)
                 .ToList();
 
@@ -61,6 +61,9 @@ namespace LuanSC.Scenes
             {
                 BuildTurnQueue(); // the cycle begins anew
             }
+
+            // finish up the previous turn
+            currentControlledGameObject?.GetComponent<EffectComponent>()?.TickEnd(msg => fightFeed.AddLine(msg));
 
             // Dequeue and run
             currentControlledGameObject = queue.Dequeue();
@@ -78,10 +81,25 @@ namespace LuanSC.Scenes
 
             // effect processing
             var effects = currentControlledGameObject.GetComponent<EffectComponent>();
-            effects?.Tick();
+            effects?.Tick(msg => fightFeed.AddLine(msg));
 
             // report to the fight feed
             fightFeed.AddLine($"{currentControlledGameObject.Name}'s turn.");
+        }
+
+        /// <summary>
+        /// remove the corpses of the dead
+        /// </summary>
+        private void Cull()
+        {
+            foreach(GameObject obj in gameObjects)
+            {
+                if (obj.GetComponent<HPComponent>() is not null && obj.GetComponent<HPComponent>().IsAlive)
+                {
+                    gameObjects.Remove(obj);
+                    entityManager.Remove(obj);
+                }
+            }    
         }
 
         private bool BoundsCheck(Point targetPos)

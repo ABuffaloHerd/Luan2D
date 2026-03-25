@@ -14,6 +14,8 @@ namespace LuanSC.Data.Components
         public int DEF { get; set; } = 0; // Physical Defense
         public int RES { get; set; } = 0; // Magical Resistance
 
+        public bool IsAlive => Current > 0;
+
         // Alias for clarity
         public int MaxHP 
         { 

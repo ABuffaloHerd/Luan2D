@@ -12,18 +12,18 @@ public interface IEffect : IComponent
     bool IsExpired => Duration == 0;
 
     // if implemented, this will be called when the effect is applied to the owner. This allows the effect to hurt the owner, heal the owner, or do anything else it wants when applied.
-    void OnApply(GameObject owner);
+    void OnApply();
 
     // if implemented, this will be called when the effect is removed from the owner. This allows the effect to hurt the owner really bad once more or heal the owner really good once more.
-    void OnRemove(GameObject owner);
+    void OnRemove();
 
     // if implemented, this will be called at the start of the owner's turn. To regenerate, hurt or whatever.
-    void OnTurnStart(GameObject owner);
+    void OnTurnStart(Action<string> report = null);
 
     // what if the effect was delayed so you had to think in game? Hopefully this adds """depth""" to the game.
-    void OnTurnEnd(GameObject owner);
+    void OnTurnEnd(Action<string> report = null);
 
     // if implemented, this will be called before damage is applied to the owner. This allows the effect to modify or negate the damage.
     // if not implemented, the damage will be applied as normal.
-    DamageRecord OnIncomingDamage(GameObject owner, DamageRecord damage) => damage;
+    DamageRecord OnIncomingDamage(DamageRecord damage, Action<string> report = null) => damage;
 }

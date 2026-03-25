@@ -23,37 +23,39 @@ public class PoisonEffect : IEffect
         Damage = damage;
     }
 
-    public void OnApply(GameObject owner)
+    public void OnApply()
     {
         // do nothing
     }
 
-    public void OnIncomingDamage(GameObject owner, DamageRecord damage)
+    public void OnIncomingDamage()
     {
         // do nothing
     }
 
-    public void OnRemove(GameObject owner)
+    public void OnRemove()
     {
         // do nothing
     }
 
-    public void OnTurnEnd(GameObject owner)
+    public void OnTurnEnd(Action<string> report = null)
     {
         // do nothing
     }
 
-    public void OnTurnStart(GameObject owner)
+    public void OnTurnStart(Action<string> report = null)
     {
         // produce a new damage record for the poison damage and apply it to the owner
         DamageRecord damage = new()
         {
             Attacker = null, // no attacker for poison damage
-            Target = owner,
+            Target = Owner,
             Amount = Damage,
             Type = DamageType.MAGIC
         };
 
-        owner.GetComponent<HPComponent>().TakeDamage(damage);
+        int taken = Owner.GetComponent<HPComponent>().TakeDamage(damage);
+        report?.Invoke($"{Owner.Name} takes {taken} poison damage.");
+        report?.Invoke($"{Duration} turns remaining.");
     }
 }
