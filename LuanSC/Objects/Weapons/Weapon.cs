@@ -1,11 +1,16 @@
 ﻿using LuanSC.Data;
 using LuanSC.Data.Components;
+using LuanSC.Data.Components.Attacks;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace LuanSC.Objects.Weapons
 {
+    /// <summary>
+    /// Glorified IAbility container
+    /// Damage attribute is used at the weapon factory and is passed into attacks so the attacks decide how to use that number.
+    /// </summary>
     public class Weapon
     {
         public string Name { get; set; }
@@ -14,7 +19,7 @@ namespace LuanSC.Objects.Weapons
 
         public Pattern Range { get; private set; } = new Pattern(); // Default: single target
 
-        public HashSet<IAttackComponent> Components{ get; } = new();
+        public List<IAbility> Abilities{ get; } = new();
         public Weapon(string name, int damage)
         {
             Name = name;
@@ -29,6 +34,6 @@ namespace LuanSC.Objects.Weapons
             Range = range;
         }
 
-        public T GetComponent<T>() where T : IAttackComponent => Components.OfType<T>().FirstOrDefault();
+        public T GetAbility<T>() where T : IAbility => Abilities.OfType<T>().FirstOrDefault();
     }
 }

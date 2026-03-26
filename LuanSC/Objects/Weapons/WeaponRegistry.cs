@@ -16,8 +16,8 @@ namespace LuanSC.Objects.Weapons
             Weapon k = new Weapon("Katana", 10, p);
 
             // Dual strike
-            k.Components.Add(new BasicAttack());
-            k.Components.Add(new BasicAttack());
+            k.Abilities.Add(new BasicAttack(k.Damage));
+            k.Abilities.Add(new BasicAttack(k.Damage));
 
             return k;
         }
@@ -38,7 +38,7 @@ namespace LuanSC.Objects.Weapons
             p.Mark(0, -1);
 
             Weapon s = new Weapon("Stick", 4);
-            s.Components.Add(new BasicAttack());
+            s.Abilities.Add(new BasicAttack(s.Damage));
             return s;
         }
     }

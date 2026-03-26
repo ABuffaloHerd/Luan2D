@@ -6,6 +6,9 @@ using System.Text;
 
 namespace LuanSC.Data.Components
 {
+    /// <summary>
+    /// The fastest way to tell if the gameobject has a weapon or not and provides an interface for it
+    /// </summary>
     public class WeaponComponent : IComponent
     {
         public string Name => "Weapon Component";

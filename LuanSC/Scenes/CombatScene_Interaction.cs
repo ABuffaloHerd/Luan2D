@@ -1,6 +1,8 @@
 ﻿using LuanSC.Data;
 using LuanSC.Data.Components;
+using LuanSC.Data.Components.Attacks;
 using LuanSC.Objects;
+using LuanSC.Objects.Weapons;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,24 +13,10 @@ namespace LuanSC.Scenes
 {
     public partial class CombatScene
     {
-        public void Attack(GameObject attacker)
+        private List<GameObject> FindTargets(GameObject user, Pattern range)
         {
-            // First use the attacker's weapon range to find targets
-            // copied code from the overlay render method
-
-            // List of targets
             List<GameObject> targets = new();
-
-            // Check that it is controllable object's turn
-            if (currentControlledGameObject.GetComponent<ControllableComponent>() is null) return;
-
-            // check for a weapon component
-            if (currentControlledGameObject is null) return;
-            WeaponComponent w = currentControlledGameObject.GetComponent<WeaponComponent>();
-            if (w == null) return;
-
-            var pattern = w.Weapon.Range;
-            foreach (var cell in pattern.GetRotated(currentControlledGameObject.Direction))
+            foreach (var cell in range.GetRotated(currentControlledGameObject.Direction))
             {
                 int x = currentControlledGameObject.Position.X + cell.X;
                 int y = currentControlledGameObject.Position.Y + cell.Y;
@@ -41,31 +29,52 @@ namespace LuanSC.Scenes
                         // Upcast to GameObject
                         GameObject gameobj = (GameObject)entity;
                         // Check that the entity is not the attacker itself
-                        if (entity != attacker)
+                        if (entity != user)
                         {
                             targets.Add(gameobj);
                         }
                     }
                 }
-            }
 
-            // Debug print the targets
-#if DEBUG
-            Debug.Print("Attack targets:");
-            foreach (var target in targets)
-            {
-                Debug.Print($"- {target.GetType().Name} at ({target.Position.X}, {target.Position.Y})");
-            }
+#if DEBUG // DEBUG PRONT
+                Debug.Print($"Targets for {user.Name}:");
+                foreach (var target in targets)
+                    Debug.Print($"  - {target.GetType().Name} at ({target.Position.X}, {target.Position.Y})");
 #endif
-            // Big bad block of null checks
-            WeaponComponent weapon = attacker.GetComponent<WeaponComponent>();
-            if (weapon is null) return;
-
-            // now do the damaging via the weapon component
-            foreach (var component in weapon.Weapon.Components)
-            {
-                component.Execute(attacker, weapon.Weapon, targets, this);
             }
+
+            return targets;
+        }
+
+        private void UseAbilities(GameObject user, IReadOnlyList<IAbility> abilities, IReadOnlyList<GameObject> targets)
+        {
+            foreach (var ability in abilities)
+            {
+                if (ability.CanUse(user))
+                {
+                    ability.Execute(user, targets);
+                }
+                else
+                {
+                    GameEvents.Publish(new CombatEvent.GenericMessage($"{user} cannot use {ability.Name} right now."));
+                }
+            }
+        }
+
+        public void Attack(GameObject attacker)
+        {
+            // bad block of null checks
+            if (attacker is null) return;
+            if (attacker.GetComponent<WeaponComponent>() is null) return; // you don't even have fists??
+
+            // First use the attacker's weapon range to find targets
+            Weapon weapon = attacker.GetComponent<WeaponComponent>().Weapon;
+            if (weapon is null) return; // you have a weapon component but not a weapon?? how did you get this far tbh
+
+            var targets = FindTargets(attacker, weapon.Range);
+            
+            // now we can execute order 66
+            UseAbilities(attacker, weapon.Abilities, targets);
         }
     }
 }
