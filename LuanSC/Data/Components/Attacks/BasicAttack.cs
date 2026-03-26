@@ -19,7 +19,7 @@ namespace LuanSC.Data.Components.Attacks
             if (targets.Count == 0)
             {
                 // if there are no targets, just publish a message (mocking the player) and return
-                GameEvents.Publish(new CombatEvent.GenericMessage($"{Name} tagged the air for {weapon.Damage} damage"));
+                GameEvents.Publish(new CombatEvent.GenericMessage($"{Owner} tagged the air for {weapon.Damage} damage"));
                 return;
             }
 
@@ -29,7 +29,7 @@ namespace LuanSC.Data.Components.Attacks
             // if the target doesn't have a health component, just publish a message (mocking the player) and return
             if (healthy is null)
             {
-                GameEvents.Publish(new CombatEvent.GenericMessage($"{Name} tagged the wall for {weapon.Damage} damage"));
+                GameEvents.Publish(new CombatEvent.GenericMessage($"{Owner} tagged the wall for {weapon.Damage} damage"));
                 return;
             }
 
@@ -44,9 +44,6 @@ namespace LuanSC.Data.Components.Attacks
                 Amount = damage,
                 Type = DamageType.PHYSICAL
             };
-
-            List<DamageRecord> records = new();
-            records.Add(pain);
 
             int dealt = healthy.TakeDamage(pain);
 

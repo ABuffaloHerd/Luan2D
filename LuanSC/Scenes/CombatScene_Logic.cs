@@ -88,7 +88,7 @@ namespace LuanSC.Scenes
         }
 
         /// <summary>
-        /// remove the corpses of the dead
+        /// remove the corpses of the dead instead of leaving them where they fall
         /// </summary>
         private void Cull()
         {
