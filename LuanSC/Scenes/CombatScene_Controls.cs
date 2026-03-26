@@ -53,7 +53,13 @@ namespace LuanSC.Scenes
 
             if (keyboard.IsKeyPressed(Keys.H))
             {
-                overlay.IsVisible = !overlay.IsVisible;
+                // toggle overlay
+                overlayVisible = !overlayVisible;
+
+                if(!overlayVisible)
+                {
+                    overlay.Clear();
+                }
                 return true;
             }
 

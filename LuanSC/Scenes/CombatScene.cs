@@ -1,5 +1,6 @@
 ﻿using LuanSC.Data;
 using LuanSC.Data.Components;
+using SadConsole.Components;
 using SadConsole.Renderers;
 using SadConsole.UI;
 using System;
@@ -11,10 +12,11 @@ namespace LuanSC.Scenes
     public partial class CombatScene : Scene
     {
         // Surface is where the gameobjects are drawn
-        private ScreenSurface surface;
+        private LayeredScreenSurface surface;
 
         // overlay is where effects and the cursor is drawn
-        private ScreenSurface overlay;
+
+        private CellSurface overlay;
 
         // Controls
         private ControlsConsole controls;
@@ -23,6 +25,8 @@ namespace LuanSC.Scenes
         private CombatSettings settings;
         private FightFeed fightFeed;
         private ScreenSurface order;
+
+        private bool overlayVisible = true;
 
         public CombatScene(SceneManager manager, CombatSettings settings) : base(manager)
         {
@@ -33,15 +37,15 @@ namespace LuanSC.Scenes
             surface = new(settings.Width, settings.Height);
             surface.Position = new(1, 1);
             surface.FontSize *= settings.FontScale;
-
             surface.Resize(settings.Width, settings.Height, false);
 
             /// Overlay surface for effects and cursor and range patterns
-            overlay = new(settings.Width, settings.Height);
-            overlay.Position = new(1, 1);
-            overlay.FontSize *= settings.FontScale;
-            overlay.Resize(settings.Width, settings.Height, false);
-            Children.Add(overlay);
+            //overlay = new(settings.Width, settings.Height);
+            //overlay.Position = new(1, 1);
+            //overlay.FontSize *= settings.FontScale;
+            //overlay.Resize(settings.Width, settings.Height, false);
+
+            overlay = surface.GetSadComponent<LayeredSurface>().Create();
 
             Border.BorderParameters parameters = Border.BorderParameters.GetDefault();
             ShapeParameters shapeParams = ShapeParameters.CreateStyledBoxThick(Color.White);
@@ -118,10 +122,8 @@ namespace LuanSC.Scenes
             // if there is an AI component run that instead
 
             // Refresh the overlay if it's visible and is dirty
-            if (overlay.IsVisible)
-            {
+            if (overlayVisible)
                 UpdateOverlay();
-            }
 
             hud.UpdateHP(currentControlledGameObject.GetComponent<HPComponent>());
             hud.UpdateMP(currentControlledGameObject.GetComponent<MPComponent>());
