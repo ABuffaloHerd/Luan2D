@@ -13,28 +13,46 @@ public class BarrierEffect : IEffect
 
     public GameObject Owner { get; private set; }
 
-    public void OnApply()
+    public void OnApply() // bonus: heal 10
     {
-        throw new NotImplementedException();
+        HealingRecord healthy = new()
+        { Amount = 10, Healer = Owner, Target = Owner };
+        Owner.GetComponent<HPComponent>().Heal(healthy);
     }
 
     public void OnRemove()
     {
-        throw new NotImplementedException();
+        
     }
 
-    public void OnTurnEnd(Action<string> report = null)
+    public void OnTurnEnd()
     {
-        throw new NotImplementedException();
+        
     }
 
-    public void OnTurnStart(Action<string> report = null)
+    public void OnTurnStart()
     {
-        throw new NotImplementedException();
+        
+    }
+
+    public DamageRecord OnIncomingDamage(DamageRecord damage)
+    {
+        // if it ain't true damage it ain't getting past
+        if (damage.Type != DamageType.TRUE)
+        {
+            GameEvents.CombatMessage($"Barrier blocked an instance of damage!");
+            return damage with { Amount = 0 };
+        }
+        else
+        {
+            GameEvents.CombatMessage($"{Owner}'s barrier couldn't block an instance of true damage");
+        }
+
+        return damage;
     }
 
     public void SetOwner(GameObject owner)
     {
-        throw new NotImplementedException();
+        Owner = owner;
     }
 }

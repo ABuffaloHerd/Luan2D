@@ -7,7 +7,7 @@ using System.Text;
 
 namespace LuanSC.Data.Components;
 
-public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
+public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener, IHealingListener, IHealingGivenListener
 {
     public string Name => "Effect Component";
     public GameObject Owner { get; private set; }
@@ -45,12 +45,28 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
         }
     }
 
+    public void OnHealingReceived(HealingRecord healing)
+    {
+        foreach (var effect in effects.OfType<IHealingListener>())
+        {
+            effect.OnHealingReceived(healing);
+        }
+    }
+
+    public void OnHealingGiven(HealingRecord healing)
+    {
+        foreach (var effect in effects.OfType<IHealingGivenListener>())
+        {
+            effect.OnHealingGiven(healing);
+        }
+    }
+
     public void SetOwner(GameObject owner)
     {
         Owner = owner;
     }
 
-    public DamageRecord ProcessIncomingDamage(DamageRecord damage)
+    public DamageRecord ProcessIncomingDamage(DamageRecord damage, Action<string> report = null)
     {
         DamageRecord modifiedDamage = damage;
         foreach (var effect in effects)
@@ -60,10 +76,20 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
         return modifiedDamage;
     }
 
+    public HealingRecord ProcessIncomingHealing(HealingRecord healthy)
+    {
+        HealingRecord modifiedHealing = healthy;
+        foreach (var effect in effects)
+        {
+            modifiedHealing = effect.OnIncomingHealing(modifiedHealing);
+        }
+        return modifiedHealing;
+    }
+
     /// <summary>
     /// Runs on turn start, ticks down durations, and removes expired effects. This should be called by the scene or some other external system that manages turns.
     /// </summary>
-    public void Tick(Action<string> report = null)
+    public void Tick()
     {
         foreach(var effect in effects.ToList())
         {
@@ -73,12 +99,12 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
 
             if (effect.IsExpired)
             {
-                report?.Invoke($"{effect.Name} has expired.");
+                GameEvents.CombatMessage($"{effect.Name} has expired.");
                 Remove(effect);
             }
             else
             {
-                effect.OnTurnStart(report);
+                effect.OnTurnStart();
             }
         }
     }

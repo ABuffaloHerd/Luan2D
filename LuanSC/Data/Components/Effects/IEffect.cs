@@ -18,12 +18,13 @@ public interface IEffect : IComponent
     void OnRemove();
 
     // if implemented, this will be called at the start of the owner's turn. To regenerate, hurt or whatever.
-    void OnTurnStart(Action<string> report = null);
+    void OnTurnStart();
 
     // what if the effect was delayed so you had to think in game? Hopefully this adds """depth""" to the game.
-    void OnTurnEnd(Action<string> report = null);
+    void OnTurnEnd();
 
     // if implemented, this will be called before damage is applied to the owner. This allows the effect to modify or negate the damage.
     // if not implemented, the damage will be applied as normal.
-    DamageRecord OnIncomingDamage(DamageRecord damage, Action<string> report = null) => damage;
+    DamageRecord OnIncomingDamage(DamageRecord damage) => damage;
+    HealingRecord OnIncomingHealing(HealingRecord healthy) => healthy;
 }

@@ -38,12 +38,12 @@ public class PoisonEffect : IEffect
         // do nothing
     }
 
-    public void OnTurnEnd(Action<string> report = null)
+    public void OnTurnEnd()
     {
         // do nothing
     }
 
-    public void OnTurnStart(Action<string> report = null)
+    public void OnTurnStart()
     {
         // produce a new damage record for the poison damage and apply it to the owner
         DamageRecord damage = new()
@@ -55,7 +55,7 @@ public class PoisonEffect : IEffect
         };
 
         int taken = Owner.GetComponent<HPComponent>().TakeDamage(damage);
-        report?.Invoke($"{Owner.Name} takes {taken} poison damage.");
-        report?.Invoke($"{Duration} turns remaining.");
+        GameEvents.CombatMessage($"{Owner.Name} takes {taken} poison damage.");
+        GameEvents.CombatMessage($"{Duration} turns remaining.");
     }
 }

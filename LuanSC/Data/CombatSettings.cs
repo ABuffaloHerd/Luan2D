@@ -74,6 +74,13 @@ namespace LuanSC.Data
             PoisonEffect poison = new(10, 10);
             hirina.GetComponent<EffectComponent>().Apply(poison);
 
+            // give minako a barrier
+            BarrierEffect barrier = new()
+            {
+                Duration = 1
+            };
+            minako.GetComponent<EffectComponent>().Apply(barrier);
+
             return settings;
         }
     }

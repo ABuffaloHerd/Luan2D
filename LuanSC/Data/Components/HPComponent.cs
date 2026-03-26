@@ -17,13 +17,13 @@ namespace LuanSC.Data.Components
         public bool IsAlive => Current > 0;
 
         // Alias for clarity
-        public int MaxHP 
-        { 
+        public int MaxHP
+        {
             get => Max;
             set => Max = value;
         }
-        public int CurrentHP 
-        { 
+        public int CurrentHP
+        {
             get => Current;
             set => Current = value;
         }
@@ -33,7 +33,7 @@ namespace LuanSC.Data.Components
             Max = maxHealth;
             Current = maxHealth;
         }
-        
+
         /// <summary>
         /// Take damage
         /// </summary>
@@ -47,9 +47,9 @@ namespace LuanSC.Data.Components
             int taken = damage.Type switch
             {
                 DamageType.PHYSICAL => damage.Amount - DEF,                     // Flat reduction
-                DamageType.MAGIC    => (int)(damage.Amount * (1 - RES / 100f)), // Percentage reduction   
-                DamageType.TRUE     => damage.Amount,                           // fuck that's gotta hurt
-                _                   => damage.Amount,                           // how did we get here
+                DamageType.MAGIC => (int)(damage.Amount * (1 - RES / 100f)), // Percentage reduction   
+                DamageType.TRUE => damage.Amount,                           // fuck that's gotta hurt
+                _ => damage.Amount,                           // how did we get here
             };
 
 
@@ -81,6 +81,21 @@ namespace LuanSC.Data.Components
             }
 
             return taken;
+        }
+
+        public int Heal(HealingRecord healthy)
+        {
+            int amount = healthy.Amount;
+            int healed = Math.Min(amount, Max - Current);
+
+            // Opportunity for effects to modify healing
+            foreach(IHealingListener listener in Owner.Components.OfType<IHealingListener>())
+            {
+                listener.OnHealingReceived(healthy with { Amount = healed });
+            }
+
+            Current += healed;
+            return healed;
         }
     }
 }

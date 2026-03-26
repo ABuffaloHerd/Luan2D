@@ -81,7 +81,7 @@ namespace LuanSC.Scenes
 
             // effect processing
             var effects = currentControlledGameObject.GetComponent<EffectComponent>();
-            effects?.Tick(msg => fightFeed.AddLine(msg));
+            effects?.Tick();
 
             // report to the fight feed
             fightFeed.AddLine($"{currentControlledGameObject.Name}'s turn.");
