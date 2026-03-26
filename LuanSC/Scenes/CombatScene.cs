@@ -48,7 +48,7 @@ namespace LuanSC.Scenes
             parameters.ChangeBorderStyle(shapeParams);
             parameters.AddTitle("Arena");
             parameters.TitleBackground = Color.White;
-            parameters.TitleForeground = Color.DarkRed;
+            parameters.TitleForeground = Color.Red;
             parameters.ChangeBorderForegroundColor(Color.Gray);
             new Border(surface, parameters);
 
