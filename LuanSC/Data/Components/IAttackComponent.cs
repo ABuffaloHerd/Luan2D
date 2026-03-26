@@ -9,7 +9,7 @@ namespace LuanSC.Data.Components
 {
     public interface IAttackComponent : IComponent
     {
-        CombatRecord Execute(
+        void Execute(
             GameObject owner,
             Weapon weapon,
             IReadOnlyList<GameObject> targets,

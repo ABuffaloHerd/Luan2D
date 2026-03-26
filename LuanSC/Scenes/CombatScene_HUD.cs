@@ -224,32 +224,4 @@ public partial class CombatScene
             gbBar.DisplayText = $"{component.CurrentGB}%";
         }
     }
-
-
-    // --------------------------------------------------------------
-    // ------------------- COMBAT RECORDS ---------------------------
-    // --------------------------------------------------------------
-    private void ProcessCombatRecord(List<CombatRecord> records)
-    {
-        foreach (var record in records)
-        {
-#if DEBUG
-            Debug.Print("Processing Combat Record:");
-            Debug.Print(record.ToString());
-
-#endif
-            // Action actually happened
-            if (record.Metadata.TryGetValue("result", out object? value) && value is true)
-            {
-                int totalDamage = record.TotalDamage();
-                fightFeed.AddLine($"{record.Metadata["attacker"]} dealt {totalDamage} damage to {record.Metadata["target"]}");
-            }
-            else
-            {
-                // mock
-                fightFeed.AddLine($"{record.Metadata["attacker"]} tagged the air for 0 damage.");
-            }
-
-        }
-    }
 }

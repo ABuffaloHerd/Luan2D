@@ -99,7 +99,6 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
 
             if (effect.IsExpired)
             {
-                GameEvents.CombatMessage($"{effect.Name} has expired.");
                 Remove(effect);
             }
             else

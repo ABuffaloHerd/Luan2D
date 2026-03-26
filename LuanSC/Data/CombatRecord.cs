@@ -1,48 +1,25 @@
-﻿using System;
+﻿using LuanSC.Objects;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace LuanSC.Data
 {
-    public record CombatRecord
+    public abstract record CombatEvent
     {
-        public List<DamageRecord> DamageRecords { get; init; } = new();
-        public Dictionary<string, object> Metadata { get; init; } = new();
+        public sealed record DamageDealt(GameObject Attacker, GameObject Target, int Amount, DamageType Type) : CombatEvent;
 
-        public int TotalDamage()
-        {
-            int total = 0;
-            foreach (var record in DamageRecords)
-            {
-                total += record.Amount;
-            }
-            return total;
-        }
-
-        public override string ToString()
-        {
-            StringBuilder sb = new();
-            sb.AppendLine("Combat Record:");
-            foreach (var damage in DamageRecords)
-            {
-                sb.AppendLine($"- {damage}");
-            }
-
-            foreach (var kvp in Metadata)
-            {
-                sb.AppendLine($"Metadata - {kvp.Key}: {kvp.Value}");
-            }
-
-            return sb.ToString();
-        }
-
-        // default constructor for easy initialization
-        public CombatRecord(string attacker)
-        {
-            Metadata["attacker"] = attacker;
-            Metadata["result"] = false;
-        }
-
-        public CombatRecord() { }
+        /// <summary>
+        /// When damage is blocked
+        /// </summary>
+        /// <param name="Owner">Who was saved</param>
+        /// <param name="EffectName">What saved them</param>
+        /// <param name="Blocked">How much was blocked</param>
+        public sealed record DamageBlocked(GameObject Owner, string EffectName, int Blocked) : CombatEvent;
+        public sealed record HealingDealt(GameObject Healer, GameObject Target, int Amount) : CombatEvent;
+        public sealed record EffectApplied(GameObject Target, string EffectName) : CombatEvent;
+        public sealed record EffectExpired(GameObject Target, string EffectName) : CombatEvent;
+        public sealed record GenericMessage(string Message) : CombatEvent;
+        public sealed record EntityDied(GameObject Target) : CombatEvent;
     }
 }

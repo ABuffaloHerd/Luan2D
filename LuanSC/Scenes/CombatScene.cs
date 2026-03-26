@@ -101,8 +101,9 @@ namespace LuanSC.Scenes
             // REALLY make sure this scene is focused
             this.IsFocused = true;
 
-            // subscribe to the global event bus
-            GameEvents.OnCombatMessage += fightFeed.AddLine;
+            // subscribe to my youtube channel (the event bus)
+            combatEventHandler = HandleCombatEvent;
+            Subscribe();
 
             // Set up game objects and entities
             InitObjects(settings);

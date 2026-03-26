@@ -3,6 +3,7 @@ using LuanSC.Data.Components;
 using LuanSC.Objects;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 
@@ -60,18 +61,11 @@ namespace LuanSC.Scenes
             WeaponComponent weapon = attacker.GetComponent<WeaponComponent>();
             if (weapon is null) return;
 
-            // Construct list to handle incoming combat records
-            List<CombatRecord> combatRecords = new();
-
             // now do the damaging via the weapon component
             foreach (var component in weapon.Weapon.Components)
             {
-                CombatRecord r = component.Execute(attacker, weapon.Weapon, targets, this);
-                combatRecords.Add(r);
+                component.Execute(attacker, weapon.Weapon, targets, this);
             }
-
-            // Process combat records
-            ProcessCombatRecord(combatRecords);
         }
     }
 }

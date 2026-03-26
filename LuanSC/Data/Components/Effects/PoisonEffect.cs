@@ -1,6 +1,7 @@
 ﻿using LuanSC.Objects;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace LuanSC.Data.Components.Effects;
@@ -55,7 +56,7 @@ public class PoisonEffect : IEffect
         };
 
         int taken = Owner.GetComponent<HPComponent>().TakeDamage(damage);
-        GameEvents.CombatMessage($"{Owner.Name} takes {taken} poison damage.");
-        GameEvents.CombatMessage($"{Duration} turns remaining.");
+        GameEvents.Publish(new CombatEvent.DamageDealt(null, Owner, damage.Amount, damage.Type));
+        GameEvents.Publish(new CombatEvent.GenericMessage($"{Duration} turns remaining."));
     }
 }
