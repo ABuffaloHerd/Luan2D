@@ -26,6 +26,8 @@ namespace LuanSC.Scenes
         private FightFeed fightFeed;
         private ScreenSurface order;
 
+        private Rectangle view;
+
         private bool overlayVisible = true;
 
         public CombatScene(SceneManager manager, CombatSettings settings) : base(manager)
@@ -36,7 +38,7 @@ namespace LuanSC.Scenes
             /// Main surface for game objects. Has the entity manager attached to it.
             surface = new(settings.Width, settings.Height);
             surface.Position = new(1, 1);
-            surface.FontSize *= settings.FontScale;
+            //surface.FontSize *= settings.FontScale;
             surface.Resize(settings.Width, settings.Height, false);
 
             /// Overlay surface for effects and cursor and range patterns
@@ -45,7 +47,16 @@ namespace LuanSC.Scenes
             //overlay.FontSize *= settings.FontScale;
             //overlay.Resize(settings.Width, settings.Height, false);
 
+            // while the warning here is sensible, layered console is supposed to come with a layered surface so if it doesn't then fuck what now
             overlay = surface.GetSadComponent<LayeredSurface>().Create();
+
+            // setup the view rectangle to be the size of the surface
+            view = new(0, 0, surface.Width, surface.Height);
+
+            // now sync view with the arena and overlay
+            surface.ViewWidth = view.Width;
+            surface.ViewHeight = view.Height;
+
 
             Border.BorderParameters parameters = Border.BorderParameters.GetDefault();
             ShapeParameters shapeParams = ShapeParameters.CreateStyledBoxThick(Color.White);

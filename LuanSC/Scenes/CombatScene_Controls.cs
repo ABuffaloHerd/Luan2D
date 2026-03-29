@@ -107,6 +107,27 @@ namespace LuanSC.Scenes
                 Attack(currentControlledGameObject);
             }
 
+
+            // zoom in and out + and -
+            if (keyboard.IsKeyPressed(Keys.OemPlus))
+            {
+                surface.ViewHeight = Math.Max(surface.ViewHeight /= 2, 8);
+                surface.ViewWidth = Math.Max(surface.ViewWidth /= 2, 8);
+
+                surface.FontSize = new Point(surface.FontSize.X * 2, surface.FontSize.Y * 2);
+
+                return true;
+            }
+
+            if (keyboard.IsKeyPressed(Keys.OemMinus))
+            {
+                surface.ViewHeight = Math.Min(surface.ViewHeight *= 2, 64);
+                surface.ViewWidth = Math.Min(surface.ViewWidth *= 2, 64);
+
+                surface.FontSize = new Point(surface.FontSize.X / 2, surface.FontSize.Y / 2);
+                return true;
+            }
+
             return base.ProcessKeyboard(keyboard);
         }
     }

@@ -66,9 +66,9 @@ namespace LuanSC.Data
             mariah.Position = new Point(3, 3);
             settings.AddGameObject(mariah);
 
-            settings.Width = 21;
-            settings.Height = 21;
-            settings.FontScale = 1.9f;
+            //settings.Width = 21;
+            //settings.Height = 21;
+            //settings.FontScale = 1.9f;
 
             // Poison hirina
             PoisonEffect poison = new(10, 10);
