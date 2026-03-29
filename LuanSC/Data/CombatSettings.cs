@@ -66,6 +66,11 @@ namespace LuanSC.Data
             mariah.Position = new Point(3, 3);
             settings.AddGameObject(mariah);
 
+            var wall = Wall.GenerateWall();
+            wall.Position = new Point(4, 4);
+
+            settings.AddGameObject(wall);
+
             //settings.Width = 21;
             //settings.Height = 21;
             //settings.FontScale = 1.9f;
