@@ -1,8 +1,10 @@
 ﻿using LuanSC.Data;
 using LuanSC.Data.Components;
 using SadConsole.Components;
+using SadConsole.Effects;
 using SadConsole.Renderers;
 using SadConsole.UI;
+using SadConsole.UI.Controls;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,12 +17,12 @@ namespace LuanSC.Scenes
         private LayeredScreenSurface surface;
 
         // overlay is where effects and the cursor is drawn
-
         private CellSurface overlay;
 
         // Controls
         private ControlsConsole controls;
         private HUD hud;
+        private ControlsConsole bossBar;
 
         private CombatSettings settings;
         private FightFeed fightFeed;
@@ -32,12 +34,16 @@ namespace LuanSC.Scenes
 
         public CombatScene(SceneManager manager, CombatSettings settings) : base(manager)
         {
+            // Setup use mouse
+            this.UseMouse = true;
+
+
             // Set up surfaces and borders
             this.settings = settings;
 
             /// Main surface for game objects. Has the entity manager attached to it.
             surface = new(settings.Width, settings.Height);
-            surface.Position = new(1, 1);
+            surface.Position = new(1, 3);
             //surface.FontSize *= settings.FontScale;
             surface.Resize(settings.Width, settings.Height, false);
 
@@ -79,6 +85,17 @@ namespace LuanSC.Scenes
             new Border(controls, parameters);
 
             Children.Add(controls);
+
+            // setup bossbar console
+            bossBar = new(45, 2);
+            bossBar.Position = new(0, 0);
+            Label lb = new("TargetDummy")
+            {
+                Position = new(1, 0)
+            };
+            bossBar.Controls.Add(lb);
+
+            Children.Add(bossBar);
 
             // HUD
             hud = new(21, 20);
@@ -165,6 +182,12 @@ namespace LuanSC.Scenes
                 if (drawX >= 0 && drawX < overlay.Width && drawY >= 0 && drawY < overlay.Height)
                 {
                     ColoredGlyph g = new(Color.Yellow, Color.Transparent, 'X');
+                    Blinker b = new()
+                    {
+                        Duration = TimeSpan.MaxValue,
+                        BlinkSpeed = TimeSpan.FromMilliseconds(500)
+                    };
+
                     overlay.SetCellAppearance(drawX, drawY, g);
                 }
             }

@@ -31,7 +31,7 @@ namespace LuanSC.Data
         {
             CombatSettings settings = new CombatSettings();
 
-            var hirina = new PlayerGameObject(new ColoredGlyph(Color.Red, Color.Transparent, 'H'), 0);
+            var hirina = new PlayerGameObject(new ColoredGlyph(Color.Red, Color.Transparent, 'H'), MagicNumbers.GAMEOBJECT_INDEX);
             hirina.Name = "Hirina";
             hirina.GetComponent<HPComponent>().Max = 250;
             hirina.GetComponent<MPComponent>().Max = 100;
@@ -40,14 +40,14 @@ namespace LuanSC.Data
             hirina.Position = new(1, 1);
             settings.AddGameObject(hirina);
 
-            var targetdummy = new EnemyGameObject(new ColoredGlyph(Color.White, Color.Transparent, 'T'), 0);
+            var targetdummy = new EnemyGameObject(new ColoredGlyph(Color.White, Color.Transparent, 'T'), MagicNumbers.GAMEOBJECT_INDEX);
             targetdummy.Name = "Target Dummy";
             targetdummy.Position = new(5, 5);
             targetdummy.GetComponent<HPComponent>().Max = 100;
             targetdummy.GetComponent<SpeedComponent>().Speed = 50;
             settings.AddGameObject(targetdummy);
 
-            var minako = new PlayerGameObject(new ColoredGlyph(Color.Gray, Color.Transparent, 'M'), 0);
+            var minako = new PlayerGameObject(new ColoredGlyph(Color.Gray, Color.Transparent, 'M'), MagicNumbers.GAMEOBJECT_INDEX);
             minako.Name = "Minako";
             minako.GetComponent<HPComponent>().Max = 100;
             minako.GetComponent<MPComponent>().Max = 50;
@@ -56,7 +56,7 @@ namespace LuanSC.Data
             minako.Position = new Point(2, 2);
             settings.AddGameObject(minako);
 
-            var mariah = new PlayerGameObject(new ColoredGlyph(Color.Blue, Color.Transparent, 'M'), 0);
+            var mariah = new PlayerGameObject(new ColoredGlyph(Color.Blue, Color.Transparent, 'M'), MagicNumbers.GAMEOBJECT_INDEX);
             mariah.Name = "Mariah";
             mariah.GetComponent<HPComponent>().Max = 150;
             mariah.GetComponent<MPComponent>().Max = 200;

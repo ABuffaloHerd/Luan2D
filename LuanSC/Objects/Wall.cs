@@ -26,7 +26,7 @@ public class Wall : GameObject
             Foreground = c
         };
 
-        return new Wall(cgb, 0);
+        return new Wall(cgb, MagicNumbers.GAMEOBJECT_INDEX);
     }
 
     private Wall(ColoredGlyphBase coloredGlyphBase, int zIndex) : base(coloredGlyphBase, zIndex)

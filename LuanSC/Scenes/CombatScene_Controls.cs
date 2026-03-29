@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using LuanSC.Data;
+using SadConsole.UI;
 
 namespace LuanSC.Scenes
 {
@@ -107,24 +108,30 @@ namespace LuanSC.Scenes
                 Attack(currentControlledGameObject);
             }
 
-
             // zoom in and out + and -
             if (keyboard.IsKeyPressed(Keys.OemPlus))
             {
-                surface.ViewHeight = Math.Max(surface.ViewHeight /= 2, 8);
-                surface.ViewWidth = Math.Max(surface.ViewWidth /= 2, 8);
+                surface.ViewHeight = Math.Max(surface.ViewHeight -= 5, 10);
+                surface.ViewWidth = Math.Max(surface.ViewWidth -= 5, 10);
 
-                surface.FontSize = new Point(surface.FontSize.X * 2, surface.FontSize.Y * 2);
+                surface.FontSize = new Point(surface.FontSize.X - 5, surface.FontSize.Y - 5);
 
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.OemMinus))
             {
-                surface.ViewHeight = Math.Min(surface.ViewHeight *= 2, 64);
-                surface.ViewWidth = Math.Min(surface.ViewWidth *= 2, 64);
+                surface.ViewHeight = Math.Min(surface.ViewHeight += 5, 45);
+                surface.ViewWidth = Math.Min(surface.ViewWidth += 5, 45);
 
-                surface.FontSize = new Point(surface.FontSize.X / 2, surface.FontSize.Y / 2);
+                surface.FontSize = new Point(surface.FontSize.X + 5, surface.FontSize.Y + 5);
+                return true;
+            }
+
+            // Open spellbook G
+            if (keyboard.IsKeyDown(Keys.G))
+            {
+                DisplaySpellbook();
                 return true;
             }
 
