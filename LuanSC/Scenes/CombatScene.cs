@@ -28,6 +28,8 @@ namespace LuanSC.Scenes
         private FightFeed fightFeed;
         private ScreenSurface order;
 
+        private TickerText tickerText;
+
         private Rectangle view;
 
         private bool overlayVisible = true;
@@ -75,16 +77,21 @@ namespace LuanSC.Scenes
 
             Children.Add(surface);
 
+            // ticker text for humour
+            tickerText = new(45, 1);
+            tickerText.Position = (45, 46);
+
+            Children.Add(tickerText);
 
             // CONTROLS
-            controls = new(21, 21);
-            controls.Position = new(46, GameSettings.GAME_HEIGHT / 2 + 1);
+            //controls = new(21, 21);
+            //controls.Position = new(46, GameSettings.GAME_HEIGHT / 2 + 1);
 
-            parameters = Border.BorderParameters.GetDefault();
-            parameters.AddTitle("Controls");
-            new Border(controls, parameters);
+            //parameters = Border.BorderParameters.GetDefault();
+            //parameters.AddTitle("Controls");
+            //new Border(controls, parameters);
 
-            Children.Add(controls);
+            //Children.Add(controls);
 
             // setup bossbar console
             bossBar = new(45, 2);
@@ -98,8 +105,8 @@ namespace LuanSC.Scenes
             Children.Add(bossBar);
 
             // HUD
-            hud = new(21, 20);
-            hud.Position = new(46, 1);
+            hud = new(20, 20);
+            hud.Position = new(69, 25);
             parameters = Border.BorderParameters.GetDefault();
             parameters.AddTitle("HUD");
             new Border(hud, parameters);
@@ -107,14 +114,14 @@ namespace LuanSC.Scenes
             Children.Add(hud);
 
             // FIGHT FEED
-            fightFeed = new FightFeed(20, 20);
-            fightFeed.Position = new((controls.Position.X + controls.Width) * 2 + 4, 2); // y is 1 to accomodate border, x*2 to accommodate half font size
+            fightFeed = new FightFeed(43, 22);
+            fightFeed.Position = new(46, 1);
 
             Children.Add(fightFeed);
 
             // TURN ORDER
-            order = new(20, 21);
-            order.Position = new(hud.Position.X + order.Width + 3, hud.Position.Y + order.Height + 1);
+            order = new(20, 20);
+            order.Position = new(46, 25);
             parameters = Border.BorderParameters.GetDefault();
             parameters.AddTitle("Turn Order");
             new Border(order, parameters);

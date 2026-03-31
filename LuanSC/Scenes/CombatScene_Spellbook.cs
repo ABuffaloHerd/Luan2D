@@ -12,6 +12,7 @@ public partial class CombatScene
     {
         if (spellbookInstances > 0) return;
 
+        // might need to make this a class var
         Window spellbook = new Window(30, 30)
         {
             Title = $"Spellbook",
