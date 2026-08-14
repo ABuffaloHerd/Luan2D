@@ -135,6 +135,13 @@ namespace LuanSC.Scenes
                 return true;
             }
 
+            // Hit F1 for help
+            if (keyboard.IsKeyPressed(Keys.F1))
+            {
+                DisplayHelp();
+                return true;
+            }
+
             return base.ProcessKeyboard(keyboard);
         }
     }
