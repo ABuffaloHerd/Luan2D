@@ -1,11 +1,12 @@
-﻿using LuanSC.Data.Components;
+﻿using LuanSC.Data;
+using LuanSC.Data.Components;
+using LuanSC.Data.Components.AI;
 using SadConsole.Input;
-using Direction = LuanSC.Data.Direction;
+using SadConsole.UI;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using LuanSC.Data;
-using SadConsole.UI;
+using Direction = LuanSC.Data.Direction;
 
 namespace LuanSC.Scenes
 {
@@ -20,35 +21,35 @@ namespace LuanSC.Scenes
                 return true;
             }
 
+            // Always allow escape to work
+            if (currentControlledGameObject?.GetComponent<AIComponent>() is not null)
+                return base.ProcessKeyboard(keyboard);
+
             if (keyboard.IsKeyPressed(Keys.Up))
             {
-                Point newPos = Direction.UP.ToVector();
-                if (BoundsCheck(currentControlledGameObject.Position + newPos))
-                    currentControlledGameObject.Position += newPos;
+                //Point newPos = Direction.UP.ToVector();
+                //if (IsWalkable(currentControlledGameObject.Position + newPos))
+                //    currentControlledGameObject.Position += newPos;
+                //return true;
+                Execute(currentControlledGameObject, new TurnAction.Move(Direction.UP));
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.Down))
             {
-                Point newPos = Direction.DOWN.ToVector();
-                if (BoundsCheck(currentControlledGameObject.Position + newPos))
-                    currentControlledGameObject.Position += newPos;
+                Execute(currentControlledGameObject, new TurnAction.Move(Direction.DOWN));
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.Left))
             {
-                Point newPos = Direction.LEFT.ToVector();
-                if (BoundsCheck(currentControlledGameObject.Position + newPos))
-                    currentControlledGameObject.Position += newPos;
+                Execute(currentControlledGameObject, new TurnAction.Move(Direction.LEFT));
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.Right))
             {
-                Point newPos = Direction.RIGHT.ToVector();
-                if (BoundsCheck(currentControlledGameObject.Position + newPos))
-                    currentControlledGameObject.Position += newPos;
+                Execute(currentControlledGameObject, new TurnAction.Move(Direction.RIGHT));
                 return true;
             }
 
@@ -67,25 +68,25 @@ namespace LuanSC.Scenes
             // Directional Changes
             if (keyboard.IsKeyPressed(Keys.W))
             {
-                currentControlledGameObject.Direction = Data.Direction.UP;
+                Execute(currentControlledGameObject, new TurnAction.Face(Direction.UP));
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.S))
             {
-                currentControlledGameObject.Direction = Data.Direction.DOWN;
+                Execute(currentControlledGameObject, new TurnAction.Face(Direction.DOWN));
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.A))
             {
-                currentControlledGameObject.Direction = Data.Direction.LEFT;
+                Execute(currentControlledGameObject, new TurnAction.Face(Direction.LEFT));
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.D))
             {
-                currentControlledGameObject.Direction = Data.Direction.RIGHT;
+                Execute(currentControlledGameObject, new TurnAction.Face(Direction.RIGHT));
                 return true;
             }
 
@@ -97,15 +98,14 @@ namespace LuanSC.Scenes
 
             if (keyboard.IsKeyPressed(Keys.Space))
             {
-                StartNextTurn();
+                Execute(currentControlledGameObject, new TurnAction.EndTurn());
                 return true;
             }
 
             // Attack key L
             if (keyboard.IsKeyPressed(Keys.L))
             {
-                // Run attack function
-                Attack(currentControlledGameObject);
+                Execute(currentControlledGameObject, new TurnAction.Attack());
             }
 
             // zoom in and out + and -

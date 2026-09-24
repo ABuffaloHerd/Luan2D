@@ -8,11 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using LuanSC.Data.Components.AI;
+using System.Diagnostics;
 
 namespace LuanSC.Scenes
 {
-    public partial class CombatScene
+    public partial class CombatScene : ICombatContext
     {
+        public IReadOnlyList<GameObject> Objects => gameObjects;
         private List<GameObject> gameObjects = new();
 
         private EntityManager entityManager = new();
@@ -21,8 +24,9 @@ namespace LuanSC.Scenes
         /// Queue of game object sorted by speed. Pop this nigga to get the next object's turn
         /// </summary>
         private Queue<GameObject> queue = new();
-
         private GameObject currentControlledGameObject = null;
+        private Queue<TurnAction> aiPlan;   // null means "no plan yet for this turn"
+        private TimeSpan aiTimer = TimeSpan.Zero;
 
         /// <summary>
         /// In the future this will consume the combatsettings object to produce a gaming scene.
@@ -69,6 +73,9 @@ namespace LuanSC.Scenes
             currentControlledGameObject = queue.Dequeue();
             currentControlledGameObject.Blink();
 
+            aiPlan = null;
+            aiTimer = TimeSpan.Zero;
+
             // Then update the turn order console.
             order.Clear();
             int y = 0;
@@ -94,7 +101,7 @@ namespace LuanSC.Scenes
         {
             foreach(GameObject obj in gameObjects)
             {
-                if (obj.GetComponent<HPComponent>() is not null && obj.GetComponent<HPComponent>().IsAlive)
+                if (obj.GetComponent<HPComponent>() is not null && !obj.GetComponent<HPComponent>().IsAlive)
                 {
                     gameObjects.Remove(obj);
                     entityManager.Remove(obj);
@@ -102,7 +109,55 @@ namespace LuanSC.Scenes
             }    
         }
 
-        private bool BoundsCheck(Point targetPos)
+        private void Execute(GameObject actor, TurnAction action)
+        {
+            switch (action)
+            {
+                case TurnAction.Move move:
+                    Point target = actor.Position + move.Direction.ToVector();
+                    if (IsWalkable(target))
+                        actor.Position = target;
+                    break;
+
+                case TurnAction.Face face:
+                    actor.Direction = face.Direction;
+                    break;
+
+                case TurnAction.Attack:
+                    Attack(actor);
+                    break;
+
+                case TurnAction.EndTurn:
+                    // Notify the fight feed that the turn has ended
+                    fightFeed.AddLine($"{actor.Name} ends their turn.");
+                    StartNextTurn();
+                    break;
+            }
+        }
+
+        private void UpdateAI(TimeSpan delta)
+        {
+#if DEBUG
+            Debug.Print($"UpdateAI: {currentControlledGameObject.Name} ({currentControlledGameObject.Position})");
+#endif
+            AIComponent ai = currentControlledGameObject.GetComponent<AIComponent>();
+            if (ai is null) return;
+
+            aiTimer += delta;
+            if (aiTimer < ai.ActionDelay) return;
+            aiTimer = TimeSpan.Zero;
+
+            // Plan late, after the effects tick. Poison can kill the actor first.
+            if (aiPlan is null)
+            {
+                aiPlan = new Queue<TurnAction>(ai.Behavior.PlanTurn(currentControlledGameObject, this));
+                aiPlan.Enqueue(new TurnAction.EndTurn()); // the plan always ends the turn
+            }
+
+            Execute(currentControlledGameObject, aiPlan.Dequeue());
+        }
+
+        public bool IsWalkable(Point targetPos)
         {
             // checks if the target position is out of bounds or on top of another entity
             foreach (var obj in gameObjects)

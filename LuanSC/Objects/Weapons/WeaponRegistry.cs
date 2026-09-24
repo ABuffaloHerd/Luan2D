@@ -41,5 +41,15 @@ namespace LuanSC.Objects.Weapons
             s.Abilities.Add(new BasicAttack(s.Damage));
             return s;
         }
+
+        // Give em the hands
+        public static Weapon Hands()
+        {
+            Pattern p = new();
+            p.Mark(0, -1);
+            Weapon h = new Weapon("The Hands", 1);
+            h.Abilities.Add(new BasicAttack(h.Damage));
+            return h;
+        }
     }
 }
