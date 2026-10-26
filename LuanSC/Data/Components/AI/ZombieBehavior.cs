@@ -1,5 +1,6 @@
 ﻿using LuanSC.Objects;
 using LuanSC.Objects.Weapons;
+using static SadConsole.UI.Controls.Table.Cell;
 using Direction = LuanSC.Data.Direction;
 
 namespace LuanSC.Data.Components.AI;
@@ -21,6 +22,9 @@ public class ZombieBehavior : IAIBehavior
         Weapon weapon = self.GetComponent<WeaponComponent>()?.Weapon;
         Point position = self.Position;
 
+        ActionComponent actions = self.GetComponent<ActionComponent>();
+        int steps = actions?.Remaining(ActionType.MOVE) ?? MaxSteps;
+
         for (int step = 0; step < MaxSteps; step++)
         {
             if (weapon is not null && TryGetAttackDirection(weapon, position, target.Position, out _))
@@ -33,7 +37,8 @@ public class ZombieBehavior : IAIBehavior
             position += next.Value.ToVector();
         }
 
-        if (weapon is not null && TryGetAttackDirection(weapon, position, target.Position, out Direction facing))
+        bool canAttack = actions?.CanSpend(ActionType.ATTACK) ?? true;
+        if (canAttack && weapon is not null && TryGetAttackDirection(weapon, position, target.Position, out Direction facing))
         {
             plan.Add(new TurnAction.Face(facing));
             plan.Add(new TurnAction.Attack());

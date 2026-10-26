@@ -167,6 +167,12 @@ namespace LuanSC.Scenes
             hud.UpdateMP(currentControlledGameObject.GetComponent<MPComponent>());
             hud.UpdateSP(currentControlledGameObject.GetComponent<SPComponent>());
             hud.UpdateOD(currentControlledGameObject.GetComponent<ODComponent>());
+
+            ActionComponent? actions = currentControlledGameObject.GetComponent<ControllableComponent>() is not null
+                ? currentControlledGameObject.GetComponent<ActionComponent>()
+                : null;
+
+            hud.UpdateActions(actions);
         }
 
         private void UpdateOverlay()

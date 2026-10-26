@@ -1,4 +1,5 @@
 ﻿using LuanSC.Data.Components;
+using LuanSC.Data.Components.AI;
 using LuanSC.Data.Components.Effects;
 using LuanSC.Objects;
 using LuanSC.Objects.Weapons;
@@ -68,8 +69,15 @@ namespace LuanSC.Data
 
             var wall = Wall.GenerateWall();
             wall.Position = new Point(4, 4);
-
             settings.AddGameObject(wall);
+
+            var zombie = new EnemyGameObject(new ColoredGlyph(Color.Green, Color.Transparent, 'z'), MagicNumbers.GAMEOBJECT_INDEX, new ZombieBehavior());
+            zombie.Name = "Zombie";
+            zombie.GetComponent<HPComponent>().Max = 50;
+            zombie.GetComponent<SpeedComponent>().Speed = 50;
+            zombie.Position = (10, 5);
+
+            settings.AddGameObject(zombie);
 
             //settings.Width = 21;
             //settings.Height = 21;

@@ -10,6 +10,7 @@ using System.Net;
 using System.Text;
 using LuanSC.Data.Components.AI;
 using System.Diagnostics;
+using System.Security.AccessControl;
 
 namespace LuanSC.Scenes
 {
@@ -90,6 +91,9 @@ namespace LuanSC.Scenes
             var effects = currentControlledGameObject.GetComponent<EffectComponent>();
             effects?.Tick();
 
+            // reload action counters
+            currentControlledGameObject.GetComponent<ActionComponent>()?.Refill();
+
             // report to the fight feed
             fightFeed.AddLine($"{currentControlledGameObject.Name}'s turn.");
         }
@@ -109,14 +113,41 @@ namespace LuanSC.Scenes
             }    
         }
 
+        private static ActionType? ActionTypeOf(TurnAction action)
+        {
+            return action switch
+            {
+                TurnAction.Move => ActionType.MOVE,
+                TurnAction.Attack => ActionType.ATTACK,
+                _ => null // if they ain't declared it's free dawg it's lit
+            };
+        }
+
         private void Execute(GameObject actor, TurnAction action)
         {
+            // Check if the actor has enough action points to perform the action
+            ActionType? type = ActionTypeOf(action);
+            ActionComponent actions = actor.GetComponent<ActionComponent>();
+
+            if (type is not null && actions is not null && !actions.CanSpend(type.Value))
+            {
+                // Not enough action points, cannot perform the action
+                GameEvents.Publish(new CombatEvent.GenericMessage($"{actor.Name} has no {type.Value} actions left."));
+                return;
+            }
+
+            bool success = false; // track if successful and only spend points if it was
+
+            // now execute the action
             switch (action)
             {
                 case TurnAction.Move move:
                     Point target = actor.Position + move.Direction.ToVector();
                     if (IsWalkable(target))
+                    {
                         actor.Position = target;
+                        success = true;
+                    }
                     break;
 
                 case TurnAction.Face face:
@@ -125,6 +156,7 @@ namespace LuanSC.Scenes
 
                 case TurnAction.Attack:
                     Attack(actor);
+                    success = true;
                     break;
 
                 case TurnAction.EndTurn:
@@ -132,6 +164,12 @@ namespace LuanSC.Scenes
                     fightFeed.AddLine($"{actor.Name} ends their turn.");
                     StartNextTurn();
                     break;
+            }
+
+            // now spend the points
+            if (success && type is not null)
+            {
+                actions?.TrySpend(type.Value);
             }
         }
 

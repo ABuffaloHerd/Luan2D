@@ -2,10 +2,7 @@
 using LuanSC.Data.Components;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
+
 
 namespace LuanSC.Scenes;
 
@@ -18,12 +15,16 @@ public partial class CombatScene
         private ProgressBar spBar;
         private ProgressBar odBar;
         private ProgressBar gbBar;
+        private ProgressBar mvBar;
+        private ProgressBar atBar;
 
         private Label hplabel;
         private Label mplabel;
         private Label splabel;
         private Label odlabel;
         private Label gblabel;
+        private Label mvlabel;
+        private Label atlabel;
 
         public HUD(int width, int height) : base(width, height)
         {
@@ -129,6 +130,36 @@ public partial class CombatScene
 
             Controls.Add(gbBar);
             Controls.Add(gblabel);
+
+            // MV bar
+            mvBar = new(this.Width - 5, 1, HorizontalAlignment.Left);
+            mvBar.Position = new(this.Width - mvBar.Width, 10);
+            mvBar.Progress = 1.0f;
+            mvBar.BarColor = Color.Green;
+            mvBar.DisplayTextColor = Color.Black;
+
+            mvlabel = new(this.Width - mvBar.Width);
+            mvlabel.Position = new(0, mvBar.Position.Y);
+            mvlabel.DisplayText = "MV :";
+            mvlabel.TextColor = Color.Green;
+
+            Controls.Add(mvBar);
+            Controls.Add(mvlabel);
+
+            // AT bar
+            atBar = new(this.Width - 5, 1, HorizontalAlignment.Left);
+            atBar.Position = new(this.Width - atBar.Width, 12);
+            atBar.Progress = 1.0f;
+            atBar.BarColor = Color.Orange;
+            atBar.DisplayTextColor = Color.Black;
+
+            atlabel = new(this.Width - atBar.Width);
+            atlabel.Position = new(0, atBar.Position.Y);
+            atlabel.DisplayText = "AT :";
+            atlabel.TextColor = Color.Orange;
+
+            Controls.Add(atBar);
+            Controls.Add(atlabel);
         }
 
         public void UpdateHP(HPComponent component)
@@ -222,6 +253,27 @@ public partial class CombatScene
             float gbval = component.CurrentGB / 100f;
             gbBar.Progress = gbval;
             gbBar.DisplayText = $"{component.CurrentGB}%";
+        }
+
+        public void UpdateActions(ActionComponent component)
+        {
+            UpdateActionBar(mvBar, mvlabel, component, ActionType.MOVE);
+            UpdateActionBar(atBar, atlabel, component, ActionType.ATTACK);
+        }
+
+        private static void UpdateActionBar(ProgressBar bar, Label label, ActionComponent component, ActionType type)
+        {
+            bool visible = component is not null && component.IsLimited(type);
+            bar.IsVisible = visible;
+            label.IsVisible = visible;
+
+            if (!visible) return;
+
+            int max = component.Max(type);
+            int current = component.Remaining(type);
+
+            bar.Progress = max > 0 ? (float)current / max : 0f;
+            bar.DisplayText = $"{current} / {max}";
         }
     }
 }
