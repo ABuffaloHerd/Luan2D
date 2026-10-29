@@ -16,10 +16,10 @@ namespace LuanSC.Scenes
         private List<GameObject> FindTargets(GameObject user, Pattern range)
         {
             List<GameObject> targets = new();
-            foreach (var cell in range.GetRotated(currentControlledGameObject.Direction))
+            foreach (var cell in range.GetRotated(user.Direction))
             {
-                int x = currentControlledGameObject.Position.X + cell.X;
-                int y = currentControlledGameObject.Position.Y + cell.Y;
+                int x = user.Position.X + cell.X;
+                int y = user.Position.Y + cell.Y;
 
                 // Now sample the game objects at that position
                 foreach (var entity in entityManager.Entities)

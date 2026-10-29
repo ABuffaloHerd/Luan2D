@@ -1,7 +1,7 @@
 ﻿internal static class GameSettings
 {
     public const int GAME_WIDTH = 90;
-    public const int GAME_HEIGHT = 45;
+    public const int GAME_HEIGHT = 47;
     public static readonly string FONT = FONTS.Bisasam.GetFont();
 
     public static string GetFont(this FONTS font)

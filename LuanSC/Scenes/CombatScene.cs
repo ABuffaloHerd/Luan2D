@@ -1,8 +1,10 @@
 ﻿using LuanSC.Data;
 using LuanSC.Data.Components;
 using SadConsole.Components;
+using SadConsole.Effects;
 using SadConsole.Renderers;
 using SadConsole.UI;
+using SadConsole.UI.Controls;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,28 +17,36 @@ namespace LuanSC.Scenes
         private LayeredScreenSurface surface;
 
         // overlay is where effects and the cursor is drawn
-
         private CellSurface overlay;
 
         // Controls
         private ControlsConsole controls;
         private HUD hud;
+        private ControlsConsole bossBar;
 
         private CombatSettings settings;
         private FightFeed fightFeed;
         private ScreenSurface order;
 
+        private TickerText tickerText;
+
+        private Rectangle view;
+
         private bool overlayVisible = true;
 
         public CombatScene(SceneManager manager, CombatSettings settings) : base(manager)
         {
+            // Setup use mouse
+            this.UseMouse = true;
+
+
             // Set up surfaces and borders
             this.settings = settings;
 
             /// Main surface for game objects. Has the entity manager attached to it.
             surface = new(settings.Width, settings.Height);
-            surface.Position = new(1, 1);
-            surface.FontSize *= settings.FontScale;
+            surface.Position = new(1, 3);
+            //surface.FontSize *= settings.FontScale;
             surface.Resize(settings.Width, settings.Height, false);
 
             /// Overlay surface for effects and cursor and range patterns
@@ -45,7 +55,16 @@ namespace LuanSC.Scenes
             //overlay.FontSize *= settings.FontScale;
             //overlay.Resize(settings.Width, settings.Height, false);
 
+            // while the warning here is sensible, layered console is supposed to come with a layered surface so if it doesn't then fuck what now
             overlay = surface.GetSadComponent<LayeredSurface>().Create();
+
+            // setup the view rectangle to be the size of the surface
+            view = new(0, 0, surface.Width, surface.Height);
+
+            // now sync view with the arena and overlay
+            surface.ViewWidth = view.Width;
+            surface.ViewHeight = view.Height;
+
 
             Border.BorderParameters parameters = Border.BorderParameters.GetDefault();
             ShapeParameters shapeParams = ShapeParameters.CreateStyledBoxThick(Color.White);
@@ -58,20 +77,36 @@ namespace LuanSC.Scenes
 
             Children.Add(surface);
 
+            // ticker text for humour
+            tickerText = new(45, 1);
+            tickerText.Position = (45, 46);
+
+            Children.Add(tickerText);
 
             // CONTROLS
-            controls = new(21, 21);
-            controls.Position = new(46, GameSettings.GAME_HEIGHT / 2 + 1);
+            //controls = new(21, 21);
+            //controls.Position = new(46, GameSettings.GAME_HEIGHT / 2 + 1);
 
-            parameters = Border.BorderParameters.GetDefault();
-            parameters.AddTitle("Controls");
-            new Border(controls, parameters);
+            //parameters = Border.BorderParameters.GetDefault();
+            //parameters.AddTitle("Controls");
+            //new Border(controls, parameters);
 
-            Children.Add(controls);
+            //Children.Add(controls);
+
+            // setup bossbar console
+            bossBar = new(45, 2);
+            bossBar.Position = new(0, 0);
+            Label lb = new("TargetDummy")
+            {
+                Position = new(1, 0)
+            };
+            bossBar.Controls.Add(lb);
+
+            Children.Add(bossBar);
 
             // HUD
-            hud = new(21, 20);
-            hud.Position = new(46, 1);
+            hud = new(20, 20);
+            hud.Position = new(69, 25);
             parameters = Border.BorderParameters.GetDefault();
             parameters.AddTitle("HUD");
             new Border(hud, parameters);
@@ -79,14 +114,14 @@ namespace LuanSC.Scenes
             Children.Add(hud);
 
             // FIGHT FEED
-            fightFeed = new FightFeed(20, 20);
-            fightFeed.Position = new((controls.Position.X + controls.Width) * 2 + 4, 2); // y is 1 to accomodate border, x*2 to accommodate half font size
+            fightFeed = new FightFeed(43, 22);
+            fightFeed.Position = new(46, 1);
 
             Children.Add(fightFeed);
 
             // TURN ORDER
-            order = new(20, 21);
-            order.Position = new(hud.Position.X + order.Width + 3, hud.Position.Y + order.Height + 1);
+            order = new(20, 20);
+            order.Position = new(46, 25);
             parameters = Border.BorderParameters.GetDefault();
             parameters.AddTitle("Turn Order");
             new Border(order, parameters);
@@ -119,7 +154,10 @@ namespace LuanSC.Scenes
             base.Update(delta);
 
             if (currentControlledGameObject is null) return;
+
             // if there is an AI component run that instead
+            if (currentControlledGameObject.GetComponent<ControllableComponent>() is null)
+                UpdateAI(delta);
 
             // Refresh the overlay if it's visible and is dirty
             if (overlayVisible)
@@ -129,6 +167,12 @@ namespace LuanSC.Scenes
             hud.UpdateMP(currentControlledGameObject.GetComponent<MPComponent>());
             hud.UpdateSP(currentControlledGameObject.GetComponent<SPComponent>());
             hud.UpdateOD(currentControlledGameObject.GetComponent<ODComponent>());
+
+            ActionComponent? actions = currentControlledGameObject.GetComponent<ControllableComponent>() is not null
+                ? currentControlledGameObject.GetComponent<ActionComponent>()
+                : null;
+
+            hud.UpdateActions(actions);
         }
 
         private void UpdateOverlay()
@@ -154,6 +198,12 @@ namespace LuanSC.Scenes
                 if (drawX >= 0 && drawX < overlay.Width && drawY >= 0 && drawY < overlay.Height)
                 {
                     ColoredGlyph g = new(Color.Yellow, Color.Transparent, 'X');
+                    Blinker b = new()
+                    {
+                        Duration = TimeSpan.MaxValue,
+                        BlinkSpeed = TimeSpan.FromMilliseconds(500)
+                    };
+
                     overlay.SetCellAppearance(drawX, drawY, g);
                 }
             }

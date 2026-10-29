@@ -49,6 +49,8 @@ namespace LuanSC.Objects
             Components.Add(new ODComponent());
             Components.Add(new EffectComponent());
 
+            Components.Add(ActionComponent.CreateDefault());
+
             Components.Add(new WeaponComponent(WeaponRegistry.Katana()));
 
             foreach(var component in Components)
