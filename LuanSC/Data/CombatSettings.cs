@@ -116,6 +116,14 @@ namespace LuanSC.Data
             PoisonEffect poison = new(10, 10);
             hirina.GetComponent<EffectComponent>().Apply(poison);
 
+            // damage modifier test. Outgoing: +50% then -20%. Incoming, after RES: +25% then -5. Katana 12 a hit, poison 7 a tick.
+            // Effects run in the order they're applied, so Vulnerable scales before Armour takes its 5 off.
+            EffectComponent hirinaEffects = hirina.GetComponent<EffectComponent>();
+            hirinaEffects.Apply(new EmpowerEffect(duration: 5, percent: 50));
+            hirinaEffects.Apply(new WeakenEffect(duration: 5, percent: 20));
+            hirinaEffects.Apply(new VulnerableEffect(duration: 5, percent: 25));
+            hirinaEffects.Apply(new ArmourEffect(duration: 5, amount: 5));
+
             // give minako a barrier
             BarrierEffect barrier = new()
             {

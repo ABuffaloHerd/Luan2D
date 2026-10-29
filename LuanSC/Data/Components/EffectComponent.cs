@@ -66,6 +66,16 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
         Owner = owner;
     }
 
+    public DamageRecord ProcessOutgoingDamage(DamageRecord damage)
+    {
+        DamageRecord modifiedDamage = damage;
+        foreach (var effect in effects)
+        {
+            modifiedDamage = effect.OnOutgoingDamage(modifiedDamage);
+        }
+        return modifiedDamage;
+    }
+
     public DamageRecord ProcessIncomingDamage(DamageRecord damage, Action<string> report = null)
     {
         DamageRecord modifiedDamage = damage;

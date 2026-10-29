@@ -47,8 +47,8 @@ namespace LuanSC.Objects
         {
             Blinker b = new()
             {
-                BlinkCount = 3,
-                BlinkSpeed = TimeSpan.FromMilliseconds(500),
+                BlinkCount = 5,
+                BlinkSpeed = TimeSpan.FromMilliseconds(50),
                 RestoreCellOnRemoved = true,
                 RemoveOnFinished = true
             };

@@ -23,7 +23,11 @@ public interface IEffect : IComponent
     // what if the effect was delayed so you had to think in game? Hopefully this adds """depth""" to the game.
     void OnTurnEnd();
 
-    // if implemented, this will be called before damage is applied to the owner. This allows the effect to modify or negate the damage.
+    // if implemented, this will be called when the owner deals damage, before the target's DEF/RES. This allows the effect to boost or weaken it.
+    // Runs for every source of damage (attacks, spells) because HPComponent.TakeDamage calls it, so attacks don't need to.
+    DamageRecord OnOutgoingDamage(DamageRecord damage) => damage;
+
+    // if implemented, this will be called before damage is applied to the owner, after DEF/RES. This allows the effect to modify or negate the damage.
     // if not implemented, the damage will be applied as normal.
     DamageRecord OnIncomingDamage(DamageRecord damage) => damage;
     HealingRecord OnIncomingHealing(HealingRecord healthy) => healthy;

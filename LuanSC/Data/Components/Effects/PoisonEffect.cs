@@ -56,7 +56,7 @@ public class PoisonEffect : IEffect
         };
 
         int taken = Owner.GetComponent<HPComponent>().TakeDamage(damage);
-        GameEvents.Publish(new CombatEvent.DamageDealt(null, Owner, damage.Amount, damage.Type));
+        GameEvents.Publish(new CombatEvent.DamageDealt(null, Owner, taken, damage.Type)); // what got through RES and barriers, not the raw poison
         GameEvents.Publish(new CombatEvent.GenericMessage($"{Duration} turns remaining."));
     }
 }
