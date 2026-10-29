@@ -2,6 +2,7 @@
 using LuanSC.Data.Components;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
+using System.Diagnostics;
 
 
 namespace LuanSC.Scenes;
@@ -44,8 +45,8 @@ public partial class CombatScene
     /// from a real person: tl;dr DON'T TOUCH. as a human myself i'm not fucking reading this wall of text so heed the warning now.
     private class HUD : ControlsConsole
     {
-        // HP, MP, SP, OD, GB, MV, AT and two spare for custom resources
-        public const int SLOTS = 9;
+        // HP, MP, SP, OD, GB, MV, AT and three spare for custom resources. As many as fit the panel's width.
+        public const int SLOTS = 10;
         private const int LABEL_WIDTH = 5;
 
         private readonly ProgressBar[] bars = new ProgressBar[SLOTS];
@@ -54,6 +55,8 @@ public partial class CombatScene
 
         // what each slot is currently showing, null means hidden
         private readonly HudBar[] shown = new HudBar[SLOTS];
+
+        private bool warnedOverflow;
 
         public HUD(int width, int height) : base(width, height)
         {
@@ -133,14 +136,18 @@ public partial class CombatScene
         /// </summary>
         public void Show(IEnumerable<HudBar> hudBars)
         {
-            HudBar[] next = new HudBar[SLOTS];
-            int count = 0;
+            List<HudBar> ordered = hudBars.OrderBy(b => b.Order).ToList();
 
-            foreach (HudBar hudBar in hudBars.OrderBy(b => b.Order))
+            // the panel only fits SLOTS bars across its width, the highest Order values lose out
+            if (ordered.Count > SLOTS && !warnedOverflow)
             {
-                if (count >= SLOTS) break; // TODO: page or shrink if this ever happens
-                next[count++] = hudBar;
+                Debug.Print($"HUD has {SLOTS} slots but got {ordered.Count} bars. Dropped: {string.Join(", ", ordered.Skip(SLOTS).Select(b => b.Label))}");
+                warnedOverflow = true; // Show runs every frame, once is enough
             }
+
+            HudBar[] next = new HudBar[SLOTS];
+            for (int i = 0; i < Math.Min(SLOTS, ordered.Count); i++)
+                next[i] = ordered[i];
 
             for (int i = 0; i < SLOTS; i++)
             {

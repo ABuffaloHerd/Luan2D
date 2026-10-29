@@ -69,6 +69,10 @@ namespace LuanSC.Scenes
                 Cull();
             }
 
+            // separate the previous turn's messages from the next one's
+            if (currentControlledGameObject is not null)
+                fightFeed.AddDivider();
+
             if (queue.Count <= 0)
             {
                 BuildTurnQueue(); // the cycle begins anew
