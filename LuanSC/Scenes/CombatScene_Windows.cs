@@ -25,7 +25,7 @@ public partial class CombatScene
         // might need to make this a class var
         Window spellbook = new Window(40, 40)
         {
-            Title = $"{caster.Name}'s Spellbook",
+            Title = $"{caster.Name}'s Actions",
             CanDrag = true,
             UseMouse = true,
             CloseOnEscKey = true,
@@ -53,6 +53,7 @@ public partial class CombatScene
         [
             BuildSpellTab("Spells", ActionType.SPELL, caster, book, contentWidth, contentHeight, Cast),
             BuildSpellTab("Skills", ActionType.SKILL, caster, book, contentWidth, contentHeight, Cast),
+            BuildSpellTab("Special", ActionType.SPECIAL, caster, book, contentWidth, contentHeight, Cast),
         ], contentWidth, contentHeight)
         {
             Position = new(1, 1)

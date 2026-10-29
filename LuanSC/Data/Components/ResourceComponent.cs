@@ -8,7 +8,10 @@ namespace LuanSC.Data.Components;
 public enum ResourceType
 {
     MP,
-    METAL
+    METAL,
+    SP,
+    OD,
+    GB
     // add more here, then a factory in ResourceRegistry
 }
 
@@ -67,8 +70,13 @@ public class ResourceComponent : StatComponent, IHudDisplay, IOnTurnStartListene
             Current += RegenPerTurn; // clamped
     }
 
+    /// <summary>
+    /// Drawn over the HUD bar. Override for things like percentages.
+    /// </summary>
+    protected virtual string HudText => $"{Current} / {Max}";
+
     public IEnumerable<HudBar> GetHudBars()
     {
-        yield return new HudBar(HudOrder, $"{Label,-3}:", LabelColor, BarColor, HudBar.Ratio(Current, Max), $"{Current} / {Max}", TextColor);
+        yield return new HudBar(HudOrder, $"{Label,-3}:", LabelColor, BarColor, HudBar.Ratio(Current, Max), HudText, TextColor);
     }
 }

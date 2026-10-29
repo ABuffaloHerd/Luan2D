@@ -124,6 +124,11 @@ namespace LuanSC.Data
             hirinaEffects.Apply(new VulnerableEffect(duration: 5, percent: 25));
             hirinaEffects.Apply(new ArmourEffect(duration: 5, amount: 5));
 
+            // overdrive test: one special per turn, OD starts full so Unsheath can be used straight away
+            hirina.GetComponent<ActionComponent>().Configure(ActionType.SPECIAL, 1);
+            hirina.AddComponent(new SpellbookComponent(SpellRegistry.Unsheath()));
+            hirina.GetResource(ResourceType.OD).Current = 100;
+
             // give minako a barrier
             BarrierEffect barrier = new()
             {

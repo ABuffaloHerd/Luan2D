@@ -11,7 +11,8 @@ public enum ActionType
     ATTACK,
     ITEM,
     SKILL,
-    SPELL
+    SPELL,
+    SPECIAL
     // add Item, Skill and so on here
 }
 

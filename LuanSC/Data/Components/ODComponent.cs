@@ -6,72 +6,38 @@ using System.Text;
 namespace LuanSC.Data.Components
 {
     /// <summary>
-    /// Handles the overdrive system
+    /// Overdrive. Charges from damage taken, spent on special moves. Starts empty.
+    /// Charge past full spills into the owner's GBComponent, if they have one.
     /// </summary>
-    public class ODComponent : IComponent, IDamageListener, IHudDisplay
+    public class ODComponent : ResourceComponent, IDamageListener
     {
-        private static float OD_MULTIPLIER = 0.1f; // affects how quickly OD fills
-        public string Name => "OD Component";
+        public override string Name => "OD Component";
 
         /// <summary>
-        /// Filled when damage is taken, used to trigger overdrive abilities
+        /// OD gained per point of damage taken, after DEF, RES and effects. The fraction is dropped,
+        /// so at 0.1 a hit under 10 gives nothing, and neither does a blocked one. That's intended.
         /// </summary>
-        public int CurrentOD
+        public float ChargeRate { get; set; }
+
+        public ODComponent(int max = 100, float chargeRate = 0.1f) : base(ResourceType.OD, "Overdrive", $"OD{(char)224}", Color.Purple, max)
         {
-            get => odCurrent;
-            private set
-            {
-                if (value < 0)
-                    odCurrent = 0;
-                else if (value > 100)
-                {
-                    int difference = value - 100;
-                    odCurrent = 100; // overflow to GB
-                    CurrentGB += difference;
-                }
-                else
-                    odCurrent = value;
-            }
+            ChargeRate = chargeRate;
+            HudOrder = 30;
+            Current = 0;
         }
 
-        /// <summary>
-        /// Filled when OD is at 100, used to trigger even stronger abilities
-        /// </summary>
-        public int CurrentGB
-        {
-            get => gbCurrent;
-            private set
-            {
-                if (value < 0)
-                    gbCurrent = 0;
-                else if (value > 100) // discard overflow
-                    gbCurrent = 100;
-                else
-                    gbCurrent = value;
-            }
-        }
-
-        // private backing fields
-        private int odCurrent;
-        private int gbCurrent;
-
-        public GameObject Owner { get; private set; }
-        public void SetOwner(GameObject owner)
-        {
-            Owner = owner;
-        }
+        protected override string HudText => $"{(int)(Current * 100f / Max)}%";
 
         public void OnDamageTaken(DamageRecord damage)
         {
-            int amount = damage.Amount;
-            int odGain = (int)(amount * OD_MULTIPLIER);
-            CurrentOD += odGain; // this automatically handles overflow to GB
-        }
+            int gain = (int)(damage.Amount * ChargeRate);
+            if (gain <= 0) return;
 
-        public IEnumerable<HudBar> GetHudBars()
-        {
-            yield return new HudBar(30, $"OD{(char)224}:", Color.Purple, Color.Purple, CurrentOD / 100f, $"{CurrentOD}%");
-            yield return new HudBar(31, $"GB{(char)225}:", Color.DarkGray, Color.Gold, CurrentGB / 100f, $"{CurrentGB}%", Color.DarkGray);
+            int overflow = Math.Max(0, Current + gain - Max);
+            Current += gain; // clamped to Max
+
+            if (overflow > 0 && Owner?.GetResource(ResourceType.GB) is ResourceComponent gb)
+                gb.Current += overflow; // GB throws away its own overflow
         }
     }
 }
