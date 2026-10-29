@@ -38,16 +38,14 @@ namespace LuanSC.Data.Components.Attacks
                 return;
             }
 
-            // TODO: Owner's effects that boost damage go here
-            int damage = Damage;
-
-            // send a damage packet to the targeted health component
+            // send a damage packet to the targeted health component. The owner's damage buffs are applied in TakeDamage.
             DamageRecord pain = new()
             {
                 Attacker = owner,
                 Target = target,
-                Amount = damage,
-                Type = DamageType.PHYSICAL
+                Amount = Damage,
+                Type = DamageType.PHYSICAL,
+                Source = Name
             };
 
             int dealt = healthy.TakeDamage(pain);

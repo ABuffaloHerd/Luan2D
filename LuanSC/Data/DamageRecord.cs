@@ -11,5 +11,10 @@ namespace LuanSC.Data
         public required GameObject Target { get; init; }
         public int Amount { get; init; }
         public DamageType Type { get; init; }
+
+        /// <summary>
+        /// What did the damage, e.g. "Fireball" or "Poison". Null if nobody said.
+        /// </summary>
+        public string Source { get; init; }
     }
 }

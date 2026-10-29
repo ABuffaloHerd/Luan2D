@@ -52,11 +52,12 @@ public class PoisonEffect : IEffect
             Attacker = null, // no attacker for poison damage
             Target = Owner,
             Amount = Damage,
-            Type = DamageType.MAGIC
+            Type = DamageType.MAGIC,
+            Source = Name
         };
 
         int taken = Owner.GetComponent<HPComponent>().TakeDamage(damage);
-        GameEvents.Publish(new CombatEvent.DamageDealt(null, Owner, damage.Amount, damage.Type));
+        GameEvents.Publish(new CombatEvent.DamageDealt(null, Owner, taken, damage.Type)); // what got through RES and barriers, not the raw poison
         GameEvents.Publish(new CombatEvent.GenericMessage($"{Duration} turns remaining."));
     }
 }

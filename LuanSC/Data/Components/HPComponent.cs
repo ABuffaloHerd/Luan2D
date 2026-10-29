@@ -21,6 +21,11 @@ namespace LuanSC.Data.Components
 
         public bool IsAlive => Current > 0;
 
+        /// <summary>
+        /// The most recent hit, after effects and DEF/RES. On a corpse this is the killing blow.
+        /// </summary>
+        public DamageRecord LastHit { get; private set; }
+
         // Alias for clarity
         public int MaxHP
         {
@@ -40,14 +45,22 @@ namespace LuanSC.Data.Components
         }
 
         /// <summary>
-        /// Take damage
+        /// Take damage. Every source of damage goes through here, so this is where all the effects get their say:
+        ///   1. the attacker's effects (OnOutgoingDamage), e.g. a damage buff
+        ///   2. DEF or RES
+        ///   3. the owner's effects (OnIncomingDamage), e.g. barrier
+        /// Attacks and spells just send the base damage.
         /// </summary>
         /// <param name="damage">the amount of hurt to receive</param>
         /// <returns>the amount of hurt taken by this component, after effect processing</returns>
         public int TakeDamage(DamageRecord damage)
         {
-            // TODO: Process effects that reduce damage here
-            // Take effects from Owner.GetComponents<EffectComponent>()
+            // the attacker's buffs and debuffs. Poison and the like have no attacker.
+            var attackerEffects = damage.Attacker?.GetComponent<EffectComponent>();
+            if (attackerEffects is not null)
+            {
+                damage = attackerEffects.ProcessOutgoingDamage(damage);
+            }
 
             int taken = damage.Type switch
             {
@@ -65,7 +78,11 @@ namespace LuanSC.Data.Components
                 taken = effects.ProcessIncomingDamage(damage with { Amount = taken }).Amount;
             }
 
+            // DEF higher than the hit, or an effect overdoing it, mustn't heal
+            taken = Math.Max(taken, 0);
+
             Current -= taken;
+            LastHit = damage with { Amount = taken };
 
             // notify damage listeners
             if (Owner is not null)

@@ -8,57 +8,63 @@ namespace LuanSC.Scenes
 {
     public partial class CombatScene
     {
+        /// <summary>
+        /// Scrolls random tips right to left. Each tip scrolls all the way off before the next one starts.
+        /// </summary>
         private class TickerText : ScreenSurface
         {
             public TimeSpan Cooldown = TimeSpan.FromMilliseconds(100);
 
-            private string displayText;
-            public string DisplayText
-            {
-                get => displayText;
-                set
-                {
-                    displayText = value;
-                    array = value is null ? null : new LoopingArray<char>(value.ToCharArray());
-                }
-            }
+            // every tip from every file, one per line
+            private readonly List<string> tips = new();
 
+            // the tip on screen, with a screen's worth of spaces in front so it scrolls in from the right edge
+            private string current;
             private int offset = 0;
-
-            private LoopingArray<char> array;
             private TimeSpan sinceLastScroll = TimeSpan.Zero;
 
-            public TickerText(int width, int height) : base(width, height)
+            /// <param name="files">File names under Resources/Asset. Missing ones are skipped.</param>
+            public TickerText(int width, int height, params string[] files) : base(width, height)
             {
                 Surface.DefaultForeground = Color.White;
                 Surface.DefaultBackground = Color.Transparent;
 
-                DisplayText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+                foreach (string file in files)
+                {
+                    // the post build step copies Resources next to the exe
+                    string path = Path.Combine(AppContext.BaseDirectory, "Resources", "Asset", file);
+                    if (!File.Exists(path)) continue;
+
+                    tips.AddRange(File.ReadAllLines(path).Where(line => !string.IsNullOrWhiteSpace(line)));
+                }
+
+                NextTip();
+            }
+
+            private void NextTip()
+            {
+                offset = 0;
+                current = tips.Count > 0
+                    ? new string(' ', Surface.Width) + tips[Random.Shared.Next(tips.Count)]
+                    : null; // no tips, nothing to scroll
             }
 
             public override void Update(TimeSpan delta)
             {
                 base.Update(delta);
-                if (DisplayText is null) return;
+                if (current is null) return;
 
                 sinceLastScroll += delta;
                 if (sinceLastScroll < Cooldown) return;
                 else sinceLastScroll = TimeSpan.Zero;
 
                 Surface.Clear();
-                if (DisplayText.Length < Surface.Width)
-                    Surface.Print(0, 0, DisplayText);
-                else
-                {
-                    var buffer = new char[Surface.Width];
-                    for(int x = 0; x < Surface.Width; x++)
-                    {
-                        buffer[x] = array[offset + x];
-                    }
+                Surface.Print(0, 0, current.Substring(offset, Math.Min(Surface.Width, current.Length - offset)));
+                offset++;
 
-                    Surface.Print(0, 0, new string(buffer));
-                    offset++;
-                }
+                // the last character just went off the left edge
+                if (offset >= current.Length)
+                    NextTip();
             }
         }
 

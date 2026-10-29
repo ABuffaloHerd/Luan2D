@@ -97,7 +97,7 @@ namespace LuanSC.Scenes
             Children.Add(surface);
 
             // ticker text for humour
-            tickerText = new(45, 1);
+            tickerText = new(45, 1, "ss13tips.txt");
             tickerText.Position = (45, 46);
 
             Children.Add(tickerText);

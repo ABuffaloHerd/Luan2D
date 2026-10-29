@@ -43,12 +43,20 @@ namespace LuanSC.Objects
         public ResourceComponent GetResource(ResourceType type)
             => Components.OfType<ResourceComponent>().FirstOrDefault(r => r.Type == type);
 
+        private const int BlinkCount = 5;
+        private static readonly TimeSpan BlinkSpeed = TimeSpan.FromMilliseconds(50);
+
+        /// <summary>
+        /// How long Blink runs for. Each blink is an off and an on, each lasting BlinkSpeed.
+        /// </summary>
+        public static readonly TimeSpan BlinkDuration = BlinkSpeed * BlinkCount * 2;
+
         public void Blink()
         {
             Blinker b = new()
             {
-                BlinkCount = 3,
-                BlinkSpeed = TimeSpan.FromMilliseconds(500),
+                BlinkCount = BlinkCount,
+                BlinkSpeed = BlinkSpeed,
                 RestoreCellOnRemoved = true,
                 RemoveOnFinished = true
             };

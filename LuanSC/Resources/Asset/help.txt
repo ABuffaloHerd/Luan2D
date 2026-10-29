@@ -1,0 +1,16 @@
+[c:r f:cyan]Arrow keys[c:r f:white] - Move
+[c:r f:cyan]WASD[c:r f:white] - Aim
+[c:r f:cyan]L[c:r f:white] - Attack
+[c:r f:cyan]G[c:r f:white] - Spellbook
+[c:r f:cyan]Space[c:r f:white] - End turn
+[c:r f:cyan]H[c:r f:white] - Toggle overlay
+[c:r f:cyan]+ / - or Scroll wheel[c:r f:white] - Zoom
+[c:r f:cyan]Middle mouse drag[c:r f:white] - Pan camera
+[c:r f:cyan]~ [c:r f:white]- Recenter camera
+[c:r f:cyan]F1 [c:r f:white]- Help
+[c:r f:cyan]Esc [c:r f:white]- Quit to menu
+
+[c:r f:yellow]Aiming a spell:
+[c:r f:cyan]Arrow keys or Mouse[c:r f:white] - Move cursor
+[c:r f:cyan]Enter or Left click[c:r f:white] - Cast
+[c:r f:cyan]Esc[c:r f:white] - Cancel

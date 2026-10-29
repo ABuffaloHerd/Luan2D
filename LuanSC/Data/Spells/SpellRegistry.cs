@@ -41,4 +41,10 @@ public static class SpellRegistry
             FriendlyFire = friendlyFire
         };
     }
+
+    // overdrive special: magic damage across the current weapon's range
+    public static ISpell Unsheath(int damage = 50, int spCost = 10, int odCost = 100)
+    {
+        return new Unsheath(damage, new ResourceCost(ResourceType.SP, spCost), new ResourceCost(ResourceType.OD, odCost));
+    }
 }

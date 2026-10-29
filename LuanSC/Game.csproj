@@ -25,6 +25,7 @@
   <ItemGroup>
     <Folder Include="Resources\Font\" />
     <Folder Include="Resources\Audio\" />
+    <Folder Include="Resources\Asset\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

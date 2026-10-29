@@ -5,31 +5,29 @@ using System.Text;
 
 namespace LuanSC.Data.Components
 {
-    public class SPComponent : StatComponent, IHudDisplay
+    /// <summary>
+    /// Skill points. Just a resource with SP's colours, so it works with ResourceCost and GetResource(ResourceType.SP).
+    /// </summary>
+    public class SPComponent : ResourceComponent
     {
         public override string Name => "SP Component";
 
-        public IEnumerable<HudBar> GetHudBars()
-        {
-            yield return new HudBar(20, "SP :", Color.Yellow, Color.Yellow, HudBar.Ratio(Current, Max), $"{Current} / {Max}", Color.Black);
-        }
-
         // alias for clarity
-        public int MaxSP 
-        { 
+        public int MaxSP
+        {
             get => Max;
             set => Max = value;
         }
-        public int CurrentSP 
-        { 
+        public int CurrentSP
+        {
             get => Current;
             set => Current = value;
         }
 
-        public SPComponent(int max = 50)
-        { 
-            MaxSP = max;
-            CurrentSP = max;
+        public SPComponent(int max = 50) : base(ResourceType.SP, "SP", "SP", Color.Yellow, max)
+        {
+            TextColor = Color.Black;
+            HudOrder = 20;
         }
     }
 }

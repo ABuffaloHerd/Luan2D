@@ -101,7 +101,7 @@ public partial class CombatScene
     {
         if (!InTargetRange(CursorPosition))
         {
-            fightFeed.AddLine($"Out of range. {targetingSpell.Name} reaches {targetingSpell.Range} cells.");
+            fightFeed.AddLine($"Out of range. {targetingSpell.Name} reaches {targetingSpell.Range} cells.", Color.Red);
             return;
         }
 
