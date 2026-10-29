@@ -1,5 +1,6 @@
 using LuanSC.Data.Components;
 using LuanSC.Data.Components.AI;
+using LuanSC.Data.Components.Effects;
 using LuanSC.Objects.Weapons;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ public static class SummonRegistry
         return s;
     }
 
-    // Player controlled.
+    // Player controlled testificate
     public static SummonedGameObject Familiar(GameObject owner)
     {
         SummonedGameObject f = new(new ColoredGlyph(OwnerColor(owner), Color.Transparent, 'f'), owner, MagicNumbers.GAMEOBJECT_INDEX);
@@ -40,8 +41,39 @@ public static class SummonRegistry
         return f;
     }
 
+    // Never takes a turn. Can be walked over. Gives the owner MP every turn until destroyed.
+    public static SummonedGameObject MagicCircle(GameObject owner)
+    {
+        SummonedGameObject c = new(new ColoredGlyph(Color.MediumPurple, Color.Transparent, (char)15), owner, MagicNumbers.FLOOR_INDEX);
+        c.Name = "Magic Circle";
+        c.GetComponent<HPComponent>().Max = 20;
+
+        c.RemoveComponent<CollisionComponent>();
+        c.AddComponent(new ManaWellComponent(10));
+        return c;
+    }
+
+    // Building. Shows a half block until the owner hits it hitsRequired times, then becomes builtGlyph and starts shooting.
+    // Doesn't take turns until built, and joins the turn order at the start of the next round.
+    public static SummonedGameObject SentryGun(GameObject owner, int hitsRequired = 3, char builtGlyph = 'Y')
+    {
+        SummonedGameObject g = new(new ColoredGlyph(OwnerColor(owner), Color.Transparent, ConstructionEffect.UNBUILT_GLYPH), owner, MagicNumbers.GAMEOBJECT_INDEX);
+        g.Name = "Sentry Gun";
+        g.GetComponent<HPComponent>().Max = 50;
+
+        g.GetComponent<EffectComponent>().Apply(new ConstructionEffect(hitsRequired, builtGlyph, built =>
+        {
+            built.AddComponent(new SpeedComponent(70));
+            built.AddComponent(new WeaponComponent(WeaponRegistry.SentryGun()));
+            built.AddComponent(new ActionComponent().Configure(ActionType.ATTACK, 1));
+            built.AddComponent(new AIComponent(new SentryBehavior()));
+        }));
+
+        return g;
+    }
+
     // summons wear their owner's colour so you can tell whose is whose
-    // i can tell you this is going to cause trouble later
+    // i can tell you this is going to cause visual trouble later
     private static Color OwnerColor(GameObject owner)
         => owner?.BaseAppearance?.Foreground ?? Color.White; // not the live appearance, Blink paints over that
 }

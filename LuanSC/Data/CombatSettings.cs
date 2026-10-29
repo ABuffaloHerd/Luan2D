@@ -68,6 +68,16 @@ namespace LuanSC.Data
             mariah.Position = new Point(3, 3);
             settings.AddGameObject(mariah);
 
+            var luna = new PlayerGameObject(new ColoredGlyph(Color.Purple, Color.Transparent, 'L'), MagicNumbers.GAMEOBJECT_INDEX);
+            luna.Name = "Luna";
+            luna.GetComponent<HPComponent>().Max = 150;
+            luna.GetComponent<MPComponent>().Max = 50;
+            luna.GetComponent<SpeedComponent>().Speed = 75;
+            luna.GetComponent<WeaponComponent>().Weapon = WeaponRegistry.Stick();
+            luna.GetComponent<ActionComponent>().Configure(ActionType.SKILL, 1); // one sentry per turn with B
+            luna.Position = new Point(5, 4);
+            settings.AddGameObject(luna);
+
             var wall = Wall.GenerateWall();
             wall.Position = new Point(4, 4);
             settings.AddGameObject(wall);
@@ -94,6 +104,8 @@ namespace LuanSC.Data
             //settings.Width = 21;
             //settings.Height = 21;
             //settings.FontScale = 1.9f;
+
+
 
             // Poison hirina
             PoisonEffect poison = new(10, 10);

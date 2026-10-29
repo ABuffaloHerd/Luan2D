@@ -107,6 +107,9 @@ namespace LuanSC.Scenes
 
             // report to the fight feed
             fightFeed.AddLine($"{currentControlledGameObject.Name}'s turn.");
+
+            // magic circles and the like
+            NotifyOwnerTurnStart(currentControlledGameObject);
         }
 
         private void RefreshTurnOrder()

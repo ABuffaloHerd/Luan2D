@@ -121,6 +121,23 @@ namespace LuanSC.Scenes
                 return true;
             }
 
+            // Magic circle C. Goes in the spellbook later
+            if (keyboard.IsKeyPressed(Keys.C))
+            {
+                Point spot = currentControlledGameObject.Position + currentControlledGameObject.Direction.ToVector();
+                Execute(currentControlledGameObject, new TurnAction.Summon(SummonRegistry.MagicCircle, spot, ActionType.SPELL, 50));
+                return true;
+            }
+
+            // Sentry gun B, Luna only.
+            // TODO: STOPGAP. Replace the name check with the spellbook / per-character skill list.
+            if (keyboard.IsKeyPressed(Keys.B) && currentControlledGameObject.Name == "Luna")
+            {
+                Point spot = currentControlledGameObject.Position + currentControlledGameObject.Direction.ToVector();
+                Execute(currentControlledGameObject, new TurnAction.Summon(owner => SummonRegistry.SentryGun(owner, hitsRequired: 3, builtGlyph: 'Y'), spot, ActionType.SKILL));
+                return true;
+            }
+
             // zoom in and out + and -
             if (keyboard.IsKeyPressed(Keys.OemPlus))
             {

@@ -43,6 +43,17 @@ namespace LuanSC.Objects.Weapons
             return s;
         }
 
+        // Duct tape unrifled musket tied to a trombone stand
+        public static Weapon SentryGun()
+        {
+            Pattern p = new();
+            p.Mark(0, -1).Mark(0, -2).Mark(0, -3).Mark(0, -4);
+
+            Weapon g = new Weapon("Sentry Gun", 5, p);
+            g.Abilities.Add(new BasicAttack(g.Damage));
+            return g;
+        }
+
         // Give em the hands
         public static Weapon Hands()
         {

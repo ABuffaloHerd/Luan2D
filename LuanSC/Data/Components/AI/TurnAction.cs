@@ -19,5 +19,6 @@ public abstract record TurnAction
     /// <param name="Create">Builds the summon from its owner. See SummonRegistry.</param>
     /// <param name="Position">Where it appears. Must be walkable.</param>
     /// <param name="Cost">Which action counter it uses, e.g. SKILL for buildings or SPELL for magic.</param>
-    public sealed record Summon(Func<GameObject, SummonedGameObject> Create, Point Position, ActionType Cost) : TurnAction;
+    /// <param name="ManaCost">MP taken from the owner if the summon succeeds.</param>
+    public sealed record Summon(Func<GameObject, SummonedGameObject> Create, Point Position, ActionType Cost, int ManaCost = 0) : TurnAction;
 }

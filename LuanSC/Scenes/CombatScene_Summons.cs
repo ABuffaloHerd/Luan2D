@@ -18,12 +18,41 @@ public partial class CombatScene
             return false;
         }
 
+        MPComponent mp = owner.GetComponent<MPComponent>();
+        if (summon.ManaCost > 0 && (mp is null || mp.Current < summon.ManaCost))
+        {
+            GameEvents.Publish(new CombatEvent.GenericMessage($"{owner.Name} needs {summon.ManaCost} MP for that."));
+            return false;
+        }
+
         SummonedGameObject minion = summon.Create(owner);
         minion.Position = summon.Position;
         AddGameObject(minion);
 
+        if (summon.ManaCost > 0)
+            mp.Current -= summon.ManaCost;
+
         GameEvents.Publish(new CombatEvent.Summoned(owner, minion));
         return true;
+    }
+
+    /// <summary>
+    /// Lets the owner's summons do their thing at the start of the owner's turn.
+    /// </summary>
+    private void NotifyOwnerTurnStart(GameObject owner)
+    {
+        List<SummonedGameObject> summons = gameObjects
+            .OfType<SummonedGameObject>()
+            .Where(s => s.Owner == owner)
+            .ToList();
+
+        foreach (SummonedGameObject summon in summons)
+        {
+            foreach (IOwnerTurnStartListener listener in summon.Components.OfType<IOwnerTurnStartListener>())
+            {
+                listener.OnOwnerTurnStart(owner);
+            }
+        }
     }
 
     /// <summary>
