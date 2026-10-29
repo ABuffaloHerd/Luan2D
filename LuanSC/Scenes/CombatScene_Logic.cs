@@ -71,6 +71,7 @@ namespace LuanSC.Scenes
             currentControlledGameObject?.GetComponent<EffectComponent>()?.TickEnd(msg => fightFeed.AddLine(msg));
 
             // Dequeue and run
+            // TODO: dead objects stay in the queue and still get a turn. Skip anything that isn't alive or is no longer in gameObjects.
             currentControlledGameObject = queue.Dequeue();
             currentControlledGameObject.Blink();
 
@@ -101,6 +102,8 @@ namespace LuanSC.Scenes
         /// <summary>
         /// remove the corpses of the dead instead of leaving them where they fall
         /// </summary>
+        // TODO: removing from gameObjects inside its own foreach throws InvalidOperationException. Iterate a copy or use RemoveAll.
+        // TODO: nothing calls this yet, so corpses never get removed.
         private void Cull()
         {
             foreach(GameObject obj in gameObjects)

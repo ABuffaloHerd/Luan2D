@@ -25,6 +25,7 @@ public class ZombieBehavior : IAIBehavior
         ActionComponent actions = self.GetComponent<ActionComponent>();
         int steps = actions?.Remaining(ActionType.MOVE) ?? MaxSteps;
 
+        // TODO: steps is never used. The loop should probably be capped at Math.Min(steps, MaxSteps).
         for (int step = 0; step < MaxSteps; step++)
         {
             if (weapon is not null && TryGetAttackDirection(weapon, position, target.Position, out _))

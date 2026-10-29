@@ -37,6 +37,7 @@ namespace LuanSC.Objects.Weapons
             Pattern p = new();
             p.Mark(0, -1);
 
+            // TODO: p is never passed in. It's the same as the default range so nothing breaks, but it will if p changes.
             Weapon s = new Weapon("Stick", 4);
             s.Abilities.Add(new BasicAttack(s.Damage));
             return s;
@@ -47,6 +48,7 @@ namespace LuanSC.Objects.Weapons
         {
             Pattern p = new();
             p.Mark(0, -1);
+            // TODO: same as Stick, p is never passed in
             Weapon h = new Weapon("The Hands", 1);
             h.Abilities.Add(new BasicAttack(h.Damage));
             return h;
