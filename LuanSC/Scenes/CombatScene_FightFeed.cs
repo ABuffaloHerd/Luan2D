@@ -62,10 +62,18 @@ namespace LuanSC.Scenes
             }
         }
 
-        // TODO: line wrapping eats into the next line, so we need to either wrap manually or use a different console type
         private class FightFeed : Console
         {
-            private LinkedList<string> feedLines = new();
+            /// <summary>
+            /// How many wrapped rows to remember. Only Height of them are on screen.
+            /// </summary>
+            public const int MaxRows = 200;
+
+            // already wrapped to Width, oldest first. Color null is the default foreground.
+            private List<(string Text, Color? Color)> rows = new();
+
+            // how many of the rows at the end of the list belong to the newest message
+            private int latestRowCount;
 
             /// <summary>
             /// Wraps a deque to hide all the complexity of managing the fight feed.
@@ -89,26 +97,52 @@ namespace LuanSC.Scenes
                 //this.FontSize = new(10, 10);
             }
 
-            public void AddLine(string line)
+            /// <summary>
+            /// Adds a message. Don't put colour tags in line, WordWrap counts them as text.
+            /// Pass color instead and it gets applied after wrapping.
+            /// </summary>
+            public void AddLine(string line, Color? color = null)
             {
-                feedLines.AddFirst(line);
+                // wrap here so Print never runs off the end of a row and into the next one
+                string[] wrapped = line.WordWrap(Width).ToArray();
+                latestRowCount = wrapped.Length;
+                rows.AddRange(wrapped.Select(text => (text, color)));
+
+                if (rows.Count > MaxRows)
+                    rows.RemoveRange(0, rows.Count - MaxRows);
+
+                Redraw();
             }
 
-            public override void Update(TimeSpan delta)
+            public void AddDivider()
             {
-                base.Update(delta);
+                AddLine(new string('=', Width), Color.DarkGray);
+            }
 
-                // Clear the console area
+            /// <summary>
+            /// Newest row at the bottom, older ones above it.
+            /// </summary>
+            private void Redraw()
+            {
                 this.Clear();
 
-                // Render the feed lines from the bottom up
-                int maxLines = Height;
+                int visible = Math.Min(Height, rows.Count);
+                StringBuilder sb = new();
 
-                for(int i = 0; i < maxLines; i++)
+                for (int i = 0; i < visible; i++)
                 {
-                    if (i >= feedLines.Count)
-                        break;
-                    this.Print(0, Height - i - 1, feedLines.ElementAt(i));
+                    sb.Clear();
+                    (string text, Color? color) = rows[rows.Count - 1 - i];
+
+                    // the newest message is yellow, even when it wraps onto several rows
+                    if (i < latestRowCount)
+                        color = Color.Yellow;
+
+                    if (color is not null)
+                        sb.Append($"[c:r f:{color.Value.ToParser()}]");
+
+                    sb.Append(text);
+                    this.Print(0, Height - 1 - i, ColoredString.Parser.Parse(sb.ToString()));
                 }
             }
         }

@@ -7,17 +7,7 @@ namespace LuanSC.Objects;
 
 public class Wall : GameObject
 {
-    public static Wall GenerateWall()
-    {
-        ColoredGlyph cgb = new ColoredGlyph()
-        {
-            Glyph = (char)219,
-            Foreground = Color.White
-        };
-
-        // TODO: uses zIndex 0 but the Color overload uses MagicNumbers.GAMEOBJECT_INDEX. Pick one.
-        return new Wall(cgb, 0);
-    }
+    public static Wall GenerateWall() => GenerateWall(Color.White);
 
     public static Wall GenerateWall(Color c)
     {

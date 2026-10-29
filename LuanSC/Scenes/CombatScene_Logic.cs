@@ -69,6 +69,10 @@ namespace LuanSC.Scenes
                 Cull();
             }
 
+            // separate the previous turn's messages from the next one's
+            if (currentControlledGameObject is not null)
+                fightFeed.AddDivider();
+
             if (queue.Count <= 0)
             {
                 BuildTurnQueue(); // the cycle begins anew
@@ -104,6 +108,9 @@ namespace LuanSC.Scenes
 
             // fresh HUD for the new unit
             hud.Reset();
+
+            // look at whoever's turn it is, even if the player was looking around
+            cameraFollowing = true;
 
             // don't carry a half aimed spell into someone else's turn
             CancelTargeting();

@@ -49,7 +49,7 @@ public static class AnimationRegistry
         AnimatedEffect blast = new(name, size, size)
         {
             Center = new Point(radius, radius),
-            Position = origin,
+            Cell = origin,
             Repeat = false
         };
 
