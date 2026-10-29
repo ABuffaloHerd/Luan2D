@@ -109,6 +109,9 @@ namespace LuanSC.Scenes
             // fresh HUD for the new unit
             hud.Reset();
 
+            // look at whoever's turn it is, even if the player was looking around
+            cameraFollowing = true;
+
             // don't carry a half aimed spell into someone else's turn
             CancelTargeting();
 

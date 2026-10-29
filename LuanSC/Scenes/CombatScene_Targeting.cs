@@ -38,13 +38,13 @@ public partial class CombatScene
 
     private void HookCursor()
     {
-        surface.MouseMove += (sender, state) => MoveCursor(state.SurfaceCellPosition);
+        surface.MouseMove += (sender, state) => MoveCursor(state.CellPosition);
 
         surface.MouseButtonClicked += (sender, state) =>
         {
             if (!state.Mouse.LeftClicked) return;
 
-            MoveCursor(state.SurfaceCellPosition);
+            MoveCursor(state.CellPosition);
             CursorClicked?.Invoke(CursorPosition);
         };
 

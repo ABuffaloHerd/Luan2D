@@ -9,10 +9,16 @@ namespace LuanSC.Data.Animations;
 /// like a Blinker on a cell. Build these with AnimationRegistry.
 ///
 /// Children render after their parent's renderer, so this draws over every layer AND every entity.
-/// Position is in the parent's cells, and Center is the frame cell that lands on Position.
+/// Set Cell, not Position. Cell is the arena cell the effect plays on, and Center is the frame cell that lands on it.
 /// </summary>
 public class AnimatedEffect : AnimatedScreenObject
 {
+    /// <summary>
+    /// The arena cell the effect plays on. Position is worked out from this every update,
+    /// because children are placed relative to what's on screen and the arena view scrolls when zoomed in.
+    /// </summary>
+    public Point Cell { get; set; }
+
     /// <summary>
     /// Detach from the parent once the last frame has played.
     /// </summary>
@@ -26,7 +32,25 @@ public class AnimatedEffect : AnimatedScreenObject
     public override void Update(TimeSpan delta)
     {
         MatchParentFont();
+        FollowParentView();
         base.Update(delta);
+    }
+
+    // line up straight away, or the first frame can draw at the wrong spot if the parent already updated this frame
+    protected override void OnParentChanged(IScreenObject? oldParent, IScreenObject? newParent)
+    {
+        base.OnParentChanged(oldParent, newParent);
+        MatchParentFont();
+        FollowParentView();
+    }
+
+    private void FollowParentView()
+    {
+        Point viewPosition = Parent is IScreenSurface parent ? parent.Surface.ViewPosition : Point.Zero;
+        Point position = Cell - viewPosition;
+
+        if (Position != position)
+            Position = position;
     }
 
     /// <summary>

@@ -81,6 +81,9 @@ namespace LuanSC.Scenes
             surface.ViewWidth = view.Width;
             surface.ViewHeight = view.Height;
 
+            // zoom, panning and the camera, see CombatScene_Zoom
+            HookCamera();
+
 
             Border.BorderParameters parameters = Border.BorderParameters.GetDefault();
             ShapeParameters shapeParams = ShapeParameters.CreateStyledBoxThick(Color.White);
@@ -173,6 +176,9 @@ namespace LuanSC.Scenes
             base.Update(delta);
 
             if (currentControlledGameObject is null) return;
+
+            // keep the current unit on screen when zoomed in
+            FollowCamera();
 
             // if there is an AI component run that instead
             if (currentControlledGameObject.GetComponent<ControllableComponent>() is null)

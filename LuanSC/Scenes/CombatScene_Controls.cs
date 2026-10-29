@@ -158,26 +158,23 @@ namespace LuanSC.Scenes
             //    return true;
             //}
 
-            // zoom in and out + and -
-            // TODO: zoom is half baked and doesn't work very well. Fix it in its own branch.
-            // The view always shrinks from the top left, so it can't follow the action. AnimatedEffect assumes
-            // the view never scrolls and will need a ViewPosition offset once it does.
+            // zoom in and out + and -, see CombatScene_Zoom
             if (keyboard.IsKeyPressed(Keys.OemPlus))
             {
-                surface.ViewHeight = Math.Max(surface.ViewHeight -= 5, 10);
-                surface.ViewWidth = Math.Max(surface.ViewWidth -= 5, 10);
-
-                surface.FontSize = new Point(surface.FontSize.X - 5, surface.FontSize.Y - 5);
-
+                Zoom(+1);
                 return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.OemMinus))
             {
-                surface.ViewHeight = Math.Min(surface.ViewHeight += 5, 45);
-                surface.ViewWidth = Math.Min(surface.ViewWidth += 5, 45);
+                Zoom(-1);
+                return true;
+            }
 
-                surface.FontSize = new Point(surface.FontSize.X + 5, surface.FontSize.Y + 5);
+            // ~ recentres the camera on the current unit after panning
+            if (keyboard.IsKeyPressed(Keys.OemTilde))
+            {
+                RecenterCamera();
                 return true;
             }
 
