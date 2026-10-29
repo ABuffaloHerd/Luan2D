@@ -6,7 +6,7 @@ using Direction = LuanSC.Data.Direction;
 namespace LuanSC.Data.Components.AI;
 
 /// <summary>
-/// Moves toward the nearest living player. Attacks when the weapon range reaches it.
+/// Moves toward the nearest living hostile. Attacks when the weapon range reaches it.
 /// </summary>
 public class ZombieBehavior : IAIBehavior
 {
@@ -55,7 +55,7 @@ public class ZombieBehavior : IAIBehavior
 
         foreach (GameObject obj in context.Objects)
         {
-            if (obj is not PlayerGameObject) continue;
+            if (!TeamComponent.AreHostile(self, obj)) continue;
 
             HPComponent hp = obj.GetComponent<HPComponent>();
             if (hp is null || !hp.IsAlive) continue;

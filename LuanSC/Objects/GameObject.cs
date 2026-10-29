@@ -13,6 +13,13 @@ namespace LuanSC.Objects
     {
         public Direction Direction = Direction.RIGHT;
         public HashSet<IComponent> Components { get; } = new HashSet<IComponent>();
+
+        /// <summary>
+        /// Copy of the glyph this object was created with. Effects like Blink overwrite the live appearance, so read colours from here.
+        /// Null for animated objects.
+        /// </summary>
+        public ColoredGlyphBase BaseAppearance { get; }
+
         public GameObject(Animated appearance, int zIndex) : base(appearance, zIndex)
         {
 
@@ -20,7 +27,7 @@ namespace LuanSC.Objects
 
         public GameObject(ColoredGlyphBase coloredGlyphBase, int zIndex) : base(coloredGlyphBase, zIndex)
         {
-
+            BaseAppearance = coloredGlyphBase.Clone();
         }
 
         public void AddComponent<T>(T component) where T : IComponent
@@ -41,8 +48,8 @@ namespace LuanSC.Objects
                 RemoveOnFinished = true
             };
 
-            if (IsSingleCell)
-                b.BlinkOutBackgroundColor = AppearanceSingle.Appearance.Foreground;
+            if (IsSingleCell && BaseAppearance is not null)
+                b.BlinkOutBackgroundColor = BaseAppearance.Foreground;
 
             AppearanceSingle?.Effect = b;
         }

@@ -2,6 +2,7 @@
 using LuanSC.Data.Components.AI;
 using LuanSC.Data.Components.Effects;
 using LuanSC.Objects;
+using LuanSC.Objects.Summons;
 using LuanSC.Objects.Weapons;
 using System;
 using System.Collections.Generic;
@@ -78,6 +79,17 @@ namespace LuanSC.Data
             zombie.Position = (10, 5);
 
             settings.AddGameObject(zombie);
+
+            var necromancer = new EnemyGameObject(new ColoredGlyph(Color.Purple, Color.Transparent, 'N'), MagicNumbers.GAMEOBJECT_INDEX, new SummonerBehavior(SummonRegistry.Skeleton));
+            necromancer.Name = "Necromancer";
+            necromancer.GetComponent<HPComponent>().Max = 60;
+            necromancer.GetComponent<SpeedComponent>().Speed = 60;
+            necromancer.GetComponent<ActionComponent>().Configure(ActionType.SPELL, 1);
+            necromancer.Position = (15, 10);
+            settings.AddGameObject(necromancer);
+
+            // mariah can summon once per turn with K
+            mariah.GetComponent<ActionComponent>().Configure(ActionType.SPELL, 1);
 
             //settings.Width = 21;
             //settings.Height = 21;

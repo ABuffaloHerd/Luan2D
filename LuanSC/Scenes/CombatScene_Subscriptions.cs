@@ -47,6 +47,14 @@ public partial class CombatScene : IDisposable
             case CombatEvent.EffectExpired effectExpired:
                 fightFeed.AddLine($"{effectExpired.Target.Name}'s {effectExpired.EffectName} expired.");
                 break;
+
+            case CombatEvent.EntityDied entityDied:
+                fightFeed.AddLine($"{entityDied.Target.Name} has died.");
+                break;
+
+            case CombatEvent.Summoned summoned:
+                fightFeed.AddLine($"{summoned.Owner.Name} summoned {summoned.Summon.Name}.");
+                break;
         }
     }
 }

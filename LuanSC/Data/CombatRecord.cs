@@ -21,5 +21,6 @@ namespace LuanSC.Data
         public sealed record EffectExpired(GameObject Target, string EffectName) : CombatEvent;
         public sealed record GenericMessage(string Message) : CombatEvent;
         public sealed record EntityDied(GameObject Target) : CombatEvent;
+        public sealed record Summoned(GameObject Owner, GameObject Summon) : CombatEvent;
     }
 }

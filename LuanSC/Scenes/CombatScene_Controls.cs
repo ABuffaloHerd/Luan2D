@@ -1,6 +1,7 @@
 ﻿using LuanSC.Data;
 using LuanSC.Data.Components;
 using LuanSC.Data.Components.AI;
+using LuanSC.Objects.Summons;
 using SadConsole.Input;
 using SadConsole.UI;
 using System;
@@ -23,6 +24,10 @@ namespace LuanSC.Scenes
 
             // Always allow escape to work
             if (currentControlledGameObject?.GetComponent<AIComponent>() is not null)
+                return base.ProcessKeyboard(keyboard);
+
+            // everyone who could take a turn is dead
+            if (currentControlledGameObject is null)
                 return base.ProcessKeyboard(keyboard);
 
             if (keyboard.IsKeyPressed(Keys.Up))
@@ -106,6 +111,14 @@ namespace LuanSC.Scenes
             if (keyboard.IsKeyPressed(Keys.L))
             {
                 Execute(currentControlledGameObject, new TurnAction.Attack());
+            }
+
+            // Test summon K. Puts a familiar in the facing cell until there's a real spell/skill menu
+            if (keyboard.IsKeyPressed(Keys.K))
+            {
+                Point spot = currentControlledGameObject.Position + currentControlledGameObject.Direction.ToVector();
+                Execute(currentControlledGameObject, new TurnAction.Summon(SummonRegistry.Familiar, spot, ActionType.SPELL));
+                return true;
             }
 
             // zoom in and out + and -
