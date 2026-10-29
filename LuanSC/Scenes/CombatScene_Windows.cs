@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using SadConsole.Instructions;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
 using LuanSC.Data.Components;
@@ -114,6 +115,12 @@ public partial class CombatScene
         return new TabItem(header, panel);
     }
 
+    // the post build step copies Resources next to the exe
+    private static readonly string HelpPath = Path.Combine(AppContext.BaseDirectory, "Resources", "Asset", "help.txt");
+
+    // time per character, so a longer help file takes longer to type out
+    private static readonly TimeSpan HelpTypingSpeed = TimeSpan.FromMilliseconds(2);
+
     private void DisplayHelp()
     {
         if (windowInstances > 0) return;
@@ -133,6 +140,34 @@ public partial class CombatScene
             windowInstances--;
             RestoreFocus();
         };
+
+        // read every time it opens so the file can be edited without restarting
+        string text = File.Exists(HelpPath)
+            ? File.ReadAllText(HelpPath).Replace("\r\n", "\n")
+            : "Help file not found.";
+
+        // inside the border, with a cell of padding. Mouse and keyboard stay with the window so dragging and Esc still work
+        Console page = new(help.Width - 4, help.Height - 4)
+        {
+            Position = new(2, 2),
+            UseMouse = false,
+            UseKeyboard = false,
+        };
+        page.Cursor.UseLinuxLineEndings = true; // \n starts a new line instead of just moving down
+        page.Cursor.IsVisible = true;
+        help.Children.Add(page);
+
+        // [c:r f:cyan] and friends colour the text. Time it on the parsed length so the colour codes don't slow it down
+        ColoredString coloured = ColoredString.Parser.Parse(text);
+
+        // types the text out like the visual novel scene does
+        DrawString typing = new(coloured, HelpTypingSpeed * coloured.Length)
+        {
+            Cursor = page.Cursor,
+            RemoveOnFinished = true,
+        };
+        page.SadComponents.Add(typing);
+
         help.Position = new((GameSettings.GAME_WIDTH / 2) - (help.Width / 2) - 1, (GameSettings.GAME_HEIGHT / 2) - (help.Height / 2) + 1);
         help.Show(true);
     }
