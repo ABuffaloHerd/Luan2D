@@ -49,7 +49,8 @@ public class Fireball : CastSpell
                 Attacker = caster,
                 Target = obj,
                 Amount = Damage,
-                Type = DamageType.MAGIC
+                Type = DamageType.MAGIC,
+                Source = Name
             };
 
             int dealt = hp.TakeDamage(pain);

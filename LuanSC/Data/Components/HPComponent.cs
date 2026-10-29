@@ -21,6 +21,11 @@ namespace LuanSC.Data.Components
 
         public bool IsAlive => Current > 0;
 
+        /// <summary>
+        /// The most recent hit, after effects and DEF/RES. On a corpse this is the killing blow.
+        /// </summary>
+        public DamageRecord LastHit { get; private set; }
+
         // Alias for clarity
         public int MaxHP
         {
@@ -77,6 +82,7 @@ namespace LuanSC.Data.Components
             taken = Math.Max(taken, 0);
 
             Current -= taken;
+            LastHit = damage with { Amount = taken };
 
             // notify damage listeners
             if (Owner is not null)

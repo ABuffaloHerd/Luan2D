@@ -39,7 +39,7 @@ namespace LuanSC.Data
             hirina.GetComponent<HPComponent>().Max = 250;
             hirina.GetComponent<MPComponent>().Max = 100;
             hirina.GetComponent<SpeedComponent>().Speed = 100;
-            hirina.GetComponent<WeaponComponent>().Weapon = WeaponRegistry.Katana();
+            hirina.GetComponent<WeaponComponent>().Weapon = WeaponRegistry.Throngler();
             hirina.Position = new(1, 1);
             settings.AddGameObject(hirina);
 

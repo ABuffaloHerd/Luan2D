@@ -52,7 +52,8 @@ public class PoisonEffect : IEffect
             Attacker = null, // no attacker for poison damage
             Target = Owner,
             Amount = Damage,
-            Type = DamageType.MAGIC
+            Type = DamageType.MAGIC,
+            Source = Name
         };
 
         int taken = Owner.GetComponent<HPComponent>().TakeDamage(damage);

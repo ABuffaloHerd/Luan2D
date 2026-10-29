@@ -49,12 +49,42 @@ public partial class CombatScene : IDisposable
                 break;
 
             case CombatEvent.EntityDied entityDied:
-                fightFeed.AddLine($"{entityDied.Target.Name} has died.");
+                fightFeed.AddLine(DeathMessage(entityDied));
                 break;
 
             case CombatEvent.Summoned summoned:
                 fightFeed.AddLine($"{summoned.Owner.Name} summoned {summoned.Summon.Name}.");
                 break;
         }
+    }
+
+    /// <summary>
+    /// Picked at random for every death. {target} is who died, {killer} who or what killed them, {source} what they were killed with.
+    /// TODO: These will be read from a file later.
+    /// </summary>
+    private static readonly string[] deathMessages =
+    [
+        "{target} was killed by {killer}.",
+        "{target} was eviscerated by {killer}'s {source}.",
+        "{target} was annihilated by {killer}.",
+        "{target} was obliterated by {killer}'s {source}.",
+        "{target} is no longer among us.",
+        "{target} was not the imposter.",
+        "The funeral wake for {target} is next week, {killer} is invited.",
+        "Call an ambulance! But not for {killer}."
+    ];
+
+    private static string DeathMessage(CombatEvent.EntityDied died)
+    {
+        DamageRecord blow = died.KillingBlow;
+
+        // poison and the like have no attacker, so the effect gets the credit
+        string killer = blow?.Attacker?.Name ?? blow?.Source ?? "something";
+        string source = blow?.Source ?? "something";
+
+        return deathMessages[Random.Shared.Next(deathMessages.Length)]
+            .Replace("{target}", died.Target.Name)
+            .Replace("{killer}", killer)
+            .Replace("{source}", source);
     }
 }

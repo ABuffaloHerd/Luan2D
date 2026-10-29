@@ -22,6 +22,18 @@ namespace LuanSC.Objects.Weapons
             return k;
         }
 
+        public static Weapon Throngler()
+        {
+            Pattern p = new();
+            p.Mark(0, -1).Mark(0, -2).Mark(0, -3).Mark(0, -4);
+            p.Mark(1, 0).Mark(-1, 0).Mark(1, -1).Mark(-1, -1);
+            Weapon t = new Weapon("Throngler", 500, p); // five hundred damage.
+
+            t.Abilities.Add(new BasicAttack(t.Damage));
+
+            return t;
+        }
+
         public static Weapon Gun()
         {
             Pattern p = new();

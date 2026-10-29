@@ -44,7 +44,8 @@ namespace LuanSC.Data.Components.Attacks
                 Attacker = owner,
                 Target = target,
                 Amount = Damage,
-                Type = DamageType.PHYSICAL
+                Type = DamageType.PHYSICAL,
+                Source = Name
             };
 
             int dealt = healthy.TakeDamage(pain);

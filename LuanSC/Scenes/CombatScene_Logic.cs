@@ -160,7 +160,7 @@ namespace LuanSC.Scenes
             {
                 if (!gameObjects.Contains(obj)) continue; // already vanished with their owner
 
-                GameEvents.Publish(new CombatEvent.EntityDied(obj));
+                GameEvents.Publish(new CombatEvent.EntityDied(obj, obj.GetComponent<HPComponent>().LastHit));
                 RemoveGameObject(obj);
             }
         }

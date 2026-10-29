@@ -20,7 +20,9 @@ namespace LuanSC.Data
         public sealed record EffectApplied(GameObject Target, string EffectName) : CombatEvent;
         public sealed record EffectExpired(GameObject Target, string EffectName) : CombatEvent;
         public sealed record GenericMessage(string Message) : CombatEvent;
-        public sealed record EntityDied(GameObject Target) : CombatEvent;
+        /// <param name="Target">Who died</param>
+        /// <param name="KillingBlow">The hit that did it. Null if they died some other way.</param>
+        public sealed record EntityDied(GameObject Target, DamageRecord KillingBlow) : CombatEvent;
         public sealed record Summoned(GameObject Owner, GameObject Summon) : CombatEvent;
     }
 }
