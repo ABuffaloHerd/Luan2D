@@ -14,8 +14,6 @@ namespace LuanSC.Data.Components
             yield return new HudBar(20, "SP :", Color.Yellow, Color.Yellow, HudBar.Ratio(Current, Max), $"{Current} / {Max}", Color.Black);
         }
 
-        public GameObject Owner { get; private set; }
-
         // alias for clarity
         public int MaxSP 
         { 
@@ -26,11 +24,6 @@ namespace LuanSC.Data.Components
         { 
             get => Current;
             set => Current = value;
-        }
-
-        public void SetOwner(GameObject owner)
-        {
-            Owner = owner;
         }
 
         public SPComponent(int max = 50)
