@@ -56,7 +56,7 @@ namespace LuanSC.Scenes
             };
             b4.Click += (s, e) =>
             {
-                GameRoot.sceneManger.ChangeScene(manager => new CombatScene(manager, CombatSettings.GetTestSettings()));
+                GameRoot.sceneManger.ChangeScene(manager => new CombatScene(manager, LevelRegistry.Test()));
             };
 
             controls.Controls.Add(b);

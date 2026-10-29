@@ -30,13 +30,13 @@ namespace LuanSC.Scenes
         private TimeSpan aiTimer = TimeSpan.Zero;
 
         /// <summary>
-        /// In the future this will consume the combatsettings object to produce a gaming scene.
+        /// Builds fresh units from the settings and puts them in the arena.
         /// </summary>
         private void InitObjects(CombatSettings settings)
         {
             surface.SadComponents.Add(entityManager);
 
-            foreach (var obj in settings.GameObjects)
+            foreach (var obj in settings.BuildObjects())
             {
                 gameObjects.Add(obj);
                 entityManager.Add(obj);
