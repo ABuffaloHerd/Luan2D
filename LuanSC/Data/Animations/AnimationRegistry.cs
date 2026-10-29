@@ -31,8 +31,8 @@ public static class AnimationRegistry
     /// <inheritdoc cref="SquareBlast"/>
     public static AnimatedEffect CircleBlast(Point origin, int radius = 3, Color? color = null, TimeSpan? frameTime = null, char[] glyphs = null)
     {
-        return RingBlast("Circle Blast", origin, radius, color, frameTime, glyphs,
-            offset => (int)Math.Round(Math.Sqrt(offset.X * offset.X + offset.Y * offset.Y)));
+        // same distance as Pattern.Circle, so a blast lines up with a circle area exactly
+        return RingBlast("Circle Blast", origin, radius, color, frameTime, glyphs, Pattern.CircleDistance);
     }
 
     /// <summary>

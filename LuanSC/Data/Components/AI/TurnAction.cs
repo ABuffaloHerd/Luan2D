@@ -1,4 +1,5 @@
-﻿using LuanSC.Objects;
+﻿using LuanSC.Data.Spells;
+using LuanSC.Objects;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,4 +22,10 @@ public abstract record TurnAction
     /// <param name="Cost">Which action counter it uses, e.g. SKILL for buildings or SPELL for magic.</param>
     /// <param name="Costs">Resources taken from the owner if the summon succeeds, e.g. MP or metal. null is free.</param>
     public sealed record Summon(Func<GameObject, SummonedGameObject> Create, Point Position, ActionType Cost, IReadOnlyList<ResourceCost> Costs = null) : TurnAction;
+
+    /// <summary>
+    /// Casts a spell that resolves itself (damage, healing...) at an arena position.
+    /// The scene checks range and costs before calling Spell.Resolve.
+    /// </summary>
+    public sealed record Cast(CastSpell Spell, Point Target) : TurnAction;
 }

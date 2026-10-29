@@ -81,6 +81,28 @@ namespace LuanSC.Data
 
             return this;
         }
+
+        /// <summary>
+        /// Straight line distance from (0, 0), rounded to the nearest cell. Our fonts have square cells so this looks round.
+        /// Shared by Circle and the circle animations so what you see is what gets hit.
+        /// </summary>
+        public static int CircleDistance(Point offset)
+            => (int)Math.Round(Math.Sqrt(offset.X * offset.X + offset.Y * offset.Y));
+
+        /// <summary>
+        /// Every cell within radius of (0, 0), centre included.
+        /// </summary>
+        public static Pattern Circle(int radius)
+        {
+            Pattern circle = new();
+
+            for (int y = -radius; y <= radius; y++)
+                for (int x = -radius; x <= radius; x++)
+                    if (CircleDistance((x, y)) <= radius)
+                        circle.Mark(x, y);
+
+            return circle;
+        }
         /// <summary>
         /// Returns a collection of points that have been rotated without modifying the actual data
         /// This is all rotated relative to 0, 0

@@ -102,7 +102,7 @@ namespace LuanSC.Data
 
             // mariah casts one spell per turn
             mariah.GetComponent<ActionComponent>().Configure(ActionType.SPELL, 1);
-            mariah.AddComponent(new SpellbookComponent(SpellRegistry.SummonFamiliar(), SpellRegistry.MagicCircle()));
+            mariah.AddComponent(new SpellbookComponent(SpellRegistry.SummonFamiliar(), SpellRegistry.MagicCircle(), SpellRegistry.Fireball()));
 
             luna.AddComponent(new SpellbookComponent(SpellRegistry.SentryGun(hitsRequired: 3, builtGlyph: 'Y')));
 
