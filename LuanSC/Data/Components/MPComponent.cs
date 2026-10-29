@@ -7,8 +7,9 @@ namespace LuanSC.Data.Components
 {
     /// <summary>
     /// Can the owner use magic?
+    /// Just a resource with MP's colours, so it works with ResourceCost and GetResource(ResourceType.MP).
     /// </summary>
-    public class MPComponent : StatComponent
+    public class MPComponent : ResourceComponent
     {
         public override string Name => "MPComponent";
 
@@ -24,10 +25,10 @@ namespace LuanSC.Data.Components
             set => Current = value;
         }
 
-        public MPComponent(int maxMana = 100)
+        public MPComponent(int maxMana = 100) : base(ResourceType.MP, "MP", "MP", Color.Blue, maxMana)
         {
-            Max = maxMana;
-            Current = maxMana;
+            LabelColor = Color.LightBlue;
+            HudOrder = 10;
         }
     }
 }

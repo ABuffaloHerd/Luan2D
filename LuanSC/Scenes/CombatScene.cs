@@ -144,6 +144,9 @@ namespace LuanSC.Scenes
             combatEventHandler = HandleCombatEvent;
             Subscribe();
 
+            // mouse cursor over the arena
+            HookCursor();
+
             // Set up game objects and entities
             InitObjects(settings);
 
@@ -159,20 +162,17 @@ namespace LuanSC.Scenes
             if (currentControlledGameObject.GetComponent<ControllableComponent>() is null)
                 UpdateAI(delta);
 
-            // Refresh the overlay if it's visible and is dirty
-            if (overlayVisible)
+            // Refresh the overlay if it's visible and is dirty. Targeting always draws, H or not
+            if (overlayVisible || IsTargeting)
                 UpdateOverlay();
 
-            hud.UpdateHP(currentControlledGameObject.GetComponent<HPComponent>());
-            hud.UpdateMP(currentControlledGameObject.GetComponent<MPComponent>());
-            hud.UpdateSP(currentControlledGameObject.GetComponent<SPComponent>());
-            hud.UpdateOD(currentControlledGameObject.GetComponent<ODComponent>());
+            bool controllable = currentControlledGameObject.GetComponent<ControllableComponent>() is not null;
 
-            ActionComponent? actions = currentControlledGameObject.GetComponent<ControllableComponent>() is not null
-                ? currentControlledGameObject.GetComponent<ActionComponent>()
-                : null;
-
-            hud.UpdateActions(actions);
+            // every component that wants to be in the HUD gets a say
+            hud.Show(currentControlledGameObject.Components
+                .OfType<IHudDisplay>()
+                .Where(c => controllable || c is not ActionComponent) // AI action counters drain too fast to be worth showing
+                .SelectMany(c => c.GetHudBars()));
         }
 
         private void UpdateOverlay()
@@ -184,6 +184,13 @@ namespace LuanSC.Scenes
 
             // Check that it is controllable object's turn
             if(currentControlledGameObject.GetComponent<ControllableComponent>() is null) return;
+
+            // aiming a spell replaces the weapon range
+            if (IsTargeting)
+            {
+                DrawTargeting();
+                return;
+            }
 
             // check for a weapon component
             if (currentControlledGameObject is null) return;

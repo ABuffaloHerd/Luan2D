@@ -8,23 +8,52 @@ namespace LuanSC.Scenes;
 
 public partial class CombatScene
 {
+    /// <summary>
+    /// A column of generic bar slots. What goes in them is decided by the components, see IHudDisplay.
+    /// </summary>
+    /// <remarks>
+    /// HOW SADCONSOLE REDRAWS CONTROLS (read this before touching Show/Apply)
+    ///
+    /// Each frame goes:
+    ///   1. Update: ControlHost calls UpdateAndRedraw on every control. That repaints the control's own
+    ///      surface, but returns immediately unless control.IsDirty is set.
+    ///   2. Our CombatScene.Update runs after base.Update, so anything we change lands here.
+    ///   3. Render: if the ControlHost is dirty, the render step composites every visible control's surface
+    ///      onto the console and then clears control.IsDirty.
+    ///
+    /// So if we only set properties (which sets IsDirty) in step 2, step 3 composites the control's OLD surface
+    /// and wipes the flag. Next frame UpdateAndRedraw sees nothing dirty and never repaints. The new value only
+    /// shows up when something else dirties the control during step 1, e.g. the mouse hovering over it.
+    ///
+    /// It only bit us on player turns because hidden controls never get their IsDirty cleared (the render step
+    /// skips them), which keeps the host dirty and step 3 running every frame. The old fixed layout had no hidden
+    /// slots for players, so it never happened there.
+    ///
+    /// The fix, in Apply: after changing a slot we call UpdateAndRedraw ourselves, so the control's surface is
+    /// already current, and set Controls.IsDirty so the host composites it this frame.
+    ///
+    /// Other gotchas found along the way (SadConsole 10.8):
+    ///  - Label.TextColor does not set IsDirty.
+    ///  - ProgressBar.DisplayText/BarColor/DisplayTextColor set IsDirty even when the value hasn't changed,
+    ///    so Show only touches slots whose HudBar actually changed.
+    ///  - Surface.Clear() does nothing for controls. They're drawn on a separate render target that is wiped
+    ///    on every composite.
+    ///
+    /// Source: ControlHost.cs and ControlHostRenderStep.cs (SadConsole.Host.MonoGame) on the SadConsole GitHub.
+    /// </remarks>
+    /// from a real person: tl;dr DON'T TOUCH. as a human myself i'm not fucking reading this wall of text so heed the warning now.
     private class HUD : ControlsConsole
     {
-        private ProgressBar hpBar;
-        private ProgressBar mpBar;
-        private ProgressBar spBar;
-        private ProgressBar odBar;
-        private ProgressBar gbBar;
-        private ProgressBar mvBar;
-        private ProgressBar atBar;
+        // HP, MP, SP, OD, GB, MV, AT and two spare for custom resources
+        public const int SLOTS = 9;
+        private const int LABEL_WIDTH = 5;
 
-        private Label hplabel;
-        private Label mplabel;
-        private Label splabel;
-        private Label odlabel;
-        private Label gblabel;
-        private Label mvlabel;
-        private Label atlabel;
+        private readonly ProgressBar[] bars = new ProgressBar[SLOTS];
+        private readonly Label[] labels = new Label[SLOTS];
+        private Color? defaultTextColor;
+
+        // what each slot is currently showing, null means hidden
+        private readonly HudBar[] shown = new HudBar[SLOTS];
 
         public HUD(int width, int height) : base(width, height)
         {
@@ -59,221 +88,105 @@ public partial class CombatScene
 
         public void Rebuild()
         {
-            // HP bar
-            hpBar = new(this.Width - 5, 1, HorizontalAlignment.Left);
-            hpBar.Position = new(this.Width - hpBar.Width, 0);
-            hpBar.Progress = 1.0f;
-            hpBar.BarColor = Color.Red;
+            Controls.Clear();
 
-            hplabel = new(this.Width - hpBar.Width);
-            hplabel.Position = new(0, hpBar.Position.Y);
-            hplabel.DisplayText = "HP :";
-            hplabel.TextColor = Color.Red;
-
-            Controls.Add(hpBar);
-            Controls.Add(hplabel);
-
-            // MP bar
-            mpBar = new(this.Width - 5, 1, HorizontalAlignment.Left);
-            mpBar.Position = new(this.Width - hpBar.Width, 2);
-            mpBar.Progress = 1.0f;
-            mpBar.BarColor = Color.Blue;
-
-            mplabel = new(this.Width - mpBar.Width);
-            mplabel.Position = new(0, mpBar.Position.Y);
-            mplabel.DisplayText = "MP :";
-            mplabel.TextColor = Color.LightBlue;
-
-            Controls.Add(mpBar);
-            Controls.Add(mplabel);
-
-            // SP bar
-            spBar = new(this.Width - 5, 1, HorizontalAlignment.Left);
-            spBar.Position = new(this.Width - spBar.Width, 4);
-            spBar.Progress = 1.0f;
-            spBar.BarColor = Color.Yellow;
-            spBar.DisplayTextColor = Color.Black;
-
-            splabel = new(this.Width - spBar.Width);
-            splabel.Position = new(0, spBar.Position.Y);
-            splabel.DisplayText = "SP :";
-            splabel.TextColor = Color.Yellow;
-
-            Controls.Add(spBar);
-            Controls.Add(splabel);
-
-            // OD bar
-            odBar = new(this.Width - 5, 1, HorizontalAlignment.Left);
-            odBar.Position = new(this.Width - odBar.Width, 6);
-            odBar.Progress = 1.0f; // placeholder
-            odBar.BarColor = Color.Purple;
-
-            odlabel = new(this.Width - odBar.Width);
-            odlabel.Position = new(0, odBar.Position.Y);
-            odlabel.DisplayText = $"OD{(char)224}:";
-            odlabel.TextColor = Color.Purple;
-
-            Controls.Add(odBar);
-            Controls.Add(odlabel);
-
-            // GB bar
-            gbBar = new(this.Width - 5, 1, HorizontalAlignment.Left);
-            gbBar.Position = new(this.Width - gbBar.Width, 8);
-            gbBar.Progress = 1.0f; // placeholder
-            gbBar.BarColor = Color.Gold;
-            gbBar.DisplayTextColor = Color.DarkGray;
-
-            gblabel = new(this.Width - gbBar.Width);
-            gblabel.Position = new(0, gbBar.Position.Y);
-            gblabel.DisplayText = $"GB{(char)225}:";
-            gblabel.TextColor = Color.DarkGray;
-
-            Controls.Add(gbBar);
-            Controls.Add(gblabel);
-
-            // MV bar
-            mvBar = new(this.Width - 5, 1, HorizontalAlignment.Left);
-            mvBar.Position = new(this.Width - mvBar.Width, 10);
-            mvBar.Progress = 1.0f;
-            mvBar.BarColor = Color.Green;
-            mvBar.DisplayTextColor = Color.Black;
-
-            mvlabel = new(this.Width - mvBar.Width);
-            mvlabel.Position = new(0, mvBar.Position.Y);
-            mvlabel.DisplayText = "MV :";
-            mvlabel.TextColor = Color.Green;
-
-            Controls.Add(mvBar);
-            Controls.Add(mvlabel);
-
-            // AT bar
-            atBar = new(this.Width - 5, 1, HorizontalAlignment.Left);
-            atBar.Position = new(this.Width - atBar.Width, 12);
-            atBar.Progress = 1.0f;
-            atBar.BarColor = Color.Orange;
-            atBar.DisplayTextColor = Color.Black;
-
-            atlabel = new(this.Width - atBar.Width);
-            atlabel.Position = new(0, atBar.Position.Y);
-            atlabel.DisplayText = "AT :";
-            atlabel.TextColor = Color.Orange;
-
-            Controls.Add(atBar);
-            Controls.Add(atlabel);
-        }
-
-        public void UpdateHP(HPComponent component)
-        {
-            if (component is null) return;
-
-            // get the max
-            int max = component.Max;
-            int current = component.Current;
-
-            float val = (float)current / (float)max;
-
-            hpBar.Progress = val;
-            hpBar.DisplayText = $"{current} / {max}";
-
-            // put a label
-        }
-
-        public void UpdateMP(MPComponent component)
-        {
-            if (component is null)
+            for (int i = 0; i < SLOTS; i++)
             {
-                mpBar.IsVisible = false;
-                mplabel.IsVisible = false;
+                int y = i * 2; // a blank line between bars
+
+                ProgressBar bar = new(this.Width - LABEL_WIDTH, 1, HorizontalAlignment.Left)
+                {
+                    Position = new(LABEL_WIDTH, y),
+                    IsVisible = false
+                };
+
+                Label label = new(LABEL_WIDTH)
+                {
+                    Position = new(0, y),
+                    IsVisible = false
+                };
+
+                bars[i] = bar;
+                labels[i] = label;
+
+                Controls.Add(bar);
+                Controls.Add(label);
+            }
+
+            defaultTextColor = bars[0].DisplayTextColor;
+        }
+
+        /// <summary>
+        /// Wipes every slot. Call when the turn changes so nothing from the last unit is left behind.
+        /// </summary>
+        public void Reset()
+        {
+            Array.Clear(shown);
+
+            for (int i = 0; i < SLOTS; i++)
+                Apply(i, null);
+        }
+
+        /// <summary>
+        /// Fills slots in order and hides the rest. Anything past SLOTS is dropped.
+        /// Only touches slots that changed. SadConsole controls redraw on every property set, even with the same value.
+        /// </summary>
+        public void Show(IEnumerable<HudBar> hudBars)
+        {
+            HudBar[] next = new HudBar[SLOTS];
+            int count = 0;
+
+            foreach (HudBar hudBar in hudBars.OrderBy(b => b.Order))
+            {
+                if (count >= SLOTS) break; // TODO: page or shrink if this ever happens
+                next[count++] = hudBar;
+            }
+
+            for (int i = 0; i < SLOTS; i++)
+            {
+                if (next[i] == shown[i]) continue; // records compare by value
+
+                Apply(i, next[i]);
+            }
+        }
+
+        /// <summary>
+        /// Puts a bar in a slot, or hides the slot if hudBar is null.
+        ///
+        /// We run after SadConsole's update, so the controls get redrawn by hand here.
+        /// Otherwise the render step composites the old picture and clears IsDirty before
+        /// UpdateAndRedraw ever sees it, and the change only shows up when the mouse dirties it again.
+        /// </summary>
+        private void Apply(int slot, HudBar hudBar)
+        {
+            ProgressBar bar = bars[slot];
+            Label label = labels[slot];
+
+            shown[slot] = hudBar;
+            Controls.IsDirty = true; // the host recomposites from the controls' surfaces on its next render
+
+            if (hudBar is null)
+            {
+                bar.IsVisible = false;
+                label.IsVisible = false;
                 return;
             }
-            else
-            {
-                mpBar.IsVisible = true;
-                mplabel.IsVisible = true;
-            }
 
-            int max = component.Max;
-            int current = component.Current;
+            bar.Progress = hudBar.Progress;
+            bar.DisplayText = hudBar.Text;
+            bar.BarColor = hudBar.BarColor;
+            bar.DisplayTextColor = hudBar.TextColor ?? defaultTextColor;
+            bar.IsVisible = true;
 
-            float val = (float)current / (float)max;
+            label.DisplayText = hudBar.Label;
+            label.TextColor = hudBar.LabelColor; // doesn't mark the label dirty by itself
+            label.IsVisible = true;
 
-            mpBar.Progress = val;
-            mpBar.DisplayText = $"{current} / {max}";
-        }
-
-        public void UpdateSP(SPComponent component)
-        {
-            if (component is null)
-            {
-                spBar.IsVisible = false;
-                splabel.IsVisible = false;
-                return;
-            }
-            else
-            {
-                spBar.IsVisible = true;
-                splabel.IsVisible = true;
-            }
-
-            int max = component.MaxSP;
-            int current = component.CurrentSP;
-
-            float val = (float)current / (float)max;
-
-            spBar.Progress = val;
-            spBar.DisplayText = $"{current} / {max}";
-        }
-
-        public void UpdateOD(ODComponent component)
-        {
-            if (component is null)
-            {
-                odBar.IsVisible = false;
-                odlabel.IsVisible = false;
-
-                gbBar.IsVisible = false;
-                gblabel.IsVisible = false;
-                return;
-
-            }
-            else
-            {
-                odBar.IsVisible = true;
-                odlabel.IsVisible = true;
-
-                gbBar.IsVisible = true;
-                gblabel.IsVisible = true;
-            }
-
-            float val = (float)component.CurrentOD / 100f;
-
-            odBar.Progress = val;
-            odBar.DisplayText = $"{component.CurrentOD}%";
-
-            float gbval = component.CurrentGB / 100f;
-            gbBar.Progress = gbval;
-            gbBar.DisplayText = $"{component.CurrentGB}%";
-        }
-
-        public void UpdateActions(ActionComponent component)
-        {
-            UpdateActionBar(mvBar, mvlabel, component, ActionType.MOVE);
-            UpdateActionBar(atBar, atlabel, component, ActionType.ATTACK);
-        }
-
-        private static void UpdateActionBar(ProgressBar bar, Label label, ActionComponent component, ActionType type)
-        {
-            bool visible = component is not null && component.IsLimited(type);
-            bar.IsVisible = visible;
-            label.IsVisible = visible;
-
-            if (!visible) return;
-
-            int max = component.Max(type);
-            int current = component.Remaining(type);
-
-            bar.Progress = max > 0 ? (float)current / max : 0f;
-            bar.DisplayText = $"{current} / {max}";
+            // UpdateAndRedraw bails unless IsDirty is set
+            bar.IsDirty = true;
+            label.IsDirty = true;
+            bar.UpdateAndRedraw(TimeSpan.Zero);
+            label.UpdateAndRedraw(TimeSpan.Zero);
         }
     }
 }

@@ -15,6 +15,7 @@ namespace LuanSC.Objects
             AddComponent(new HPComponent(100));
             AddComponent(new CollisionComponent());
             AddComponent(new EffectComponent());
+            AddComponent(new TeamComponent(Team.ENEMY));
             AddComponent(new WeaponComponent(WeaponRegistry.Hands()));
             AddComponent(ActionComponent.CreateDefault());
             AddComponent(new AIComponent(behavior ?? new IdleBehavior()));

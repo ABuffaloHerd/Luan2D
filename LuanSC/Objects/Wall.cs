@@ -15,6 +15,7 @@ public class Wall : GameObject
             Foreground = Color.White
         };
 
+        // TODO: uses zIndex 0 but the Color overload uses MagicNumbers.GAMEOBJECT_INDEX. Pick one.
         return new Wall(cgb, 0);
     }
 

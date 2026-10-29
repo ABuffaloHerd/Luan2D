@@ -6,7 +6,7 @@ using Direction = LuanSC.Data.Direction;
 namespace LuanSC.Data.Components.AI;
 
 /// <summary>
-/// Moves toward the nearest living player. Attacks when the weapon range reaches it.
+/// Moves toward the nearest living hostile. Attacks when the weapon range reaches it.
 /// </summary>
 public class ZombieBehavior : IAIBehavior
 {
@@ -25,6 +25,7 @@ public class ZombieBehavior : IAIBehavior
         ActionComponent actions = self.GetComponent<ActionComponent>();
         int steps = actions?.Remaining(ActionType.MOVE) ?? MaxSteps;
 
+        // TODO: steps is never used. The loop should probably be capped at Math.Min(steps, MaxSteps).
         for (int step = 0; step < MaxSteps; step++)
         {
             if (weapon is not null && TryGetAttackDirection(weapon, position, target.Position, out _))
@@ -54,7 +55,7 @@ public class ZombieBehavior : IAIBehavior
 
         foreach (GameObject obj in context.Objects)
         {
-            if (obj is not PlayerGameObject) continue;
+            if (!TeamComponent.AreHostile(self, obj)) continue;
 
             HPComponent hp = obj.GetComponent<HPComponent>();
             if (hp is null || !hp.IsAlive) continue;

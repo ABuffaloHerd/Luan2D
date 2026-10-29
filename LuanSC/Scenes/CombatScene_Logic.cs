@@ -62,13 +62,24 @@ namespace LuanSC.Scenes
 
         private void StartNextTurn()
         {
+            // finish up the previous turn, unless they died during it
+            if (currentControlledGameObject is not null && gameObjects.Contains(currentControlledGameObject))
+            {
+                currentControlledGameObject.GetComponent<EffectComponent>()?.TickEnd(msg => fightFeed.AddLine(msg));
+                Cull();
+            }
+
             if (queue.Count <= 0)
             {
                 BuildTurnQueue(); // the cycle begins anew
             }
 
-            // finish up the previous turn
-            currentControlledGameObject?.GetComponent<EffectComponent>()?.TickEnd(msg => fightFeed.AddLine(msg));
+            // nobody left who can take a turn
+            if (queue.Count <= 0)
+            {
+                currentControlledGameObject = null;
+                return;
+            }
 
             // Dequeue and run
             currentControlledGameObject = queue.Dequeue();
@@ -77,25 +88,55 @@ namespace LuanSC.Scenes
             aiPlan = null;
             aiTimer = TimeSpan.Zero;
 
-            // Then update the turn order console.
-            order.Clear();
-            int y = 0;
-            // print the current object's turn
-            order.Print(0, y++, ColoredString.Parser.Parse($"[c:r f:Black][c:r b:Yellow]{currentControlledGameObject.Name}"));
-            foreach (var obj in queue)
-            {
-                order.Print(0, y++, ColoredString.Parser.Parse(obj.Name));
-            }
-
             // effect processing
             var effects = currentControlledGameObject.GetComponent<EffectComponent>();
             effects?.Tick();
 
+            // Poison can kill the actor before they get to move
+            Cull();
+            if (!gameObjects.Contains(currentControlledGameObject))
+            {
+                StartNextTurn();
+                return;
+            }
+
+            RefreshTurnOrder();
+
+            // fresh HUD for the new unit
+            hud.Reset();
+
+            // don't carry a half aimed spell into someone else's turn
+            CancelTargeting();
+
             // reload action counters
             currentControlledGameObject.GetComponent<ActionComponent>()?.Refill();
 
+            // resource regen and anything else that ticks on its owner's turn
+            foreach (IOnTurnStartListener listener in currentControlledGameObject.Components.OfType<IOnTurnStartListener>().ToList())
+            {
+                listener.OnTurnStart();
+            }
+
             // report to the fight feed
             fightFeed.AddLine($"{currentControlledGameObject.Name}'s turn.");
+
+            // magic circles and the like
+            NotifyOwnerTurnStart(currentControlledGameObject);
+        }
+
+        private void RefreshTurnOrder()
+        {
+            order.Clear();
+            int y = 0;
+
+            // print the current object's turn
+            if (currentControlledGameObject is not null)
+                order.Print(0, y++, ColoredString.Parser.Parse($"[c:r f:Black][c:r b:Yellow]{currentControlledGameObject.Name}"));
+
+            foreach (var obj in queue)
+            {
+                order.Print(0, y++, ColoredString.Parser.Parse(obj.Name));
+            }
         }
 
         /// <summary>
@@ -103,14 +144,18 @@ namespace LuanSC.Scenes
         /// </summary>
         private void Cull()
         {
-            foreach(GameObject obj in gameObjects)
+            // copy first, RemoveGameObject changes gameObjects
+            List<GameObject> dead = gameObjects
+                .Where(obj => obj.GetComponent<HPComponent>() is { IsAlive: false })
+                .ToList();
+
+            foreach (GameObject obj in dead)
             {
-                if (obj.GetComponent<HPComponent>() is not null && !obj.GetComponent<HPComponent>().IsAlive)
-                {
-                    gameObjects.Remove(obj);
-                    entityManager.Remove(obj);
-                }
-            }    
+                if (!gameObjects.Contains(obj)) continue; // already vanished with their owner
+
+                GameEvents.Publish(new CombatEvent.EntityDied(obj));
+                RemoveGameObject(obj);
+            }
         }
 
         private static ActionType? ActionTypeOf(TurnAction action)
@@ -119,6 +164,7 @@ namespace LuanSC.Scenes
             {
                 TurnAction.Move => ActionType.MOVE,
                 TurnAction.Attack => ActionType.ATTACK,
+                TurnAction.Summon summon => summon.Cost,
                 _ => null // if they ain't declared it's free dawg it's lit
             };
         }
@@ -159,6 +205,10 @@ namespace LuanSC.Scenes
                     success = true;
                     break;
 
+                case TurnAction.Summon summon:
+                    success = Summon(actor, summon);
+                    break;
+
                 case TurnAction.EndTurn:
                     // Notify the fight feed that the turn has ended
                     fightFeed.AddLine($"{actor.Name} ends their turn.");
@@ -171,6 +221,15 @@ namespace LuanSC.Scenes
             {
                 actions?.TrySpend(type.Value);
             }
+
+            // EndTurn already culled inside StartNextTurn
+            if (action is TurnAction.EndTurn) return;
+
+            Cull();
+
+            // the actor died on their own turn, move on
+            if (!gameObjects.Contains(actor))
+                StartNextTurn();
         }
 
         private void UpdateAI(TimeSpan delta)

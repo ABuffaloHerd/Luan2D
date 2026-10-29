@@ -8,9 +8,14 @@ namespace LuanSC.Data.Components
     /// <summary>
     /// Can the owner take damage?
     /// </summary>
-    public class HPComponent : StatComponent
+    public class HPComponent : StatComponent, IHudDisplay
     {
         public override string Name => "HP Component";
+
+        public IEnumerable<HudBar> GetHudBars()
+        {
+            yield return new HudBar(0, "HP :", Color.Red, Color.Red, HudBar.Ratio(Current, Max), $"{Current} / {Max}");
+        }
         public int DEF { get; set; } = 0; // Physical Defense
         public int RES { get; set; } = 0; // Magical Resistance
 

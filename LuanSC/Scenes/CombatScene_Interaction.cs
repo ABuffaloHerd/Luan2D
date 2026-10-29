@@ -56,6 +56,7 @@ namespace LuanSC.Scenes
                 }
                 else
                 {
+                    // TODO: {user} probably prints the object's type, not its name. Use user.Name (BasicAttack has the same problem with {owner}).
                     GameEvents.Publish(new CombatEvent.GenericMessage($"{user} cannot use {ability.Name} right now."));
                 }
             }

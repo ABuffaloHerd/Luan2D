@@ -48,6 +48,7 @@ namespace LuanSC.Objects
             Components.Add(new ControllableComponent());
             Components.Add(new ODComponent());
             Components.Add(new EffectComponent());
+            Components.Add(new TeamComponent(Team.PLAYER));
 
             Components.Add(ActionComponent.CreateDefault());
 

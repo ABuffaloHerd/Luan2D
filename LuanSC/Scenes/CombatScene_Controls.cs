@@ -1,6 +1,7 @@
 ﻿using LuanSC.Data;
 using LuanSC.Data.Components;
 using LuanSC.Data.Components.AI;
+using LuanSC.Objects.Summons;
 using SadConsole.Input;
 using SadConsole.UI;
 using System;
@@ -15,6 +16,10 @@ namespace LuanSC.Scenes
         private static int testint = 0;
         public override bool ProcessKeyboard(Keyboard keyboard)
         {
+            // aiming a spell takes over the keyboard, Esc cancels instead of quitting
+            if (IsTargeting)
+                return ProcessTargetingKeyboard(keyboard);
+
             if (keyboard.IsKeyPressed(SadConsole.Input.Keys.Escape))
             {
                 manager.ChangeScene(sceneManager => new Menu(sceneManager));
@@ -23,6 +28,10 @@ namespace LuanSC.Scenes
 
             // Always allow escape to work
             if (currentControlledGameObject?.GetComponent<AIComponent>() is not null)
+                return base.ProcessKeyboard(keyboard);
+
+            // everyone who could take a turn is dead
+            if (currentControlledGameObject is null)
                 return base.ProcessKeyboard(keyboard);
 
             if (keyboard.IsKeyPressed(Keys.Up))
@@ -108,6 +117,33 @@ namespace LuanSC.Scenes
                 Execute(currentControlledGameObject, new TurnAction.Attack());
             }
 
+            // DEBUG SUMMON KEYS. Replaced by the spellbook (G). Uncomment to summon without a spellbook.
+            // These skip the spellbook's checks, so anyone can summon anything.
+            //
+            //// K: familiar in the facing cell
+            //if (keyboard.IsKeyPressed(Keys.K))
+            //{
+            //    Point spot = currentControlledGameObject.Position + currentControlledGameObject.Direction.ToVector();
+            //    Execute(currentControlledGameObject, new TurnAction.Summon(SummonRegistry.Familiar, spot, ActionType.SPELL));
+            //    return true;
+            //}
+            //
+            //// C: magic circle in the facing cell
+            //if (keyboard.IsKeyPressed(Keys.C))
+            //{
+            //    Point spot = currentControlledGameObject.Position + currentControlledGameObject.Direction.ToVector();
+            //    Execute(currentControlledGameObject, new TurnAction.Summon(SummonRegistry.MagicCircle, spot, ActionType.SPELL, [new ResourceCost(ResourceType.MP, 50)]));
+            //    return true;
+            //}
+            //
+            //// B: sentry gun in the facing cell
+            //if (keyboard.IsKeyPressed(Keys.B))
+            //{
+            //    Point spot = currentControlledGameObject.Position + currentControlledGameObject.Direction.ToVector();
+            //    Execute(currentControlledGameObject, new TurnAction.Summon(owner => SummonRegistry.SentryGun(owner, hitsRequired: 3, builtGlyph: 'Y'), spot, ActionType.SKILL, [new ResourceCost(ResourceType.METAL, 100)]));
+            //    return true;
+            //}
+
             // zoom in and out + and -
             if (keyboard.IsKeyPressed(Keys.OemPlus))
             {
@@ -129,7 +165,7 @@ namespace LuanSC.Scenes
             }
 
             // Open spellbook G
-            if (keyboard.IsKeyDown(Keys.G))
+            if (keyboard.IsKeyPressed(Keys.G))
             {
                 DisplaySpellbook();
                 return true;

@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using SadConsole.UI;
+using SadConsole.UI.Controls;
+using LuanSC.Data.Components;
+using LuanSC.Data.Spells;
+using LuanSC.Objects;
 
 namespace LuanSC.Scenes;
 
@@ -12,10 +16,16 @@ public partial class CombatScene
     {
         if (windowInstances > 0) return;
 
+        // only your own units, and only on their turn
+        GameObject caster = currentControlledGameObject;
+        if (caster?.GetComponent<ControllableComponent>() is null) return;
+
+        SpellbookComponent book = caster.GetComponent<SpellbookComponent>();
+
         // might need to make this a class var
-        Window spellbook = new Window(30, 30)
+        Window spellbook = new Window(40, 40)
         {
-            Title = $"Spellbook",
+            Title = $"{caster.Name}'s Spellbook",
             CanDrag = true,
             UseMouse = true,
             CloseOnEscKey = true,
@@ -23,13 +33,84 @@ public partial class CombatScene
 
         windowInstances++;
 
-        spellbook.Closed += (sender, args) =>
+        // Hide may or may not raise Closed, so make sure this only runs once
+        bool closed = false;
+        void OnClosed()
         {
+            if (closed) return;
+            closed = true;
             windowInstances--;
             RestoreFocus();
+        }
+
+        spellbook.Closed += (sender, args) => OnClosed();
+
+        // content area, the tab control adds its headers and border around this
+        int contentWidth = spellbook.Width - 2;
+        int contentHeight = spellbook.Height - 2;
+
+        TabControl tabs = new(
+        [
+            BuildSpellTab("Spells", ActionType.SPELL, caster, book, contentWidth, contentHeight, Cast),
+            BuildSpellTab("Skills", ActionType.SKILL, caster, book, contentWidth, contentHeight, Cast),
+        ], contentWidth, contentHeight)
+        {
+            Position = new(1, 1)
         };
+        spellbook.Controls.Add(tabs);
+
         spellbook.Position = new((GameSettings.GAME_WIDTH / 2) - (spellbook.Width / 2) - 1, (GameSettings.GAME_HEIGHT / 2) - (spellbook.Height / 2) + 1);
         spellbook.Show(true);
+
+        // closes the book before casting so targeting gets the keyboard back
+        void Cast(ISpell spell)
+        {
+            spellbook.Hide();
+            OnClosed();
+            this.Cast(caster, spell);
+        }
+    }
+
+    /// <summary>
+    /// One tab of the spellbook. A button per spell with its cost, greyed out if it can't be cast right now.
+    /// </summary>
+    private static TabItem BuildSpellTab(string header, ActionType type, GameObject caster, SpellbookComponent book, int width, int height, Action<ISpell> cast)
+    {
+        Panel panel = new(width, height);
+        // overwrite the width parameter so that buttons don't overlap with the panel etc.
+        width -= 2;
+
+        List<ISpell> spells = book?.OfType(type).ToList() ?? new();
+        if (spells.Count == 0)
+        {
+            panel.Add(new Label("Nothing here.") { Position = new(1, 1) });
+            return new TabItem(header, panel);
+        }
+
+        int y = 0;
+        foreach (ISpell spell in spells)
+        {
+            Button button = new(width, 1)
+            {
+                Text = spell.Name,
+                Position = new(0, y),
+                IsEnabled = spell.CanCast(caster)
+            };
+            button.Click += (sender, args) => cast(spell);
+            panel.Add(button);
+
+            string costs = spell.Costs.Count > 0
+                ? string.Join(", ", spell.Costs.Select(c => $"{c.Amount} {c.Type}"))
+                : "Free";
+            string targeting = spell.Targeting == Targeting.CURSOR ? $"range {spell.Range}" : "in front";
+
+            panel.Add(new Label(width) { DisplayText = $" {costs}, {targeting}", Position = new(0, y + 1), TextColor = Color.Gray });
+            panel.Add(new Label(width) { DisplayText = $" {spell.Description}", Position = new(0, y + 2), TextColor = Color.DarkGray });
+
+            y += 4;
+        }
+
+        return new TabItem(header, panel);
     }
 
     private void DisplayHelp()

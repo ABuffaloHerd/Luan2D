@@ -5,9 +5,14 @@ using System.Text;
 
 namespace LuanSC.Data.Components
 {
-    public class SPComponent : StatComponent
+    public class SPComponent : StatComponent, IHudDisplay
     {
         public override string Name => "SP Component";
+
+        public IEnumerable<HudBar> GetHudBars()
+        {
+            yield return new HudBar(20, "SP :", Color.Yellow, Color.Yellow, HudBar.Ratio(Current, Max), $"{Current} / {Max}", Color.Black);
+        }
 
         public GameObject Owner { get; private set; }
 

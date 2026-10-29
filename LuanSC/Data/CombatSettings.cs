@@ -1,7 +1,9 @@
 ﻿using LuanSC.Data.Components;
 using LuanSC.Data.Components.AI;
 using LuanSC.Data.Components.Effects;
+using LuanSC.Data.Spells;
 using LuanSC.Objects;
+using LuanSC.Objects.Summons;
 using LuanSC.Objects.Weapons;
 using System;
 using System.Collections.Generic;
@@ -67,6 +69,17 @@ namespace LuanSC.Data
             mariah.Position = new Point(3, 3);
             settings.AddGameObject(mariah);
 
+            var luna = new PlayerGameObject(new ColoredGlyph(Color.Purple, Color.Transparent, 'L'), MagicNumbers.GAMEOBJECT_INDEX);
+            luna.Name = "Luna";
+            luna.GetComponent<HPComponent>().Max = 150;
+            luna.GetComponent<MPComponent>().Max = 50;
+            luna.GetComponent<SpeedComponent>().Speed = 75;
+            luna.GetComponent<WeaponComponent>().Weapon = WeaponRegistry.Stick();
+            luna.GetComponent<ActionComponent>().Configure(ActionType.SKILL, 1); // one sentry per turn
+            luna.AddComponent(ResourceRegistry.Metal()); // 100 of 200, +25 a turn. sentries cost 100
+            luna.Position = new Point(5, 4);
+            settings.AddGameObject(luna);
+
             var wall = Wall.GenerateWall();
             wall.Position = new Point(4, 4);
             settings.AddGameObject(wall);
@@ -79,9 +92,25 @@ namespace LuanSC.Data
 
             settings.AddGameObject(zombie);
 
+            var necromancer = new EnemyGameObject(new ColoredGlyph(Color.Purple, Color.Transparent, 'N'), MagicNumbers.GAMEOBJECT_INDEX, new SummonerBehavior(SummonRegistry.Skeleton));
+            necromancer.Name = "Necromancer";
+            necromancer.GetComponent<HPComponent>().Max = 60;
+            necromancer.GetComponent<SpeedComponent>().Speed = 60;
+            necromancer.GetComponent<ActionComponent>().Configure(ActionType.SPELL, 1);
+            necromancer.Position = (15, 10);
+            settings.AddGameObject(necromancer);
+
+            // mariah casts one spell per turn
+            mariah.GetComponent<ActionComponent>().Configure(ActionType.SPELL, 1);
+            mariah.AddComponent(new SpellbookComponent(SpellRegistry.SummonFamiliar(), SpellRegistry.MagicCircle()));
+
+            luna.AddComponent(new SpellbookComponent(SpellRegistry.SentryGun(hitsRequired: 3, builtGlyph: 'Y')));
+
             //settings.Width = 21;
             //settings.Height = 21;
             //settings.FontScale = 1.9f;
+
+
 
             // Poison hirina
             PoisonEffect poison = new(10, 10);
