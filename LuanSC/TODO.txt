@@ -1,6 +1,5 @@
 ticker text reads from ss14 tips and tf2 tips.
 tips.txt for this game specifically
-help reads from a help file
 cleanup combat settings
 modular combat settings - read from file?
 character loadouts - premade and custom
