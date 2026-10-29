@@ -16,8 +16,21 @@ namespace LuanSC.Scenes
         // Surface is where the gameobjects are drawn
         private LayeredScreenSurface surface;
 
-        // overlay is where effects and the cursor is drawn
+        // Arena draw order, bottom to top:
+        //   layer 0  surface.Surface  empty, free for terrain
+        //   layer 1  overlay          weapon range and targeting highlights, redrawn every frame
+        //   layer 2  effects          spell animations
+        //   entities                  every game object, always above all layers
+        //   surface.Children          AnimatedEffects, drawn after the whole surface so they cover entities too
         private CellSurface overlay;
+
+        /// <summary>
+        /// Top arena layer for spell animations. Still drawn under entities.
+        /// </summary>
+        // TODO: shaders. The MonoGame host takes HLSL effects (OutputSurfaceRenderStep.ShaderEffect on the arena
+        // would also draw over entities, or DoFinalDraw = false for full screen). Needs the MonoGame content
+        // pipeline set up to compile .fx files first. Get to this later.
+        private CellSurface effects;
 
         // Controls
         private ControlsConsole controls;
@@ -57,6 +70,9 @@ namespace LuanSC.Scenes
 
             // while the warning here is sensible, layered console is supposed to come with a layered surface so if it doesn't then fuck what now
             overlay = surface.GetSadComponent<LayeredSurface>().Create();
+
+            // created after overlay so it sits on top of it
+            effects = surface.GetSadComponent<LayeredSurface>().Create();
 
             // setup the view rectangle to be the size of the surface
             view = new(0, 0, surface.Width, surface.Height);
