@@ -19,7 +19,7 @@ public enum ActionType
 /// Limits how many times the owner can do each type of action in one turn.
 /// A type that is not configured has no limit.
 /// </summary>
-public class ActionComponent : IComponent
+public class ActionComponent : IComponent, IHudDisplay
 {
     public const int SPEED_PER_MOVE = 10;
 
@@ -72,6 +72,16 @@ public class ActionComponent : IComponent
     }
 
     public bool IsLimited(ActionType type) => slots.ContainsKey(type);
+
+    // only movement and attacks for now, skill and spell counters would push resources off the HUD
+    public IEnumerable<HudBar> GetHudBars()
+    {
+        if (IsLimited(ActionType.MOVE))
+            yield return new HudBar(50, "MV :", Color.Green, Color.Green, HudBar.Ratio(Remaining(ActionType.MOVE), Max(ActionType.MOVE)), $"{Remaining(ActionType.MOVE)} / {Max(ActionType.MOVE)}", Color.Black);
+
+        if (IsLimited(ActionType.ATTACK))
+            yield return new HudBar(51, "AT :", Color.Orange, Color.Orange, HudBar.Ratio(Remaining(ActionType.ATTACK), Max(ActionType.ATTACK)), $"{Remaining(ActionType.ATTACK)} / {Max(ActionType.ATTACK)}", Color.Black);
+    }
 
     public int Max(ActionType type) => slots.TryGetValue(type, out Slot slot) ? slot.Max : int.MaxValue;
     public int Remaining(ActionType type) => slots.TryGetValue(type, out Slot slot) ? slot.Current : int.MaxValue;

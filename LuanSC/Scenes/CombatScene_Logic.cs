@@ -102,8 +102,17 @@ namespace LuanSC.Scenes
 
             RefreshTurnOrder();
 
+            // fresh HUD for the new unit
+            hud.Reset();
+
             // reload action counters
             currentControlledGameObject.GetComponent<ActionComponent>()?.Refill();
+
+            // resource regen and anything else that ticks on its owner's turn
+            foreach (IOnTurnStartListener listener in currentControlledGameObject.Components.OfType<IOnTurnStartListener>().ToList())
+            {
+                listener.OnTurnStart();
+            }
 
             // report to the fight feed
             fightFeed.AddLine($"{currentControlledGameObject.Name}'s turn.");

@@ -75,6 +75,7 @@ namespace LuanSC.Data
             luna.GetComponent<SpeedComponent>().Speed = 75;
             luna.GetComponent<WeaponComponent>().Weapon = WeaponRegistry.Stick();
             luna.GetComponent<ActionComponent>().Configure(ActionType.SKILL, 1); // one sentry per turn with B
+            luna.AddComponent(ResourceRegistry.Metal()); // 100 of 200, +25 a turn. sentries cost 100
             luna.Position = new Point(5, 4);
             settings.AddGameObject(luna);
 

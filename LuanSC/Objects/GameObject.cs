@@ -40,6 +40,9 @@ namespace LuanSC.Objects
 
         public void RemoveComponent<T>() where T : IComponent => Components.RemoveWhere(c => c is T);
 
+        public ResourceComponent GetResource(ResourceType type)
+            => Components.OfType<ResourceComponent>().FirstOrDefault(r => r.Type == type);
+
         public void Blink()
         {
             Blinker b = new()

@@ -18,19 +18,25 @@ public partial class CombatScene
             return false;
         }
 
-        MPComponent mp = owner.GetComponent<MPComponent>();
-        if (summon.ManaCost > 0 && (mp is null || mp.Current < summon.ManaCost))
+        IReadOnlyList<ResourceCost> costs = summon.Costs ?? [];
+
+        // check everything first so nothing is spent on a failed summon
+        foreach (ResourceCost cost in costs)
         {
-            GameEvents.Publish(new CombatEvent.GenericMessage($"{owner.Name} needs {summon.ManaCost} MP for that."));
-            return false;
+            ResourceComponent resource = owner.GetResource(cost.Type);
+            if (resource is null || !resource.CanSpend(cost.Amount))
+            {
+                GameEvents.Publish(new CombatEvent.GenericMessage($"{owner.Name} needs {cost.Amount} {resource?.DisplayName ?? cost.Type.ToString()} for that."));
+                return false;
+            }
         }
 
         SummonedGameObject minion = summon.Create(owner);
         minion.Position = summon.Position;
         AddGameObject(minion);
 
-        if (summon.ManaCost > 0)
-            mp.Current -= summon.ManaCost;
+        foreach (ResourceCost cost in costs)
+            owner.GetResource(cost.Type).TrySpend(cost.Amount);
 
         GameEvents.Publish(new CombatEvent.Summoned(owner, minion));
         return true;

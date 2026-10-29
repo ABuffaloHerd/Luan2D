@@ -125,7 +125,7 @@ namespace LuanSC.Scenes
             if (keyboard.IsKeyPressed(Keys.C))
             {
                 Point spot = currentControlledGameObject.Position + currentControlledGameObject.Direction.ToVector();
-                Execute(currentControlledGameObject, new TurnAction.Summon(SummonRegistry.MagicCircle, spot, ActionType.SPELL, 50));
+                Execute(currentControlledGameObject, new TurnAction.Summon(SummonRegistry.MagicCircle, spot, ActionType.SPELL, [new ResourceCost(ResourceType.MP, 50)]));
                 return true;
             }
 
@@ -134,7 +134,7 @@ namespace LuanSC.Scenes
             if (keyboard.IsKeyPressed(Keys.B) && currentControlledGameObject.Name == "Luna")
             {
                 Point spot = currentControlledGameObject.Position + currentControlledGameObject.Direction.ToVector();
-                Execute(currentControlledGameObject, new TurnAction.Summon(owner => SummonRegistry.SentryGun(owner, hitsRequired: 3, builtGlyph: 'Y'), spot, ActionType.SKILL));
+                Execute(currentControlledGameObject, new TurnAction.Summon(owner => SummonRegistry.SentryGun(owner, hitsRequired: 3, builtGlyph: 'Y'), spot, ActionType.SKILL, [new ResourceCost(ResourceType.METAL, 100)]));
                 return true;
             }
 

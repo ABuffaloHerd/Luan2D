@@ -163,16 +163,13 @@ namespace LuanSC.Scenes
             if (overlayVisible)
                 UpdateOverlay();
 
-            hud.UpdateHP(currentControlledGameObject.GetComponent<HPComponent>());
-            hud.UpdateMP(currentControlledGameObject.GetComponent<MPComponent>());
-            hud.UpdateSP(currentControlledGameObject.GetComponent<SPComponent>());
-            hud.UpdateOD(currentControlledGameObject.GetComponent<ODComponent>());
+            bool controllable = currentControlledGameObject.GetComponent<ControllableComponent>() is not null;
 
-            ActionComponent? actions = currentControlledGameObject.GetComponent<ControllableComponent>() is not null
-                ? currentControlledGameObject.GetComponent<ActionComponent>()
-                : null;
-
-            hud.UpdateActions(actions);
+            // every component that wants to be in the HUD gets a say
+            hud.Show(currentControlledGameObject.Components
+                .OfType<IHudDisplay>()
+                .Where(c => controllable || c is not ActionComponent) // AI action counters drain too fast to be worth showing
+                .SelectMany(c => c.GetHudBars()));
         }
 
         private void UpdateOverlay()
