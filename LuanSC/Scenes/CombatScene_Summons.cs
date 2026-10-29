@@ -18,25 +18,11 @@ public partial class CombatScene
             return false;
         }
 
-        IReadOnlyList<ResourceCost> costs = summon.Costs ?? [];
-
-        // check everything first so nothing is spent on a failed summon
-        foreach (ResourceCost cost in costs)
-        {
-            ResourceComponent resource = owner.GetResource(cost.Type);
-            if (resource is null || !resource.CanSpend(cost.Amount))
-            {
-                GameEvents.Publish(new CombatEvent.GenericMessage($"{owner.Name} needs {cost.Amount} {resource?.DisplayName ?? cost.Type.ToString()} for that."));
-                return false;
-            }
-        }
+        if (!TryPayCosts(owner, summon.Costs)) return false;
 
         SummonedGameObject minion = summon.Create(owner);
         minion.Position = summon.Position;
         AddGameObject(minion);
-
-        foreach (ResourceCost cost in costs)
-            owner.GetResource(cost.Type).TrySpend(cost.Amount);
 
         GameEvents.Publish(new CombatEvent.Summoned(owner, minion));
         return true;

@@ -32,4 +32,13 @@ public static class SpellRegistry
             owner => SummonRegistry.SentryGun(owner, hitsRequired, builtGlyph),
             new ResourceCost(ResourceType.METAL, 100));
     }
+
+    // flat magic damage to everything in the circle, friends included unless friendlyFire is off
+    public static ISpell Fireball(int damage = 30, int radius = 2, int range = 10, int mpCost = 50, bool friendlyFire = true)
+    {
+        return new Fireball(damage, radius, range, new ResourceCost(ResourceType.MP, mpCost))
+        {
+            FriendlyFire = friendlyFire
+        };
+    }
 }

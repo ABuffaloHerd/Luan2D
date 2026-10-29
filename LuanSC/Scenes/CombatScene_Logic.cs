@@ -165,6 +165,7 @@ namespace LuanSC.Scenes
                 TurnAction.Move => ActionType.MOVE,
                 TurnAction.Attack => ActionType.ATTACK,
                 TurnAction.Summon summon => summon.Cost,
+                TurnAction.Cast cast => cast.Spell.Type,
                 _ => null // if they ain't declared it's free dawg it's lit
             };
         }
@@ -207,6 +208,10 @@ namespace LuanSC.Scenes
 
                 case TurnAction.Summon summon:
                     success = Summon(actor, summon);
+                    break;
+
+                case TurnAction.Cast cast:
+                    success = ResolveCast(actor, cast);
                     break;
 
                 case TurnAction.EndTurn:

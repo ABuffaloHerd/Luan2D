@@ -1,6 +1,7 @@
 ﻿using LuanSC.Data;
 using LuanSC.Data.Components;
 using LuanSC.Data.Components.AI;
+using LuanSC.Data.Animations;
 using LuanSC.Objects.Summons;
 using SadConsole.Input;
 using SadConsole.UI;
@@ -105,6 +106,19 @@ namespace LuanSC.Scenes
                 return true;
             }
 
+            // DEBUG: X plays a circle blast, Z a square blast, in the middle of the arena
+            if (keyboard.IsKeyPressed(Keys.X))
+            {
+                surface.Children.Add(AnimationRegistry.CircleBlast(new Point(surface.Width / 2, surface.Height / 2)));
+                return true;
+            }
+
+            if (keyboard.IsKeyPressed(Keys.Z))
+            {
+                surface.Children.Add(AnimationRegistry.SquareBlast(new Point(surface.Width / 2, surface.Height / 2)));
+                return true;
+            }
+
             if (keyboard.IsKeyPressed(Keys.Space))
             {
                 Execute(currentControlledGameObject, new TurnAction.EndTurn());
@@ -145,6 +159,9 @@ namespace LuanSC.Scenes
             //}
 
             // zoom in and out + and -
+            // TODO: zoom is half baked and doesn't work very well. Fix it in its own branch.
+            // The view always shrinks from the top left, so it can't follow the action. AnimatedEffect assumes
+            // the view never scrolls and will need a ViewPosition offset once it does.
             if (keyboard.IsKeyPressed(Keys.OemPlus))
             {
                 surface.ViewHeight = Math.Max(surface.ViewHeight -= 5, 10);
