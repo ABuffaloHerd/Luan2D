@@ -8,4 +8,3 @@ save / load character loadouts
 story full stop - claude ignore
 audio system - music and sfx
 rename spellbook to actions
-AI waits to finish blinking before taking action

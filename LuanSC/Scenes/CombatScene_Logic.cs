@@ -90,7 +90,7 @@ namespace LuanSC.Scenes
             currentControlledGameObject.Blink();
 
             aiPlan = null;
-            aiTimer = TimeSpan.Zero;
+            aiTimer = -GameObject.BlinkDuration; // let the blink finish before the AI's first action
 
             // effect processing
             var effects = currentControlledGameObject.GetComponent<EffectComponent>();
