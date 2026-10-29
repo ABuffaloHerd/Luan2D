@@ -1,6 +1,7 @@
 ﻿using LuanSC.Data.Components;
 using LuanSC.Data.Components.AI;
 using LuanSC.Data.Components.Effects;
+using LuanSC.Data.Spells;
 using LuanSC.Objects;
 using LuanSC.Objects.Summons;
 using LuanSC.Objects.Weapons;
@@ -74,7 +75,7 @@ namespace LuanSC.Data
             luna.GetComponent<MPComponent>().Max = 50;
             luna.GetComponent<SpeedComponent>().Speed = 75;
             luna.GetComponent<WeaponComponent>().Weapon = WeaponRegistry.Stick();
-            luna.GetComponent<ActionComponent>().Configure(ActionType.SKILL, 1); // one sentry per turn with B
+            luna.GetComponent<ActionComponent>().Configure(ActionType.SKILL, 1); // one sentry per turn
             luna.AddComponent(ResourceRegistry.Metal()); // 100 of 200, +25 a turn. sentries cost 100
             luna.Position = new Point(5, 4);
             settings.AddGameObject(luna);
@@ -99,8 +100,11 @@ namespace LuanSC.Data
             necromancer.Position = (15, 10);
             settings.AddGameObject(necromancer);
 
-            // mariah can summon once per turn with K
+            // mariah casts one spell per turn
             mariah.GetComponent<ActionComponent>().Configure(ActionType.SPELL, 1);
+            mariah.AddComponent(new SpellbookComponent(SpellRegistry.SummonFamiliar(), SpellRegistry.MagicCircle()));
+
+            luna.AddComponent(new SpellbookComponent(SpellRegistry.SentryGun(hitsRequired: 3, builtGlyph: 'Y')));
 
             //settings.Width = 21;
             //settings.Height = 21;

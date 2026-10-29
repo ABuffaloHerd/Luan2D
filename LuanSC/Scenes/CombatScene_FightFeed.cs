@@ -62,6 +62,7 @@ namespace LuanSC.Scenes
             }
         }
 
+        // TODO: line wrapping eats into the next line, so we need to either wrap manually or use a different console type
         private class FightFeed : Console
         {
             private LinkedList<string> feedLines = new();

@@ -144,6 +144,9 @@ namespace LuanSC.Scenes
             combatEventHandler = HandleCombatEvent;
             Subscribe();
 
+            // mouse cursor over the arena
+            HookCursor();
+
             // Set up game objects and entities
             InitObjects(settings);
 
@@ -159,8 +162,8 @@ namespace LuanSC.Scenes
             if (currentControlledGameObject.GetComponent<ControllableComponent>() is null)
                 UpdateAI(delta);
 
-            // Refresh the overlay if it's visible and is dirty
-            if (overlayVisible)
+            // Refresh the overlay if it's visible and is dirty. Targeting always draws, H or not
+            if (overlayVisible || IsTargeting)
                 UpdateOverlay();
 
             bool controllable = currentControlledGameObject.GetComponent<ControllableComponent>() is not null;
@@ -181,6 +184,13 @@ namespace LuanSC.Scenes
 
             // Check that it is controllable object's turn
             if(currentControlledGameObject.GetComponent<ControllableComponent>() is null) return;
+
+            // aiming a spell replaces the weapon range
+            if (IsTargeting)
+            {
+                DrawTargeting();
+                return;
+            }
 
             // check for a weapon component
             if (currentControlledGameObject is null) return;

@@ -41,6 +41,7 @@ public partial class CombatScene
     ///
     /// Source: ControlHost.cs and ControlHostRenderStep.cs (SadConsole.Host.MonoGame) on the SadConsole GitHub.
     /// </remarks>
+    /// from a real person: tl;dr DON'T TOUCH. as a human myself i'm not fucking reading this wall of text so heed the warning now.
     private class HUD : ControlsConsole
     {
         // HP, MP, SP, OD, GB, MV, AT and two spare for custom resources

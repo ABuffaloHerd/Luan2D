@@ -105,6 +105,9 @@ namespace LuanSC.Scenes
             // fresh HUD for the new unit
             hud.Reset();
 
+            // don't carry a half aimed spell into someone else's turn
+            CancelTargeting();
+
             // reload action counters
             currentControlledGameObject.GetComponent<ActionComponent>()?.Refill();
 
