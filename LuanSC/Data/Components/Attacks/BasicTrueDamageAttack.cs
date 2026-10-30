@@ -13,6 +13,11 @@ public class BasicTrueDamageAttack : IAbility
 
     public int Damage { get; private set; }
 
+    public BasicTrueDamageAttack(int damage)
+    {
+        Damage = damage;
+    }
+
     public void Execute(GameObject owner, IReadOnlyList<GameObject> targets)
     {
         // attack first target in targets
