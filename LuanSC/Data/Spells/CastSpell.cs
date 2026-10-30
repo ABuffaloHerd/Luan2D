@@ -28,6 +28,7 @@ public abstract class CastSpell : ISpell
     public Targeting Targeting { get; }
     public int Range { get; }
     public Pattern Area { get; }
+    public string CastMessage { get; init; }
 
     protected CastSpell(string name, string description, ActionType type, IReadOnlyList<ResourceCost> costs, Targeting targeting, int range, Pattern area)
     {

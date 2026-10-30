@@ -15,6 +15,11 @@ public class SummonerBehavior : IAIBehavior
     public int MaxMinions { get; set; } = 2;
     public ActionType Cost { get; set; } = ActionType.SPELL;
 
+    /// <summary>
+    /// Fight feed line for each summon, {caster} and {summon} get filled in. Null uses the default, "{caster} summoned {summon}."
+    /// </summary>
+    public string Message { get; set; }
+
     public SummonerBehavior(Func<GameObject, SummonedGameObject> minion)
     {
         Minion = minion;
@@ -35,7 +40,7 @@ public class SummonerBehavior : IAIBehavior
             Point spot = self.Position + direction.ToVector();
             if (context.IsWalkable(spot))
             {
-                plan.Add(new TurnAction.Summon(Minion, spot, Cost));
+                plan.Add(new TurnAction.Summon(Minion, spot, Cost, Message: Message));
                 break;
             }
         }
