@@ -66,6 +66,17 @@ namespace LuanSC.Objects.Weapons
             return g;
         }
 
+        // TITAN APLU's arms
+        public static Weapon HydraulicFists()
+        {
+            Pattern p = new();
+            p.Mark(0, -1);
+
+            Weapon f = new Weapon("Hydraulic Fists", 25, p);
+            f.Abilities.Add(new BasicAttack(f.Damage));
+            return f;
+        }
+
         // Give em the hands
         public static Weapon Hands()
         {

@@ -30,13 +30,13 @@ namespace LuanSC.Scenes
         private TimeSpan aiTimer = TimeSpan.Zero;
 
         /// <summary>
-        /// In the future this will consume the combatsettings object to produce a gaming scene.
+        /// Builds fresh units from the settings and puts them in the arena.
         /// </summary>
         private void InitObjects(CombatSettings settings)
         {
             surface.SadComponents.Add(entityManager);
 
-            foreach (var obj in settings.GameObjects)
+            foreach (var obj in settings.BuildObjects())
             {
                 gameObjects.Add(obj);
                 entityManager.Add(obj);
@@ -159,6 +159,18 @@ namespace LuanSC.Scenes
             foreach (GameObject obj in dead)
             {
                 if (!gameObjects.Contains(obj)) continue; // already vanished with their owner
+
+                // a broken form throws its owner back out instead of killing them.
+                // The message is the same for every form for now, change it here.
+                if (obj.GetComponent<FormComponent>() is FormComponent form)
+                {
+                    string formName = obj.Name;
+                    form.Revert();
+
+                    GameEvents.Publish(new CombatEvent.GenericMessage($"The {formName} is destroyed! {obj.Name} is thrown clear."));
+                    RefreshTurnOrder();
+                    continue;
+                }
 
                 GameEvents.Publish(new CombatEvent.EntityDied(obj, obj.GetComponent<HPComponent>().LastHit));
                 RemoveGameObject(obj);

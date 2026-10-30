@@ -1,10 +1,6 @@
 ﻿using LuanSC.Data.Components;
-using LuanSC.Data.Components.AI;
-using LuanSC.Data.Components.Effects;
-using LuanSC.Data.Spells;
+using LuanSC.Data.Specs;
 using LuanSC.Objects;
-using LuanSC.Objects.Summons;
-using LuanSC.Objects.Weapons;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,131 +8,117 @@ using System.Text;
 namespace LuanSC.Data
 {
     /// <summary>
-    /// Describes a combat scenario.
+    /// Describes a combat scenario. Only data, so the same settings can start any number of fights.
+    /// BuildObjects makes the actual units. Levels live in LevelRegistry.
     /// </summary>
-    public struct CombatSettings
+    // TODO: Background tiles and audio.
+    public sealed record CombatSettings
     {
-        public List<GameObject> GameObjects = new();
+        public List<UnitSpec> Units { get; init; } = new();
+
+        /// <summary>
+        /// Applied to every unit that can have effects, after their own. Each unit gets its own copy, e.g. a weather effect.
+        /// </summary>
+        public List<EffectSpec> StartEffects { get; init; } = new();
 
         // default arena size
-        public int Width = 43;
-        public int Height = 43;
+        public int Width { get; init; } = 43;
+        public int Height { get; init; } = 43;
 
-        public float FontScale = 1;
+        public float FontScale { get; init; } = 1;
 
-        public CombatSettings() { }
-        public void AddGameObject(GameObject thing)
+        /// <summary>
+        /// New game objects for every unit. Call once per fight, the objects keep their state.
+        /// </summary>
+        public List<GameObject> BuildObjects()
         {
-            GameObjects.Add(thing); 
+            List<GameObject> objects = new();
+
+            foreach (UnitSpec unit in Units)
+            {
+                GameObject obj = BuildUnit(unit);
+
+                EffectComponent effects = obj.GetComponent<EffectComponent>();
+                if (effects is not null)
+                {
+                    foreach (EffectSpec effect in unit.Effects.Concat(StartEffects))
+                        effects.Apply(SpecLookup.Effect(effect)); // a new effect every time, they count down their own duration
+                }
+
+                objects.Add(obj);
+            }
+
+            return objects;
         }
 
-        public static CombatSettings GetTestSettings()
+        private static GameObject BuildUnit(UnitSpec unit)
         {
-            CombatSettings settings = new CombatSettings();
+            ColoredGlyph glyph = new(unit.Colour, Color.Transparent, unit.Glyph);
 
-            var hirina = new PlayerGameObject(new ColoredGlyph(Color.Red, Color.Transparent, 'H'), MagicNumbers.GAMEOBJECT_INDEX);
-            hirina.Name = "Hirina";
-            hirina.GetComponent<HPComponent>().Max = 250;
-            hirina.GetComponent<MPComponent>().Max = 100;
-            hirina.GetComponent<SpeedComponent>().Speed = 100;
-            hirina.GetComponent<WeaponComponent>().Weapon = WeaponRegistry.Throngler();
-            hirina.Position = new(1, 1);
-            settings.AddGameObject(hirina);
-
-            var targetdummy = new EnemyGameObject(new ColoredGlyph(Color.White, Color.Transparent, 'T'), MagicNumbers.GAMEOBJECT_INDEX);
-            targetdummy.Name = "Target Dummy";
-            targetdummy.Position = new(5, 5);
-            targetdummy.GetComponent<HPComponent>().Max = 100;
-            targetdummy.GetComponent<SpeedComponent>().Speed = 50;
-            settings.AddGameObject(targetdummy);
-
-            var minako = new PlayerGameObject(new ColoredGlyph(Color.Gray, Color.Transparent, 'M'), MagicNumbers.GAMEOBJECT_INDEX);
-            minako.Name = "Minako";
-            minako.GetComponent<HPComponent>().Max = 100;
-            minako.GetComponent<MPComponent>().Max = 50;
-            minako.GetComponent<SpeedComponent>().Speed = 90;
-            minako.GetComponent<SPComponent>().Max = 75;
-            minako.Position = new Point(2, 2);
-            settings.AddGameObject(minako);
-
-            var mariah = new PlayerGameObject(new ColoredGlyph(Color.Blue, Color.Transparent, 'M'), MagicNumbers.GAMEOBJECT_INDEX);
-            mariah.Name = "Mariah";
-            mariah.GetComponent<HPComponent>().Max = 150;
-            mariah.GetComponent<MPComponent>().Max = 200;
-            mariah.GetComponent<MPComponent>().Current = 75;
-            mariah.GetComponent<SpeedComponent>().Speed = 80;
-            mariah.GetComponent<WeaponComponent>().Weapon = WeaponRegistry.Stick();
-            mariah.Position = new Point(3, 3);
-            settings.AddGameObject(mariah);
-
-            var luna = new PlayerGameObject(new ColoredGlyph(Color.Purple, Color.Transparent, 'L'), MagicNumbers.GAMEOBJECT_INDEX);
-            luna.Name = "Luna";
-            luna.GetComponent<HPComponent>().Max = 150;
-            luna.GetComponent<MPComponent>().Max = 50;
-            luna.GetComponent<SpeedComponent>().Speed = 75;
-            luna.GetComponent<WeaponComponent>().Weapon = WeaponRegistry.Stick();
-            luna.GetComponent<ActionComponent>().Configure(ActionType.SKILL, 1); // one sentry per turn
-            luna.AddComponent(ResourceRegistry.Metal()); // 100 of 200, +25 a turn. sentries cost 100
-            luna.Position = new Point(5, 4);
-            settings.AddGameObject(luna);
-
-            var wall = Wall.GenerateWall();
-            wall.Position = new Point(4, 4);
-            settings.AddGameObject(wall);
-
-            var zombie = new EnemyGameObject(new ColoredGlyph(Color.Green, Color.Transparent, 'z'), MagicNumbers.GAMEOBJECT_INDEX, new ZombieBehavior());
-            zombie.Name = "Zombie";
-            zombie.GetComponent<HPComponent>().Max = 50;
-            zombie.GetComponent<SpeedComponent>().Speed = 50;
-            zombie.Position = (10, 5);
-
-            settings.AddGameObject(zombie);
-
-            var necromancer = new EnemyGameObject(new ColoredGlyph(Color.Purple, Color.Transparent, 'N'), MagicNumbers.GAMEOBJECT_INDEX, new SummonerBehavior(SummonRegistry.Skeleton));
-            necromancer.Name = "Necromancer";
-            necromancer.GetComponent<HPComponent>().Max = 60;
-            necromancer.GetComponent<SpeedComponent>().Speed = 60;
-            necromancer.GetComponent<ActionComponent>().Configure(ActionType.SPELL, 1);
-            necromancer.Position = (15, 10);
-            settings.AddGameObject(necromancer);
-
-            // mariah casts one spell per turn
-            mariah.GetComponent<ActionComponent>().Configure(ActionType.SPELL, 1);
-            mariah.AddComponent(new SpellbookComponent(SpellRegistry.SummonFamiliar(), SpellRegistry.MagicCircle(), SpellRegistry.Fireball()));
-
-            luna.AddComponent(new SpellbookComponent(SpellRegistry.SentryGun(hitsRequired: 3, builtGlyph: 'Y')));
-
-            //settings.Width = 21;
-            //settings.Height = 21;
-            //settings.FontScale = 1.9f;
-
-
-
-            // Poison hirina
-            PoisonEffect poison = new(10, 10);
-            hirina.GetComponent<EffectComponent>().Apply(poison);
-
-            // damage modifier test. Outgoing: +50% then -20%. Incoming, after RES: +25% then -5. Katana 12 a hit, poison 7 a tick.
-            // Effects run in the order they're applied, so Vulnerable scales before Armour takes its 5 off.
-            EffectComponent hirinaEffects = hirina.GetComponent<EffectComponent>();
-            hirinaEffects.Apply(new EmpowerEffect(duration: 5, percent: 50));
-            hirinaEffects.Apply(new WeakenEffect(duration: 5, percent: 20));
-            hirinaEffects.Apply(new VulnerableEffect(duration: 5, percent: 25));
-            hirinaEffects.Apply(new ArmourEffect(duration: 5, amount: 5));
-
-            // overdrive test: one special per turn, OD starts full so Unsheath can be used straight away
-            hirina.GetComponent<ActionComponent>().Configure(ActionType.SPECIAL, 1);
-            hirina.AddComponent(new SpellbookComponent(SpellRegistry.Unsheath()));
-            hirina.GetResource(ResourceType.OD).Current = 100;
-
-            // give minako a barrier
-            BarrierEffect barrier = new()
+            GameObject obj = unit.Kind switch
             {
-                Duration = 1
+                UnitType.PLAYER => new PlayerGameObject(glyph, MagicNumbers.GAMEOBJECT_INDEX),
+                UnitType.ENEMY => new EnemyGameObject(glyph, MagicNumbers.GAMEOBJECT_INDEX, SpecLookup.Ai(unit.Ai)),
+                UnitType.WALL => Wall.GenerateWall(unit.Colour),
+                _ => throw new ArgumentException($"Unknown unit kind {unit.Kind}")
             };
-            minako.GetComponent<EffectComponent>().Apply(barrier);
 
-            return settings;
+            obj.Position = unit.Position;
+            if (unit.Name is not null) obj.Name = unit.Name;
+
+            // start at full health
+            if (unit.Hp is int hp && obj.GetComponent<HPComponent>() is HPComponent health)
+            {
+                health.Max = hp;
+                health.Current = hp;
+            }
+
+            if (unit.Speed is int speed && obj.GetComponent<SpeedComponent>() is SpeedComponent speedComponent)
+                speedComponent.Speed = speed;
+
+            foreach (ResourceSpec spec in unit.Resources)
+                ApplyResource(obj, spec);
+
+            ActionComponent actions = obj.GetComponent<ActionComponent>();
+            foreach ((ActionType type, int max) in unit.ActionLimits)
+                actions?.Configure(type, max);
+
+            if (unit.Weapon is not null && obj.GetComponent<WeaponComponent>() is WeaponComponent weapon)
+                weapon.Weapon = SpecLookup.Weapon(unit.Weapon);
+
+            if (unit.Spells.Count > 0)
+                obj.AddComponent(new SpellbookComponent(unit.Spells.Select(SpecLookup.Spell).ToArray()));
+
+            return obj;
+        }
+
+        private static void ApplyResource(GameObject obj, ResourceSpec spec)
+        {
+            ResourceComponent resource = obj.GetResource(spec.Type);
+            if (resource is null)
+            {
+                resource = SpecLookup.Resource(spec.Type);
+                obj.AddComponent(resource);
+            }
+
+            if (spec.DisplayName is not null) resource.DisplayName = spec.DisplayName;
+            if (spec.Label is not null) resource.Label = spec.Label;
+            if (spec.Colour is Color colour)
+            {
+                resource.BarColor = colour;
+                resource.LabelColor = colour;
+            }
+            if (spec.TextColour is Color text) resource.TextColor = text;
+            if (spec.HudOrder is int order) resource.HudOrder = order;
+            if (spec.Regen is int regen) resource.RegenPerTurn = regen;
+
+            if (spec.Max is int max)
+            {
+                resource.Max = max;
+                resource.Current = max; // start full unless told otherwise
+            }
+
+            if (spec.Current is int current) resource.Current = current;
         }
     }
 }

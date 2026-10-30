@@ -48,9 +48,17 @@ public partial class CombatScene
             CursorClicked?.Invoke(CursorPosition);
         };
 
-        CursorClicked += _ =>
+        CursorClicked += position =>
         {
-            if (IsTargeting) ConfirmTarget();
+            if (IsTargeting)
+            {
+                ConfirmTarget();
+                return;
+            }
+
+            // not aiming, so a click inspects whatever is there
+            GameObject clicked = ObjectsAt(position).FirstOrDefault();
+            if (clicked is not null) Inspect(clicked);
         };
     }
 

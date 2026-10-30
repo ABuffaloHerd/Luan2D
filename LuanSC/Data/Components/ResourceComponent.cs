@@ -53,10 +53,10 @@ public class ResourceComponent : StatComponent, IHudDisplay, IOnTurnStartListene
         Current = max;
     }
 
-    public bool CanSpend(int amount) => Current >= amount;
+    public virtual bool CanSpend(int amount) => Current >= amount;
 
     /// <returns>false if there isn't enough. Nothing is spent in this case.</returns>
-    public bool TrySpend(int amount)
+    public virtual bool TrySpend(int amount)
     {
         if (!CanSpend(amount)) return false;
 

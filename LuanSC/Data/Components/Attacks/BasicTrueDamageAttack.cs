@@ -1,0 +1,63 @@
+﻿using LuanSC.Objects;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace LuanSC.Data.Components.Attacks;
+
+public class BasicTrueDamageAttack : IAbility
+{
+    public string Name => "True Damage Attack";
+
+    public string Description => "Deals true damage to the target.";
+
+    public int Damage { get; private set; }
+
+    public BasicTrueDamageAttack(int damage)
+    {
+        Damage = damage;
+    }
+
+    public void Execute(GameObject owner, IReadOnlyList<GameObject> targets)
+    {
+        // attack first target in targets
+        if (targets.Count == 0)
+        {
+            // if there are no targets, just publish a message (mocking the player) and return
+            GameEvents.Publish(new CombatEvent.GenericMessage($"{owner} tagged the air for {Damage} damage"));
+            return;
+        }
+
+        GameObject target = targets[0];
+        HPComponent healthy = target.GetComponent<HPComponent>();
+
+        // if the target doesn't have a health component, just publish a message (mocking the player) and return
+        if (healthy is null)
+        {
+            GameEvents.Publish(new CombatEvent.GenericMessage($"{owner} tagged the wall for {Damage} damage"));
+            return;
+        }
+
+        // send a damage packet to the targeted health component. The owner's damage buffs are applied in TakeDamage.
+        DamageRecord pain = new()
+        {
+            Attacker = owner,
+            Target = target,
+            Amount = Damage,
+            Type = DamageType.TRUE,
+            Source = Name
+        };
+
+        int dealt = healthy.TakeDamage(pain);
+
+        // pUBLISH A DAMAGE DEALT EVENT
+        var damageDealtEvent = new CombatEvent.DamageDealt
+        (
+            owner,
+            target,
+            dealt,
+            DamageType.TRUE
+        );
+        GameEvents.Publish(damageDealtEvent);
+    }
+}

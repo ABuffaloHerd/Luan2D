@@ -1,4 +1,5 @@
 using LuanSC.Data.Components;
+using LuanSC.Objects.Mechs;
 using LuanSC.Objects.Summons;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,12 @@ namespace LuanSC.Data.Spells;
 
 /// <summary>
 /// Spell factories. Put the results in a SpellbookComponent.
+///
+/// FIGHT FEED MESSAGES:
+///   Set CastMessage in the initialiser to change what the fight feed says when it's cast, e.g.
+///     new SummonSpell(...) { CastMessage = "{caster} rips open a portal and a {summon} crawls out." }
+///   {caster} and {spell} get filled in, summons also get {summon}. Leave it out for the default,
+///   "{caster} casts {spell}!" or "{caster} summoned {summon}." See TitanAplu.
 /// </summary>
 public static class SpellRegistry
 {
@@ -46,5 +53,15 @@ public static class SpellRegistry
     public static ISpell Unsheath(int damage = 50, int spCost = 10, int odCost = 100)
     {
         return new Unsheath(damage, new ResourceCost(ResourceType.SP, spCost), new ResourceCost(ResourceType.OD, odCost));
+    }
+
+    // Luna's overdrive: she pilots the mech until it's destroyed
+    public static ISpell TitanAplu(int odCost = 100)
+    {
+        return new TransformSpell("Titanfall", "Protocol 1: Protect the Pilot", ActionType.SPECIAL, "TITAN APLU", 'T',
+            MechRegistry.TitanAplu, new ResourceCost(ResourceType.GB, odCost))
+        {
+            CastMessage = "Prepare for Titanfall!"
+        };
     }
 }

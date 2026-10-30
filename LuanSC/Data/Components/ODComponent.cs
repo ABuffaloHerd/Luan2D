@@ -28,6 +28,25 @@ namespace LuanSC.Data.Components
 
         protected override string HudText => $"{(int)(Current * 100f / Max)}%";
 
+        // GB is spent first and OD covers the rest, so an OD cost can be paid out of both bars
+        public override bool CanSpend(int amount)
+            => Current + (Owner?.GetResource(ResourceType.GB)?.Current ?? 0) >= amount;
+
+        public override bool TrySpend(int amount)
+        {
+            if (!CanSpend(amount)) return false;
+
+            if (Owner?.GetResource(ResourceType.GB) is ResourceComponent gb)
+            {
+                int fromGb = Math.Min(gb.Current, amount);
+                gb.Current -= fromGb;
+                amount -= fromGb;
+            }
+
+            Current -= amount;
+            return true;
+        }
+
         public void OnDamageTaken(DamageRecord damage)
         {
             int gain = (int)(damage.Amount * ChargeRate);

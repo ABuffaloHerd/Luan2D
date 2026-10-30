@@ -10,6 +10,8 @@ namespace LuanSC.Objects.Summons;
 
 /// <summary>
 /// Summon factories. Each takes the owner so it can be passed straight into TurnAction.Summon.
+/// The "X summoned Y" message isn't set here. Players' summons set it with CastMessage on the spell in SpellRegistry,
+/// AI summons with SummonerBehavior.Message.
 /// </summary>
 public static class SummonRegistry
 {

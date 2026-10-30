@@ -29,7 +29,18 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
         }
     }
 
-    public void OnDamageDealt(DamageRecord damage) 
+    /// <summary>
+    /// Removes every effect. Each one still gets its OnRemove.
+    /// </summary>
+    public void Clear()
+    {
+        foreach (var effect in effects.ToList())
+        {
+            Remove(effect);
+        }
+    }
+
+    public void OnDamageDealt(DamageRecord damage)
     {
         foreach (var effect in effects.OfType<IDamageDealtListener>())
         {
