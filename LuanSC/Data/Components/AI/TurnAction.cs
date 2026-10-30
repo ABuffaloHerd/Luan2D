@@ -21,7 +21,8 @@ public abstract record TurnAction
     /// <param name="Position">Where it appears. Must be walkable.</param>
     /// <param name="Cost">Which action counter it uses, e.g. SKILL for buildings or SPELL for magic.</param>
     /// <param name="Costs">Resources taken from the owner if the summon succeeds, e.g. MP or metal. null is free.</param>
-    public sealed record Summon(Func<GameObject, SummonedGameObject> Create, Point Position, ActionType Cost, IReadOnlyList<ResourceCost> Costs = null) : TurnAction;
+    /// <param name="Message">Fight feed line, {caster} and {summon} get filled in. null uses the default. See ISpell.CastMessage.</param>
+    public sealed record Summon(Func<GameObject, SummonedGameObject> Create, Point Position, ActionType Cost, IReadOnlyList<ResourceCost> Costs = null, string Message = null) : TurnAction;
 
     /// <summary>
     /// Casts a spell that resolves itself (damage, healing...) at an arena position.

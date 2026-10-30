@@ -53,7 +53,8 @@ public partial class CombatScene : IDisposable
                 break;
 
             case CombatEvent.Summoned summoned:
-                fightFeed.AddLine($"{summoned.Owner.Name} summoned {summoned.Summon.Name}.");
+                // default only. Per summon: CastMessage on the spell in SpellRegistry, or SummonerBehavior.Message for AI
+                fightFeed.AddLine(summoned.Message ?? $"{summoned.Owner.Name} summoned {summoned.Summon.Name}.");
                 break;
         }
     }

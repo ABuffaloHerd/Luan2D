@@ -23,6 +23,7 @@ namespace LuanSC.Data
         /// <param name="Target">Who died</param>
         /// <param name="KillingBlow">The hit that did it. Null if they died some other way.</param>
         public sealed record EntityDied(GameObject Target, DamageRecord KillingBlow) : CombatEvent;
-        public sealed record Summoned(GameObject Owner, GameObject Summon) : CombatEvent;
+        /// <param name="Message">Already filled in. Null uses the default.</param>
+        public sealed record Summoned(GameObject Owner, GameObject Summon, string Message = null) : CombatEvent;
     }
 }

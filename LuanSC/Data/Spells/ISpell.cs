@@ -40,6 +40,13 @@ public interface ISpell
     /// </summary>
     Pattern Area { get; }
 
+    /// <summary>
+    /// Fight feed line when it's cast. {caster} and {spell} get filled in, summons also get {summon}.
+    /// {caster} is the name from before the cast, so transforms read right.
+    /// Null uses the default: "{caster} casts {spell}!", or "{caster} summoned {summon}." for summons.
+    /// </summary>
+    string CastMessage { get; }
+
     TurnAction CreateAction(GameObject caster, Point target);
 
     // checks resources and action counters, same idea as IAbility.CanUse

@@ -20,6 +20,7 @@ public class SummonSpell : ISpell
     public Targeting Targeting { get; init; } = Targeting.FACING;
     public int Range { get; init; } = 1;
     public Pattern Area { get; init; } = new Pattern().Mark(0, 0); // summons take one cell
+    public string CastMessage { get; init; }
 
     public Func<GameObject, SummonedGameObject> Create { get; }
 
@@ -33,5 +34,5 @@ public class SummonSpell : ISpell
     }
 
     public TurnAction CreateAction(GameObject caster, Point target)
-        => new TurnAction.Summon(Create, target, Type, Costs);
+        => new TurnAction.Summon(Create, target, Type, Costs, CastMessage?.Replace("{spell}", Name)); // the action doesn't know the spell
 }

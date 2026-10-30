@@ -25,6 +25,7 @@ public static class SpecLookup
         ["Stick"] = WeaponRegistry.Stick,
         ["SentryGun"] = WeaponRegistry.SentryGun,
         ["Hands"] = WeaponRegistry.Hands,
+        ["HydraulicFists"] = WeaponRegistry.HydraulicFists,
     };
 
     private static readonly Dictionary<string, Func<ISpell>> spells = new(StringComparer.OrdinalIgnoreCase)
@@ -34,6 +35,7 @@ public static class SpecLookup
         ["SentryGun"] = () => SpellRegistry.SentryGun(),
         ["Fireball"] = () => SpellRegistry.Fireball(),
         ["Unsheath"] = () => SpellRegistry.Unsheath(),
+        ["TitanAplu"] = () => SpellRegistry.TitanAplu(),
     };
 
     private static readonly Dictionary<string, Func<GameObject, SummonedGameObject>> summons = new(StringComparer.OrdinalIgnoreCase)

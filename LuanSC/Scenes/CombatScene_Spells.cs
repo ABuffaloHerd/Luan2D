@@ -34,8 +34,16 @@ public partial class CombatScene
 
         if (!TryPayCosts(caster, cast.Spell.Costs)) return false;
 
-        GameEvents.Publish(new CombatEvent.GenericMessage($"{caster.Name} casts {cast.Spell.Name}!"));
+        // before Resolve, a transform renames the caster.
+        // This is only the default, change a single spell's message with CastMessage in SpellRegistry.
+        string message = (cast.Spell.CastMessage ?? "{caster} casts {spell}!")
+            .Replace("{caster}", caster.Name)
+            .Replace("{spell}", cast.Spell.Name);
+
+        GameEvents.Publish(new CombatEvent.GenericMessage(message));
         cast.Spell.Resolve(caster, target, this);
+
+        RefreshTurnOrder(); // transforms rename the caster
         return true;
     }
 

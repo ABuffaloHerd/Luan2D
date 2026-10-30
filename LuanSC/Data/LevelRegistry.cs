@@ -28,6 +28,7 @@ public static class LevelRegistry
                 [
                     new(ResourceType.MP) { Max = 100 },
                     new(ResourceType.OD) { Current = 100 }, // starts full so Unsheath can be used straight away
+                    new(ResourceType.GB) { Current = 50 },  // Unsheath takes the 50 GB first, then 50 OD
                 ],
                 ActionLimits = { [ActionType.SPECIAL] = 1 },
                 Weapon = "Throngler",
@@ -101,10 +102,12 @@ public static class LevelRegistry
                 [
                     new(ResourceType.MP) { Max = 50 },
                     new(ResourceType.METAL), // 100 of 200, +25 a turn. sentries cost 100
+                    new(ResourceType.OD) { Current = 100 }, // both full so the mech can be tested straight away
+                    new(ResourceType.GB) { Current = 100 },
                 ],
-                ActionLimits = { [ActionType.SKILL] = 1 }, // one sentry per turn
+                ActionLimits = { [ActionType.SKILL] = 1, [ActionType.SPECIAL] = 1 }, // one sentry and one special per turn
                 Weapon = "Stick",
-                Spells = ["SentryGun"],
+                Spells = ["SentryGun", "TitanAplu"],
             },
 
             new UnitSpec { Kind = UnitType.WALL, Position = new(4, 4) },

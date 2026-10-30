@@ -24,7 +24,8 @@ public partial class CombatScene
         minion.Position = summon.Position;
         AddGameObject(minion);
 
-        GameEvents.Publish(new CombatEvent.Summoned(owner, minion));
+        string message = summon.Message?.Replace("{caster}", owner.Name).Replace("{summon}", minion.Name);
+        GameEvents.Publish(new CombatEvent.Summoned(owner, minion, message));
         return true;
     }
 
