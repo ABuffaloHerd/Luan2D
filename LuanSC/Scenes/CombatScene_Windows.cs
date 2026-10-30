@@ -172,6 +172,39 @@ public partial class CombatScene
         help.Show(true);
     }
 
+    // TODO: add more info to the inspect window, like components and their values, maybe a list of actions the object can take, etc.
+    private void Inspect(GameObject obj)
+    {
+        if (windowInstances > 0) return;
+        Window inspect = new Window(40, 40)
+        {
+            Title = $"Inspecting {obj.Name}",
+            CanDrag = true,
+            UseMouse = true,
+            CloseOnEscKey = true,
+        };
+        windowInstances++;
+        inspect.Closed += (sender, args) =>
+        {
+            windowInstances--;
+            RestoreFocus();
+        };
+        // content area, the tab control adds its headers and border around this
+        int contentWidth = inspect.Width - 2;
+        int contentHeight = inspect.Height - 2;
+        Panel panel = new(contentWidth, contentHeight);
+        panel.Add(new Label($"Name: {obj.Name}") { Position = new(1, 1) });
+        TabControl tabs = new(
+            [new TabItem("Info", panel)],
+            contentWidth, contentHeight)
+        {
+            Position = new(1, 1)
+        };
+        inspect.Controls.Add(tabs);
+        inspect.Position = new((GameSettings.GAME_WIDTH / 2) - (inspect.Width / 2) - 1, (GameSettings.GAME_HEIGHT / 2) - (inspect.Height / 2) + 1);
+        inspect.Show(true);
+    }
+
     private void RestoreFocus()
     {
         this.IsFocused = true;
