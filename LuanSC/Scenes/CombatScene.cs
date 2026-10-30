@@ -58,7 +58,6 @@ namespace LuanSC.Scenes
 
             /// Main surface for game objects. Has the entity manager attached to it.
             surface = new(settings.Width, settings.Height);
-            surface.Position = new(1, 3);
             //surface.FontSize *= settings.FontScale;
             surface.Resize(settings.Width, settings.Height, false);
 
@@ -74,12 +73,15 @@ namespace LuanSC.Scenes
             // created after overlay so it sits on top of it
             effects = surface.GetSadComponent<LayeredSurface>().Create();
 
-            // setup the view rectangle to be the size of the surface
-            view = new(0, 0, surface.Width, surface.Height);
+            // the view is capped at what fits on screen, bigger arenas scroll
+            view = new(0, 0, Math.Min(surface.Width, GameSettings.ARENA_VIEW_SIZE), Math.Min(surface.Height, GameSettings.ARENA_VIEW_SIZE));
 
             // now sync view with the arena and overlay
             surface.ViewWidth = view.Width;
             surface.ViewHeight = view.Height;
+
+            // inside the arena border, under the boss bar. A small arena sits in the middle of the space
+            surface.Position = new(1 + (GameSettings.ARENA_VIEW_SIZE - view.Width) / 2, 3 + (GameSettings.ARENA_VIEW_SIZE - view.Height) / 2);
 
             // zoom, panning and the camera, see CombatScene_Zoom
             HookCamera();
@@ -96,9 +98,17 @@ namespace LuanSC.Scenes
 
             Children.Add(surface);
 
+            // LAYOUT. Everything is placed from these so the arena size can change.
+            // Left: boss bar on top, the arena under it. Right: the sidebar, fight feed on top,
+            // turn order and HUD side by side under it, ticker on the bottom row.
+            const int panelSize = 20; // turn order and HUD, borders not included
+            int sidebarX = GameSettings.ARENA_VIEW_SIZE + 2; // where the sidebar's borders start
+            int feedHeight = GameSettings.GAME_HEIGHT - panelSize - 5; // whatever's left over: 2 borders each for the feed and panels, 1 ticker row
+            int panelY = feedHeight + 3;
+
             // ticker text for humour
-            tickerText = new(45, 1, "ss13tips.txt");
-            tickerText.Position = (45, 46);
+            tickerText = new(GameSettings.SIDEBAR_WIDTH, 1, "ss13tips.txt");
+            tickerText.Position = (sidebarX, GameSettings.GAME_HEIGHT - 1);
 
             Children.Add(tickerText);
 
@@ -113,7 +123,7 @@ namespace LuanSC.Scenes
             //Children.Add(controls);
 
             // setup bossbar console
-            bossBar = new(45, 2);
+            bossBar = new(GameSettings.ARENA_VIEW_SIZE + 2, 2);
             bossBar.Position = new(0, 0);
             Label lb = new("TargetDummy")
             {
@@ -124,8 +134,8 @@ namespace LuanSC.Scenes
             Children.Add(bossBar);
 
             // HUD
-            hud = new(20, 20);
-            hud.Position = new(69, 25);
+            hud = new(panelSize, panelSize);
+            hud.Position = new(sidebarX + GameSettings.SIDEBAR_WIDTH - panelSize - 1, panelY); // against the right edge
             parameters = Border.BorderParameters.GetDefault();
             parameters.AddTitle("HUD");
             new Border(hud, parameters);
@@ -133,14 +143,14 @@ namespace LuanSC.Scenes
             Children.Add(hud);
 
             // FIGHT FEED
-            fightFeed = new FightFeed(43, 22);
-            fightFeed.Position = new(46, 1);
+            fightFeed = new FightFeed(GameSettings.SIDEBAR_WIDTH - 2, feedHeight);
+            fightFeed.Position = new(sidebarX + 1, 1);
 
             Children.Add(fightFeed);
 
             // TURN ORDER
-            order = new(20, 20);
-            order.Position = new(46, 25);
+            order = new(panelSize, panelSize);
+            order.Position = new(sidebarX + 1, panelY);
             parameters = Border.BorderParameters.GetDefault();
             parameters.AddTitle("Turn Order");
             new Border(order, parameters);
