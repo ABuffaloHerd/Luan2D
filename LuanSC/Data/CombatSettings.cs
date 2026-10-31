@@ -57,13 +57,14 @@ namespace LuanSC.Data
 
             GameObject obj = unit.Kind switch
             {
-                UnitType.PLAYER => new PlayerGameObject(glyph, MagicNumbers.GAMEOBJECT_INDEX),
-                UnitType.ENEMY => new EnemyGameObject(glyph, MagicNumbers.GAMEOBJECT_INDEX, SpecLookup.Ai(unit.Ai)),
-                UnitType.WALL => Wall.GenerateWall(unit.Colour),
+                UnitKind.PLAYER => new PlayerGameObject(glyph, MagicNumbers.GAMEOBJECT_INDEX),
+                UnitKind.ENEMY => new EnemyGameObject(glyph, MagicNumbers.GAMEOBJECT_INDEX, SpecLookup.Ai(unit.Ai)),
+                UnitKind.WALL => Wall.GenerateWall(unit.Colour),
                 _ => throw new ArgumentException($"Unknown unit kind {unit.Kind}")
             };
 
             obj.Position = unit.Position;
+            if (unit.UnitType != UnitType.UNKNOWN) obj.UnitType = unit.UnitType; // walls tag themselves
             if (unit.Name is not null) obj.Name = unit.Name;
 
             // start at full health

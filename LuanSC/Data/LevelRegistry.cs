@@ -17,8 +17,9 @@ public static class LevelRegistry
         [
             new UnitSpec
             {
-                Kind = UnitType.PLAYER,
+                Kind = UnitKind.PLAYER,
                 Name = "Hirina",
+                UnitType = UnitType.HUMAN,
                 Glyph = 'H',
                 Colour = Color.Red,
                 Position = new(1, 1),
@@ -48,8 +49,9 @@ public static class LevelRegistry
 
             new UnitSpec
             {
-                Kind = UnitType.ENEMY,
+                Kind = UnitKind.ENEMY,
                 Name = "Target Dummy",
+                UnitType = UnitType.MECHANICAL, // a construct, not alive
                 Glyph = 'T',
                 Colour = Color.White,
                 Position = new(5, 5),
@@ -59,8 +61,9 @@ public static class LevelRegistry
 
             new UnitSpec
             {
-                Kind = UnitType.PLAYER,
+                Kind = UnitKind.PLAYER,
                 Name = "Minako",
+                UnitType = UnitType.HUMAN,
                 Glyph = 'M',
                 Colour = Color.Gray,
                 Position = new(2, 2),
@@ -79,8 +82,9 @@ public static class LevelRegistry
 
             new UnitSpec
             {
-                Kind = UnitType.PLAYER,
+                Kind = UnitKind.PLAYER,
                 Name = "Mariah",
+                UnitType = UnitType.HUMAN,
                 Glyph = 'M',
                 Colour = Color.Blue,
                 Position = new(3, 3),
@@ -94,8 +98,9 @@ public static class LevelRegistry
 
             new UnitSpec
             {
-                Kind = UnitType.PLAYER,
+                Kind = UnitKind.PLAYER,
                 Name = "Luna",
+                UnitType = UnitType.HUMAN,
                 Glyph = 'L',
                 Colour = Color.Purple,
                 Position = new(5, 4),
@@ -113,12 +118,13 @@ public static class LevelRegistry
                 Spells = ["SentryGun", "TitanAplu"],
             },
 
-            new UnitSpec { Kind = UnitType.WALL, Position = new(4, 4) },
+            new UnitSpec { Kind = UnitKind.WALL, Position = new(4, 4) },
 
             new UnitSpec
             {
-                Kind = UnitType.ENEMY,
+                Kind = UnitKind.ENEMY,
                 Name = "Zombie",
+                UnitType = UnitType.UNDEAD,
                 Glyph = 'z',
                 Colour = Color.Green,
                 Position = new(10, 5),
@@ -130,8 +136,9 @@ public static class LevelRegistry
 
             new UnitSpec
             {
-                Kind = UnitType.ENEMY,
+                Kind = UnitKind.ENEMY,
                 Name = "Necromancer",
+                UnitType = UnitType.HUMAN,
                 Glyph = 'N',
                 Colour = Color.Purple,
                 Position = new(15, 10),

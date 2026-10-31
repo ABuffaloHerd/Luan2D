@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LuanSC.Data.Specs;
 
-public enum UnitType
+public enum UnitKind
 {
     PLAYER, // friends
     ENEMY, // kill
@@ -19,7 +19,12 @@ public enum UnitType
 /// </summary>
 public sealed record UnitSpec
 {
-    public UnitType Kind { get; init; } = UnitType.ENEMY;
+    public UnitKind Kind { get; init; } = UnitKind.ENEMY;
+
+    /// <summary>
+    /// Human, undead and so on. Flags, e.g. UnitType.HUMAN | UnitType.UNDEAD.
+    /// </summary>
+    public UnitType UnitType { get; init; } = UnitType.UNKNOWN;
     public string Name { get; init; }
     public char Glyph { get; init; } = '?'; // walls ignore this
     public Color Colour { get; init; } = Color.White;

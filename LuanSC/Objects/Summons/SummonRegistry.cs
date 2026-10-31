@@ -1,3 +1,4 @@
+using LuanSC.Data;
 using LuanSC.Data.Components;
 using LuanSC.Data.Components.AI;
 using LuanSC.Data.Components.Effects;
@@ -20,6 +21,7 @@ public static class SummonRegistry
     {
         SummonedGameObject s = new(new ColoredGlyph(OwnerColor(owner), Color.Transparent, 's'), owner, MagicNumbers.GAMEOBJECT_INDEX);
         s.Name = "Skeleton";
+        s.UnitType = UnitType.UNDEAD;
         s.GetComponent<HPComponent>().Max = 30;
 
         s.AddComponent(new SpeedComponent(80));
@@ -34,6 +36,7 @@ public static class SummonRegistry
     {
         SummonedGameObject f = new(new ColoredGlyph(OwnerColor(owner), Color.Transparent, 'f'), owner, MagicNumbers.GAMEOBJECT_INDEX);
         f.Name = "Familiar";
+        f.UnitType = UnitType.BEAST;
         f.GetComponent<HPComponent>().Max = 40;
 
         f.AddComponent(new SpeedComponent(120));
@@ -48,6 +51,7 @@ public static class SummonRegistry
     {
         SummonedGameObject c = new(new ColoredGlyph(Color.MediumPurple, Color.Transparent, (char)15), owner, MagicNumbers.FLOOR_INDEX);
         c.Name = "Magic Circle";
+        c.UnitType = UnitType.MAGICAL;
         c.GetComponent<HPComponent>().Max = 20;
 
         c.RemoveComponent<CollisionComponent>();
@@ -61,6 +65,7 @@ public static class SummonRegistry
     {
         SummonedGameObject g = new(new ColoredGlyph(OwnerColor(owner), Color.Transparent, ConstructionEffect.UNBUILT_GLYPH), owner, MagicNumbers.GAMEOBJECT_INDEX);
         g.Name = "Sentry Gun";
+        g.UnitType = UnitType.MECHANICAL;
         g.GetComponent<HPComponent>().Max = 50;
 
         g.GetComponent<EffectComponent>().Apply(new ConstructionEffect(hitsRequired, builtGlyph, built =>

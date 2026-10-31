@@ -15,6 +15,11 @@ namespace LuanSC.Objects
         public HashSet<IComponent> Components { get; } = new HashSet<IComponent>();
 
         /// <summary>
+        /// What the unit is: human, undead, mechanical... Flags, so a unit can be several. UNKNOWN until something says otherwise.
+        /// </summary>
+        public UnitType UnitType { get; set; } = UnitType.UNKNOWN;
+
+        /// <summary>
         /// Copy of the glyph this object was created with. Effects like Blink overwrite the live appearance, so read colours from here.
         /// Null for animated objects.
         /// </summary>
