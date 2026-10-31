@@ -105,5 +105,21 @@ namespace LuanSC.Objects.Weapons
             h.Abilities.Add(new BasicAttack(h.Damage));
             return h;
         }
+
+        public static Weapon ManaLens()
+        {
+            Pattern p = new();
+            p.Mark(0, -3);
+            p.Mark(0, -4);
+            p.Mark(0, -5);
+
+            Weapon m = new Weapon("Mana Lens", 20, p);
+            BasicAttack attack = new BasicAttack(m.Damage)
+            {
+                Type = DamageType.MAGIC
+            };
+            m.Abilities.Add(attack);
+            return m;
+        }
     }
 }

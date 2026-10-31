@@ -49,6 +49,12 @@ public static class SpellRegistry
         };
     }
 
+    // single target heal on whoever is under the cursor
+    public static ISpell Heal(int amount = 50, int range = 5, int mpCost = 20)
+    {
+        return new Heal(amount, range, new ResourceCost(ResourceType.MP, mpCost));
+    }
+
     // overdrive special: magic damage across the current weapon's range
     public static ISpell Unsheath(int damage = 50, int spCost = 10, int odCost = 100)
     {

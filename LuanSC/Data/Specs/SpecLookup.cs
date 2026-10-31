@@ -19,33 +19,35 @@ public static class SpecLookup
 {
     private static readonly Dictionary<string, Func<Weapon>> weapons = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["Katana"] = WeaponRegistry.Katana,
-        ["Throngler"] = WeaponRegistry.Throngler,
-        ["Gun"] = WeaponRegistry.Gun,
-        ["Shotgun"] = WeaponRegistry.Shotgun,
-        ["Stick"] = WeaponRegistry.Stick,
-        ["SentryGun"] = WeaponRegistry.SentryGun,
-        ["Hands"] = WeaponRegistry.Hands,
-        ["HydraulicFists"] = WeaponRegistry.HydraulicFists,
+        ["Katana"]          = WeaponRegistry.Katana,
+        ["Throngler"]       = WeaponRegistry.Throngler,
+        ["Gun"]             = WeaponRegistry.Gun,
+        ["Shotgun"]         = WeaponRegistry.Shotgun,
+        ["Stick"]           = WeaponRegistry.Stick,
+        ["SentryGun"]       = WeaponRegistry.SentryGun,
+        ["Hands"]           = WeaponRegistry.Hands,
+        ["HydraulicFists"]  = WeaponRegistry.HydraulicFists,
+        ["ManaLens"]        = WeaponRegistry.ManaLens,
     };
 
     private static readonly Dictionary<string, Func<ISpell>> spells = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["SummonFamiliar"] = SpellRegistry.SummonFamiliar,
-        ["MagicCircle"] = SpellRegistry.MagicCircle,
-        ["SentryGun"] = () => SpellRegistry.SentryGun(),
-        ["Fireball"] = () => SpellRegistry.Fireball(),
-        ["Unsheath"] = () => SpellRegistry.Unsheath(),
-        ["TitanAplu"] = () => SpellRegistry.TitanAplu(),
-        ["Reload"] = () => SpellRegistry.Reload(),
+        ["SummonFamiliar"]  = SpellRegistry.SummonFamiliar,
+        ["MagicCircle"]     = SpellRegistry.MagicCircle,
+        ["SentryGun"]       = () => SpellRegistry.SentryGun(),
+        ["Fireball"]        = () => SpellRegistry.Fireball(),
+        ["Unsheath"]        = () => SpellRegistry.Unsheath(),
+        ["TitanAplu"]       = () => SpellRegistry.TitanAplu(),
+        ["Reload"]          = () => SpellRegistry.Reload(),
+        ["Heal"]            = () => SpellRegistry.Heal(),
     };
 
     private static readonly Dictionary<string, Func<GameObject, SummonedGameObject>> summons = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["Skeleton"] = SummonRegistry.Skeleton,
-        ["Familiar"] = SummonRegistry.Familiar,
-        ["MagicCircle"] = SummonRegistry.MagicCircle,
-        ["SentryGun"] = owner => SummonRegistry.SentryGun(owner),
+        ["Skeleton"]            = SummonRegistry.Skeleton,
+        ["Familiar"]            = SummonRegistry.Familiar,
+        ["MagicCircle"]         = SummonRegistry.MagicCircle,
+        ["SentryGun"]           = owner => SummonRegistry.SentryGun(owner),
     };
 
     private static readonly Dictionary<string, Func<EffectSpec, IEffect>> effects = new(StringComparer.OrdinalIgnoreCase)
@@ -62,12 +64,12 @@ public static class SpecLookup
     // resources a unit doesn't have by default, e.g. Metal on an engineer
     private static readonly Dictionary<ResourceType, Func<ResourceComponent>> resources = new()
     {
-        [ResourceType.MP] = () => new MPComponent(),
-        [ResourceType.SP] = () => new SPComponent(),
-        [ResourceType.OD] = () => new ODComponent(),
-        [ResourceType.GB] = () => new GBComponent(),
-        [ResourceType.METAL] = () => ResourceRegistry.Metal(),
-        [ResourceType.AMMO] = () => ResourceRegistry.Ammo(),
+        [ResourceType.MP]       = () => new MPComponent(),
+        [ResourceType.SP]       = () => new SPComponent(),
+        [ResourceType.OD]       = () => new ODComponent(),
+        [ResourceType.GB]       = () => new GBComponent(),
+        [ResourceType.METAL]    = () => ResourceRegistry.Metal(),
+        [ResourceType.AMMO]     = () => ResourceRegistry.Ammo(),
     };
 
     public static Weapon Weapon(string id) => Find(weapons, id, "weapon")();

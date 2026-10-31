@@ -10,9 +10,9 @@ namespace LuanSC.Data.Components.Attacks
     public class BasicAttack : IAbility
     {
         public string Name => "Slashing Attack";
-        public string Description => "A basic slashing attack that deals physical damage to a single target.";
+        public string Description => "A basic slashing attack that deals damage to a single target. Type configurable.";
         public int Damage { get; private set; }
-        public DamageType Type => DamageType.PHYSICAL;
+        public DamageType Type { get; set; } = DamageType.PHYSICAL;
 
         public BasicAttack(int damage)
         {

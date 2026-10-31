@@ -118,6 +118,28 @@ public static class LevelRegistry
                 Spells = ["SentryGun", "TitanAplu"],
             },
 
+            new UnitSpec
+            {
+                Kind = UnitKind.PLAYER,
+                Name = "Yin Ling",
+                UnitType = UnitType.HUMAN,
+                Glyph = 'Y',
+                Colour = Color.Cyan,
+                Position = new(3, 5),
+                Hp = 200,
+                Speed = 70,
+                Resources =
+                [
+                    new(ResourceType.MP) { Max = 300 },
+                    new(ResourceType.SP) { Max = 100 },
+                    new(ResourceType.OD), // starts full so Unsheath can be used straight away
+                    new(ResourceType.GB),  // Unsheath takes the 50 GB first, then 50 OD
+                ],
+                ActionLimits = { [ActionType.SPECIAL] = 1 , [ActionType.SPELL] = 2 },
+                Weapon = "ManaLens",
+                Spells = ["Heal"],
+            },
+
             new UnitSpec { Kind = UnitKind.WALL, Position = new(4, 4) },
 
             new UnitSpec
