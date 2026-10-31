@@ -57,6 +57,7 @@ public static class SpecLookup
         ["Weaken"] = e => new WeakenEffect(e.Duration, e.Value),
         ["Vulnerable"] = e => new VulnerableEffect(e.Duration, e.Value),
         ["Armour"] = e => new ArmourEffect(e.Duration, e.Value),
+        ["MagicArmour"] = e => new MagicArmourEffect(e.Duration, e.Value),
         ["Barrier"] = e => new BarrierEffect { Duration = e.Duration },
         ["Elemental"] = e => new ElementalModifierEffect(e.Duration, e.Element, e.Value),
     };

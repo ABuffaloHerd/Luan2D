@@ -21,6 +21,16 @@ namespace LuanSC.Data.Components
         public int RES { get; set; } = 0; // Magical Resistance
 
         /// <summary>
+        /// DEF plus bonuses from effects such as Armour. This is what physical hits are reduced by.
+        /// </summary>
+        public int TotalDEF => DEF + (Owner?.GetComponent<EffectComponent>()?.BonusDEF ?? 0);
+
+        /// <summary>
+        /// RES plus bonuses from effects. This is what magic hits are reduced by.
+        /// </summary>
+        public int TotalRES => RES + (Owner?.GetComponent<EffectComponent>()?.BonusRES ?? 0);
+
+        /// <summary>
         /// The owner's own elemental traits, in percent: positive is a weakness, negative a resistance.
         /// e.g. { [Element.Electric] = 50, [Element.Fire] = -25 }. Temporary ones go in ElementalModifierEffect instead.
         /// </summary>
@@ -54,7 +64,7 @@ namespace LuanSC.Data.Components
         /// <summary>
         /// Take damage. Every source of damage goes through here, so this is where all the effects get their say:
         ///   1. the attacker's effects (OnOutgoingDamage), e.g. a damage buff
-        ///   2. DEF or RES
+        ///   2. TotalDEF or TotalRES, base stat plus any IStatModifier effects
         ///   3. the owner's ElementModifiers, multiplied together for hits with several elements
         ///   4. the owner's effects (OnIncomingDamage), e.g. barrier or an ElementalModifierEffect
         /// Attacks and spells just send the base damage.
@@ -75,8 +85,8 @@ namespace LuanSC.Data.Components
 
             int taken = damage.Type switch
             {
-                DamageType.PHYSICAL => damage.Amount - DEF,                     // Flat reduction
-                DamageType.MAGIC => (int)(damage.Amount * (1 - RES / 100f)), // Percentage reduction   
+                DamageType.PHYSICAL => damage.Amount - TotalDEF,                     // Flat reduction
+                DamageType.MAGIC => (int)(damage.Amount * (1 - TotalRES / 100f)), // Percentage reduction   
                 DamageType.TRUE => damage.Amount,                           // fuck that's gotta hurt
                 _ => damage.Amount,                           // how did we get here
             };

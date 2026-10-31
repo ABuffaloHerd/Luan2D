@@ -38,6 +38,16 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
     /// </summary>
     public IEnumerable<T> GetAll<T>() where T : IEffect => Effects.OfType<T>();
 
+    /// <summary>
+    /// DEF added by active stat modifiers, e.g. Armour.
+    /// </summary>
+    public int BonusDEF => Effects.OfType<IStatModifier>().Sum(m => m.DEF);
+
+    /// <summary>
+    /// RES added by active stat modifiers.
+    /// </summary>
+    public int BonusRES => Effects.OfType<IStatModifier>().Sum(m => m.RES);
+
     public bool Has<T>() where T : IEffect => Effects.OfType<T>().Any();
 
     /// <summary>
