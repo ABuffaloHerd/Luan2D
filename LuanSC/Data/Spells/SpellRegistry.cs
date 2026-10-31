@@ -70,7 +70,8 @@ public static class SpellRegistry
         return new TransformSpell("Titanfall", "Protocol 3: Protect the Pilot", ActionType.SPECIAL, "TITAN APLU", 'T',
             MechRegistry.TitanAplu, new ResourceCost(ResourceType.GB, odCost))
         {
-            CastMessage = "Prepare for Titanfall!"
+            CastMessage = "Prepare for Titanfall!",
+            FormType = UnitType.MECHANICAL // back to human when she ejects
         };
     }
 }
