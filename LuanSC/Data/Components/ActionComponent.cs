@@ -45,7 +45,7 @@ public class ActionComponent : IComponent, IHudDisplay
     public IEnumerable<ActionType> Types => slots.Keys;
 
     /// <summary>
-    /// Standard setup: speed-based movement and one attack.
+    /// Standard setup: speed-based movement, one attack and one skill. Change them per unit with ActionLimits.
     /// </summary>
     public static ActionComponent CreateDefault()
     {
@@ -57,7 +57,8 @@ public class ActionComponent : IComponent, IHudDisplay
                     ? Math.Max(1, speed.Speed / SPEED_PER_MOVE)
                     : 0;
             })
-            .Configure(ActionType.ATTACK, 1);
+            .Configure(ActionType.ATTACK, 1)
+            .Configure(ActionType.SKILL, 1);
     }
 
     public ActionComponent Configure(ActionType type, int max)

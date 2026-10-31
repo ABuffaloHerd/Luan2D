@@ -37,6 +37,7 @@ public static class SpecLookup
         ["Fireball"] = () => SpellRegistry.Fireball(),
         ["Unsheath"] = () => SpellRegistry.Unsheath(),
         ["TitanAplu"] = () => SpellRegistry.TitanAplu(),
+        ["Reload"] = () => SpellRegistry.Reload(),
     };
 
     private static readonly Dictionary<string, Func<GameObject, SummonedGameObject>> summons = new(StringComparer.OrdinalIgnoreCase)
@@ -65,6 +66,7 @@ public static class SpecLookup
         [ResourceType.OD] = () => new ODComponent(),
         [ResourceType.GB] = () => new GBComponent(),
         [ResourceType.METAL] = () => ResourceRegistry.Metal(),
+        [ResourceType.AMMO] = () => ResourceRegistry.Ammo(),
     };
 
     public static Weapon Weapon(string id) => Find(weapons, id, "weapon")();

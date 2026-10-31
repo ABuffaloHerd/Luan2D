@@ -20,4 +20,11 @@ public static class ResourceRegistry
         metal.Current = start;
         return metal;
     }
+
+    // Shells, bullets, whatever the weapon eats. Starts full, only Reload refills it.
+    public static ResourceComponent Ammo(int max = 2)
+    {
+        // HUD labels are 3 characters, AMMO doesn't fit
+        return new ResourceComponent(ResourceType.AMMO, "Ammo", "A", Color.DarkGreen, max);
+    }
 }

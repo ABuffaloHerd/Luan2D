@@ -1,4 +1,5 @@
 ﻿using LuanSC.Data;
+using LuanSC.Data.Components;
 using LuanSC.Data.Components.Attacks;
 using System;
 using System.Collections.Generic;
@@ -57,6 +58,7 @@ namespace LuanSC.Objects.Weapons
 
             Weapon s = new Weapon("Shotgun", 6, p);
             s.Abilities.Add(new BlastAttack(s.Damage));
+            s.Costs.Add(new ResourceCost(ResourceType.AMMO, 1)); // a shell per shot, Reload to refill
             return s;
         }
 

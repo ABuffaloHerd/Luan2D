@@ -44,6 +44,12 @@ public abstract class CastSpell : ISpell
     public TurnAction CreateAction(GameObject caster, Point target) => new TurnAction.Cast(this, target);
 
     /// <summary>
+    /// Checked before anything is paid. Return a fight feed line to refuse the cast, or null to let it through.
+    /// The action and costs aren't spent when it's refused.
+    /// </summary>
+    public virtual string Refusal(GameObject caster) => null;
+
+    /// <summary>
     /// Applies the spell. Costs are already paid and the target is already in range.
     /// </summary>
     /// <param name="target">The arena cell that was picked (or the facing cell for FACING spells).</param>

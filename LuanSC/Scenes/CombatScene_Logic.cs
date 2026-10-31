@@ -221,8 +221,7 @@ namespace LuanSC.Scenes
                     break;
 
                 case TurnAction.Attack:
-                    Attack(actor);
-                    success = true;
+                    success = Attack(actor);
                     break;
 
                 case TurnAction.Summon summon:

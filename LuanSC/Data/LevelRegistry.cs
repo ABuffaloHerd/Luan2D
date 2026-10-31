@@ -71,7 +71,9 @@ public static class LevelRegistry
                 [
                     new(ResourceType.MP) { Max = 50 },
                     new(ResourceType.SP) { Max = 75 },
+                    new(ResourceType.AMMO), // 2 shells
                 ],
+                Spells = ["Reload"],
                 Effects = [new("Barrier", Duration: 1)],
             },
 

@@ -55,10 +55,19 @@ public static class SpellRegistry
         return new Unsheath(damage, new ResourceCost(ResourceType.SP, spCost), new ResourceCost(ResourceType.OD, odCost));
     }
 
+    // free skill, refills ammo. Refused when already full
+    public static ISpell Reload()
+    {
+        return new Reload
+        {
+            CastMessage = "{caster} reloads."
+        };
+    }
+
     // Luna's overdrive: she pilots the mech until it's destroyed
     public static ISpell TitanAplu(int odCost = 100)
     {
-        return new TransformSpell("Titanfall", "Protocol 1: Protect the Pilot", ActionType.SPECIAL, "TITAN APLU", 'T',
+        return new TransformSpell("Titanfall", "Protocol 3: Protect the Pilot", ActionType.SPECIAL, "TITAN APLU", 'T',
             MechRegistry.TitanAplu, new ResourceCost(ResourceType.GB, odCost))
         {
             CastMessage = "Prepare for Titanfall!"

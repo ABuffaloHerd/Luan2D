@@ -62,20 +62,25 @@ namespace LuanSC.Scenes
             }
         }
 
-        public void Attack(GameObject attacker)
+        /// <returns>false if the weapon's costs couldn't be paid, so Execute doesn't spend the attack.</returns>
+        public bool Attack(GameObject attacker)
         {
             // bad block of null checks
-            if (attacker is null) return;
-            if (attacker.GetComponent<WeaponComponent>() is null) return; // you don't even have fists??
+            if (attacker is null) return true;
+            if (attacker.GetComponent<WeaponComponent>() is null) return true; // you don't even have fists??
 
             // First use the attacker's weapon range to find targets
             Weapon weapon = attacker.GetComponent<WeaponComponent>().Weapon;
-            if (weapon is null) return; // you have a weapon component but not a weapon?? how did you get this far tbh
+            if (weapon is null) return true; // you have a weapon component but not a weapon?? how did you get this far tbh
+
+            // ammo and the like. One payment per attack, not per ability
+            if (!TryPayCosts(attacker, weapon.Costs)) return false;
 
             var targets = FindTargets(attacker, weapon.Range);
-            
+
             // now we can execute order 66
             UseAbilities(attacker, weapon.Abilities, targets);
+            return true;
         }
     }
 }

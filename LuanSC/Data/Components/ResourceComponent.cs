@@ -11,7 +11,8 @@ public enum ResourceType
     METAL,
     SP,
     OD,
-    GB
+    GB,
+    AMMO
     // add more here, then a factory in ResourceRegistry
 }
 
