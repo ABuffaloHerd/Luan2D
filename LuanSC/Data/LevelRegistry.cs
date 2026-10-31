@@ -66,6 +66,7 @@ public static class LevelRegistry
                 Position = new(2, 2),
                 Hp = 100,
                 Speed = 90,
+                Weapon = "Shotgun",
                 Resources =
                 [
                     new(ResourceType.MP) { Max = 50 },

@@ -44,6 +44,22 @@ namespace LuanSC.Objects.Weapons
             return g;
         }
 
+        // Hits everything in range
+        public static Weapon Shotgun()
+        {
+            Pattern p = new();
+            p.Mark(0, -1);
+            p.Mark(1, -1);
+            p.Mark(-1, -1);
+            p.Mark(0, -2);
+            p.Mark(1, -2);
+            p.Mark(-1, -2);
+
+            Weapon s = new Weapon("Shotgun", 6, p);
+            s.Abilities.Add(new BlastAttack(s.Damage));
+            return s;
+        }
+
         public static Weapon Stick()
         {
             Pattern p = new();
