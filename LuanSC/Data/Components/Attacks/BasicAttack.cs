@@ -12,6 +12,7 @@ namespace LuanSC.Data.Components.Attacks
         public string Name => "Slashing Attack";
         public string Description => "A basic slashing attack that deals physical damage to a single target.";
         public int Damage { get; private set; }
+        public DamageType Type => DamageType.PHYSICAL;
 
         public BasicAttack(int damage)
         {
@@ -44,7 +45,7 @@ namespace LuanSC.Data.Components.Attacks
                 Attacker = owner,
                 Target = target,
                 Amount = Damage,
-                Type = DamageType.PHYSICAL,
+                Type = Type,
                 Source = Name
             };
 
@@ -56,7 +57,7 @@ namespace LuanSC.Data.Components.Attacks
                 owner,
                 target,
                 dealt,
-                DamageType.PHYSICAL,
+                Type,
                 pain.Element
             );
             GameEvents.Publish(damageDealtEvent);

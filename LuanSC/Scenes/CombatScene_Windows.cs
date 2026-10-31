@@ -5,8 +5,10 @@ using SadConsole.Instructions;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
 using LuanSC.Data.Components;
+using LuanSC.Data.Components.Effects;
 using LuanSC.Data.Spells;
 using LuanSC.Objects;
+using LuanSC.Objects.Weapons;
 
 namespace LuanSC.Scenes;
 
@@ -193,7 +195,7 @@ public partial class CombatScene
         int contentWidth = inspect.Width - 2;
         int contentHeight = inspect.Height - 2;
         Panel panel = new(contentWidth, contentHeight);
-        panel.Add(new Label($"Name: {obj.Name}") { Position = new(1, 1) });
+        BuildInfoPanel(panel, obj, contentWidth - 2);
         TabControl tabs = new(
             [new TabItem("Info", panel)],
             contentWidth, contentHeight)
@@ -203,6 +205,69 @@ public partial class CombatScene
         inspect.Controls.Add(tabs);
         inspect.Position = new((GameSettings.GAME_WIDTH / 2) - (inspect.Width / 2) - 1, (GameSettings.GAME_HEIGHT / 2) - (inspect.Height / 2) + 1);
         inspect.Show(true);
+    }
+
+    /// <summary>
+    /// Name, type, HP, weapon and effects. Lines for things the object doesn't have (HP on a wall, a weapon) are left out.
+    /// A snapshot, it doesn't update while the window is open.
+    /// </summary>
+    
+    private static int width_offset = 2; // subtracted from width to make the info panel fit inside the window. SadConsole doesn't have a way to get the inner width of a window, so this is a workaround.
+    private static void BuildInfoPanel(Panel panel, GameObject obj, int width)
+    {
+        int y = 1;
+        width -= width_offset;
+        void Line(string text, Color? colour = null)
+        {
+            panel.Add(new Label(width) { DisplayText = text, Position = new(1, y), TextColor = colour ?? Color.White });
+            y++;
+        }
+
+        Line($"Name: {obj.Name}");
+        Line($"Type: {obj.UnitType.ToString().Replace(", ", "/")}");
+
+        HPComponent hp = obj.GetComponent<HPComponent>();
+        if (hp is not null)
+            Line($"HP  : {hp.Current} / {hp.Max}", Color.Red);
+
+        Weapon weapon = obj.GetComponent<WeaponComponent>()?.Weapon;
+        if (weapon is not null)
+        {
+            string costs = weapon.Costs.Count > 0
+                ? ", " + string.Join(", ", weapon.Costs.Select(c => $"{c.Amount} {c.Type}"))
+                : "";
+
+            // each ability has its own type, e.g. "PHYSICAL" or "PHYSICAL/TRUE". Plain "dmg" if it has no abilities
+            string types = string.Join("/", weapon.Abilities.Select(a => a.Type).Distinct());
+            if (types.Length == 0) types = "dmg";
+
+            Line($"Weapon: {weapon.Name} ({weapon.Damage} {types}{costs})", Color.Orange);
+        }
+
+        EffectComponent effects = obj.GetComponent<EffectComponent>();
+        if (effects is null) return;
+
+        y++;
+        Line("Effects:");
+
+        List<IEffect> active = effects.Effects.ToList();
+        if (active.Count == 0)
+        {
+            Line(" None", Color.Gray);
+            return;
+        }
+
+        foreach (IEffect effect in active)
+        {
+            string duration = effect.Duration < 0 ? "permanent" : $"{effect.Duration} turn{(effect.Duration == 1 ? "" : "s")}";
+
+            // buffs green, debuffs red, anything else plain
+            Color colour = effect.Tags.HasFlag(EffectTag.Buff) ? Color.Green
+                : effect.Tags.HasFlag(EffectTag.Debuff) ? Color.Red
+                : Color.White;
+
+            Line($" {effect.Name} ({duration})", colour);
+        }
     }
 
     private void RestoreFocus()

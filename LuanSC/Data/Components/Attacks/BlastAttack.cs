@@ -15,6 +15,7 @@ public class BlastAttack : IAbility
     public string Description => "indiscriminately whacks everything it can ";
 
     public int Damage { get; private set; }
+    public DamageType Type => DamageType.PHYSICAL;
 
     public BlastAttack(int damage)
     {
@@ -44,14 +45,14 @@ public class BlastAttack : IAbility
                 Attacker = owner,
                 Target = target,
                 Amount = Damage,
-                Type = DamageType.PHYSICAL,
+                Type = Type,
                 Source = Name
             };
 
             int dealt = healthy.TakeDamage(pain);
             hitAnything = true;
 
-            GameEvents.Publish(new CombatEvent.DamageDealt(owner, target, dealt, DamageType.PHYSICAL, pain.Element));
+            GameEvents.Publish(new CombatEvent.DamageDealt(owner, target, dealt, Type, pain.Element));
         }
 
         // only walls in range
