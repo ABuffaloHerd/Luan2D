@@ -37,6 +37,22 @@ public class ResourceComponent : StatComponent, IHudDisplay, IOnTurnStartListene
     public Color? TextColor { get; set; }
     public int HudOrder { get; set; } = 40;
 
+    // the empty part of the HUD bar, see HudBar. Null looks like every other bar
+    public int? TrackGlyph { get; set; }
+    public Color? TrackColor { get; set; }
+    public Color? TrackBackground { get; set; }
+
+    /// <summary>
+    /// Gives the bar HudBar.DimTrack from its BarColor. Call after setting BarColor.
+    /// </summary>
+    public void UseDimTrack()
+    {
+        (int glyph, Color color, Color background) = HudBar.DimTrack(BarColor);
+        TrackGlyph = glyph;
+        TrackColor = color;
+        TrackBackground = background;
+    }
+
     /// <summary>
     /// Added at the start of the owner's turn. Can be negative for things that drain.
     /// </summary>
@@ -78,6 +94,7 @@ public class ResourceComponent : StatComponent, IHudDisplay, IOnTurnStartListene
 
     public IEnumerable<HudBar> GetHudBars()
     {
-        yield return new HudBar(HudOrder, $"{Label,-3}:", LabelColor, BarColor, HudBar.Ratio(Current, Max), HudText, TextColor);
+        yield return new HudBar(HudOrder, $"{Label,-3}:", LabelColor, BarColor, HudBar.Ratio(Current, Max), HudText, TextColor,
+            TrackGlyph, TrackColor, TrackBackground);
     }
 }

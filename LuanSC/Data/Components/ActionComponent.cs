@@ -79,10 +79,18 @@ public class ActionComponent : IComponent, IHudDisplay
     public IEnumerable<HudBar> GetHudBars()
     {
         if (IsLimited(ActionType.MOVE))
-            yield return new HudBar(50, "MV :", Color.Green, Color.Green, HudBar.Ratio(Remaining(ActionType.MOVE), Max(ActionType.MOVE)), $"{Remaining(ActionType.MOVE)} / {Max(ActionType.MOVE)}", Color.Black);
+        {
+            var track = HudBar.DimTrack(Color.Green);
+            yield return new HudBar(50, "MV :", Color.Green, Color.Green, HudBar.Ratio(Remaining(ActionType.MOVE), Max(ActionType.MOVE)), $"{Remaining(ActionType.MOVE)} / {Max(ActionType.MOVE)}", Color.Black,
+                track.Glyph, track.Color, track.Background);
+        }
 
         if (IsLimited(ActionType.ATTACK))
-            yield return new HudBar(51, "AT :", Color.Orange, Color.Orange, HudBar.Ratio(Remaining(ActionType.ATTACK), Max(ActionType.ATTACK)), $"{Remaining(ActionType.ATTACK)} / {Max(ActionType.ATTACK)}", Color.Black);
+        {
+            var track = HudBar.DimTrack(Color.Orange);
+            yield return new HudBar(51, "AT :", Color.Orange, Color.Orange, HudBar.Ratio(Remaining(ActionType.ATTACK), Max(ActionType.ATTACK)), $"{Remaining(ActionType.ATTACK)} / {Max(ActionType.ATTACK)}", Color.Black,
+                track.Glyph, track.Color, track.Background);
+        }
     }
 
     public int Max(ActionType type) => slots.TryGetValue(type, out Slot slot) ? slot.Max : int.MaxValue;

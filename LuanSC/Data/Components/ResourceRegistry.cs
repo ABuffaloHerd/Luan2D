@@ -6,6 +6,8 @@ namespace LuanSC.Data.Components;
 
 /// <summary>
 /// Resource factories. MP lives in MPComponent since every caster has it.
+/// char 176 for 1/3 gradient
+/// char 177 for 2/3 gradient
 /// </summary>
 public static class ResourceRegistry
 {
@@ -15,7 +17,12 @@ public static class ResourceRegistry
         ResourceComponent metal = new(ResourceType.METAL, "Metal", "MT", Color.Silver, max)
         {
             TextColor = Color.Black,
-            RegenPerTurn = regen
+            RegenPerTurn = regen,
+
+            // grey track so the black numbers stay readable once the bar runs low
+            TrackGlyph = 176,
+            TrackColor = Color.DimGray,
+            TrackBackground = Color.Gray,
         };
         metal.Current = start;
         return metal;
