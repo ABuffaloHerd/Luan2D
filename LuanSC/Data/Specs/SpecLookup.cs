@@ -56,6 +56,7 @@ public static class SpecLookup
         ["Vulnerable"] = e => new VulnerableEffect(e.Duration, e.Value),
         ["Armour"] = e => new ArmourEffect(e.Duration, e.Value),
         ["Barrier"] = e => new BarrierEffect { Duration = e.Duration },
+        ["Elemental"] = e => new ElementalModifierEffect(e.Duration, e.Element, e.Value),
     };
 
     // resources a unit doesn't have by default, e.g. Metal on an engineer

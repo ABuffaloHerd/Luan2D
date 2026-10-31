@@ -7,7 +7,7 @@ namespace LuanSC.Data
 {
     public abstract record CombatEvent
     {
-        public sealed record DamageDealt(GameObject Attacker, GameObject Target, int Amount, DamageType Type) : CombatEvent;
+        public sealed record DamageDealt(GameObject Attacker, GameObject Target, int Amount, DamageType Type, Element Element = Element.None) : CombatEvent;
 
         /// <summary>
         /// When damage is blocked

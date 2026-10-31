@@ -51,7 +51,7 @@ public class BlastAttack : IAbility
             int dealt = healthy.TakeDamage(pain);
             hitAnything = true;
 
-            GameEvents.Publish(new CombatEvent.DamageDealt(owner, target, dealt, DamageType.PHYSICAL));
+            GameEvents.Publish(new CombatEvent.DamageDealt(owner, target, dealt, DamageType.PHYSICAL, pain.Element));
         }
 
         // only walls in range

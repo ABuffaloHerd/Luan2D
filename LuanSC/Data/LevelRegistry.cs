@@ -125,6 +125,7 @@ public static class LevelRegistry
                 Hp = 50,
                 Speed = 50,
                 Ai = new("Zombie"),
+                ElementModifiers = { [Element.Fire] = 50 }, // weak to fire
             },
 
             new UnitSpec

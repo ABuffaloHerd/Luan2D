@@ -73,6 +73,12 @@ namespace LuanSC.Data
                 health.Current = hp;
             }
 
+            if (obj.GetComponent<HPComponent>() is HPComponent hpComponent)
+            {
+                foreach ((Element element, int percent) in unit.ElementModifiers)
+                    hpComponent.ElementModifiers[element] = percent;
+            }
+
             if (unit.Speed is int speed && obj.GetComponent<SpeedComponent>() is SpeedComponent speedComponent)
                 speedComponent.Speed = speed;
 

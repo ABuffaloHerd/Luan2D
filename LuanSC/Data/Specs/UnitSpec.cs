@@ -41,6 +41,11 @@ public sealed record UnitSpec
     /// </summary>
     public Dictionary<ActionType, int> ActionLimits { get; init; } = new();
 
+    /// <summary>
+    /// Built-in elemental traits in percent: positive is a weakness, negative a resistance, e.g. [Element.Fire] = -50.
+    /// </summary>
+    public Dictionary<Element, int> ElementModifiers { get; init; } = new();
+
     public string Weapon { get; init; }
 
     /// <summary>
@@ -86,9 +91,16 @@ public sealed record ResourceSpec(ResourceType Type)
 }
 
 /// <summary>
-/// Value is whatever number the effect takes: damage for Poison, percent for Empower, Weaken and Vulnerable, amount for Armour.
+/// Value is whatever number the effect takes: damage for Poison, percent for Empower, Weaken and Vulnerable, amount for Armour,
+/// percent for Elemental (positive weakness, negative resistance).
 /// </summary>
-public sealed record EffectSpec(string Id, int Duration, int Value = 0);
+public sealed record EffectSpec(string Id, int Duration, int Value = 0)
+{
+    /// <summary>
+    /// Only used by Elemental for now, e.g. new("Elemental", -1, 50) { Element = Element.Electric }.
+    /// </summary>
+    public Element Element { get; init; }
+}
 
 /// <summary>
 /// Minion is a summon ID, only used by Summoner.

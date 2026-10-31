@@ -11,6 +11,7 @@ namespace LuanSC.Data.Components.Effects;
 public class ArmourEffect(int duration, int amount) : DamageModifierEffect(duration)
 {
     public override string Name => "Armour";
+    public override EffectTag Tags => EffectTag.Defensive | EffectTag.Buff;
     public int Amount { get; set; } = amount;
 
     public override DamageRecord OnIncomingDamage(DamageRecord damage)

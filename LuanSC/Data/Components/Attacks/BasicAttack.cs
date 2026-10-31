@@ -56,7 +56,8 @@ namespace LuanSC.Data.Components.Attacks
                 owner,
                 target,
                 dealt,
-                DamageType.PHYSICAL
+                DamageType.PHYSICAL,
+                pain.Element
             );
             GameEvents.Publish(damageDealtEvent);
         }

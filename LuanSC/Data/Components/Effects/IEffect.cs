@@ -11,6 +11,12 @@ public interface IEffect : IComponent
 
     bool IsExpired => Duration == 0;
 
+    // what kind of effect this is, for EffectComponent.HasTag. Untagged effects can still be found by type with Has<T>.
+    EffectTag Tags => EffectTag.None;
+
+    // optional, e.g. Fire for a burn. For EffectComponent.HasElement.
+    Element Element => Element.None;
+
     // if implemented, this will be called when the effect is applied to the owner. This allows the effect to hurt the owner, heal the owner, or do anything else it wants when applied.
     void OnApply();
 

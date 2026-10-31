@@ -9,6 +9,7 @@ namespace LuanSC.Data.Components.Effects;
 public class PoisonEffect : IEffect
 {
     public string Name => "Poison";
+    public EffectTag Tags => EffectTag.DoT | EffectTag.Debuff;
     public int Duration { get; set; }
     public int Damage { get; set; }
 
@@ -57,7 +58,7 @@ public class PoisonEffect : IEffect
         };
 
         int taken = Owner.GetComponent<HPComponent>().TakeDamage(damage);
-        GameEvents.Publish(new CombatEvent.DamageDealt(null, Owner, taken, damage.Type)); // what got through RES and barriers, not the raw poison
+        GameEvents.Publish(new CombatEvent.DamageDealt(null, Owner, taken, damage.Type, damage.Element)); // what got through RES and barriers, not the raw poison
         GameEvents.Publish(new CombatEvent.GenericMessage($"{Duration} turns remaining."));
     }
 }

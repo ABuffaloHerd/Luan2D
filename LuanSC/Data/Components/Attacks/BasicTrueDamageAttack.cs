@@ -56,7 +56,8 @@ public class BasicTrueDamageAttack : IAbility
             owner,
             target,
             dealt,
-            DamageType.TRUE
+            DamageType.TRUE,
+            pain.Element
         );
         GameEvents.Publish(damageDealtEvent);
     }

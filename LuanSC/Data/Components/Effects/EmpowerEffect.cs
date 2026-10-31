@@ -11,6 +11,7 @@ namespace LuanSC.Data.Components.Effects;
 public class EmpowerEffect(int duration, int percent) : DamageModifierEffect(duration)
 {
     public override string Name => "Empower";
+    public override EffectTag Tags => EffectTag.Offensive | EffectTag.Buff;
     public int Percent { get; set; } = percent;
 
     public override DamageRecord OnOutgoingDamage(DamageRecord damage) => Modify(damage, Scale(damage.Amount, Percent));

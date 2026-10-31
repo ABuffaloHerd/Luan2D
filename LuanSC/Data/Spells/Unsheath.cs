@@ -56,7 +56,7 @@ public class Unsheath : CastSpell
 
             int dealt = hp.TakeDamage(pain);
 
-            GameEvents.Publish(new CombatEvent.DamageDealt(caster, obj, dealt, DamageType.MAGIC));
+            GameEvents.Publish(new CombatEvent.DamageDealt(caster, obj, dealt, DamageType.MAGIC, pain.Element));
         }
     }
 }

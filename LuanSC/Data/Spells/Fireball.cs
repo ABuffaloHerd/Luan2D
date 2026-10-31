@@ -50,12 +50,13 @@ public class Fireball : CastSpell
                 Target = obj,
                 Amount = Damage,
                 Type = DamageType.MAGIC,
+                Element = Element.Fire,
                 Source = Name
             };
 
             int dealt = hp.TakeDamage(pain);
 
-            GameEvents.Publish(new CombatEvent.DamageDealt(caster, obj, dealt, DamageType.MAGIC));
+            GameEvents.Publish(new CombatEvent.DamageDealt(caster, obj, dealt, DamageType.MAGIC, pain.Element));
         }
     }
 }

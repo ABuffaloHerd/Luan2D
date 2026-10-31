@@ -19,6 +19,12 @@ namespace LuanSC.Data.Components
         public int DEF { get; set; } = 0; // Physical Defense
         public int RES { get; set; } = 0; // Magical Resistance
 
+        /// <summary>
+        /// The owner's own elemental traits, in percent: positive is a weakness, negative a resistance.
+        /// e.g. { [Element.Electric] = 50, [Element.Fire] = -25 }. Temporary ones go in ElementalModifierEffect instead.
+        /// </summary>
+        public Dictionary<Element, int> ElementModifiers { get; } = new();
+
         public bool IsAlive => Current > 0;
 
         /// <summary>
@@ -48,7 +54,8 @@ namespace LuanSC.Data.Components
         /// Take damage. Every source of damage goes through here, so this is where all the effects get their say:
         ///   1. the attacker's effects (OnOutgoingDamage), e.g. a damage buff
         ///   2. DEF or RES
-        ///   3. the owner's effects (OnIncomingDamage), e.g. barrier
+        ///   3. the owner's ElementModifiers, multiplied together for hits with several elements
+        ///   4. the owner's effects (OnIncomingDamage), e.g. barrier or an ElementalModifierEffect
         /// Attacks and spells just send the base damage.
         /// </summary>
         /// <param name="damage">the amount of hurt to receive</param>
@@ -69,6 +76,22 @@ namespace LuanSC.Data.Components
                 DamageType.TRUE => damage.Amount,                           // fuck that's gotta hurt
                 _ => damage.Amount,                           // how did we get here
             };
+
+            // elemental traits, after DEF/RES. Each one that applies multiplies
+            foreach ((Element element, int percent) in ElementModifiers)
+            {
+                if (!ElementRules.Applies(damage, element, percent)) continue;
+
+                int before = taken;
+                taken = ElementRules.Scale(taken, percent);
+
+                if (taken != before)
+                {
+                    string change = taken > before ? $"+{taken - before}" : (taken - before).ToString();
+                    string trait = percent >= 0 ? "weakness" : "resistance";
+                    GameEvents.Publish(new CombatEvent.GenericMessage($"{Owner?.Name}'s {element} {trait}: {change} damage."));
+                }
+            }
 
 
             // Let effects modify the incoming damage
