@@ -2,6 +2,12 @@ ticker text reads from ss14 tips and tf2 tips.
 tips.txt for this game specifically
 cleanup combat settings
 modular combat settings - read from file?
+    unitspec -> json: most of it works as-is (strings, ints, lists, dicts, positional records, char glyph)
+    Point breaks: X/Y are readonly fields, System.Text.Json skips fields -> writes {} and everything lands at 0,0
+    Color breaks: readonly R/G/B/A + multiple ctors -> deserializes silently as transparent black
+    enums come out as numbers, add JsonStringEnumConverter for "ENEMY" instead of 1
+    plan: STJ converters for Point as [x, y] and Color as "#RRGGBB" (~40 lines), round-trip test on LevelRegistry specs
+    alt: Newtonsoft (sadconsole already depends on it, ships ColorJsonConverter) or SadRogue ColorSerialized/PointSerialized
 character loadouts - premade and custom
 save / load character loadouts
 story full stop - claude ignore
