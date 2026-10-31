@@ -6,7 +6,8 @@ using System.Text;
 namespace LuanSC.Data.Components
 {
     /// <summary>
-    /// Can the owner take damage?
+    /// The owner's health. Every hit and heal goes through TakeDamage and Heal, where effects, DEF/RES and elements get their say.
+    /// Dead units (0 HP) ignore both.
     /// </summary>
     public class HPComponent : StatComponent, IHudDisplay
     {
@@ -62,6 +63,9 @@ namespace LuanSC.Data.Components
         /// <returns>the amount of hurt taken by this component, after effect processing</returns>
         public int TakeDamage(DamageRecord damage)
         {
+            // corpses stay dead and keep their real killing blow in LastHit
+            if (!IsAlive) return 0;
+
             // the attacker's buffs and debuffs. Poison and the like have no attacker.
             var attackerEffects = damage.Attacker?.GetComponent<EffectComponent>();
             if (attackerEffects is not null)
@@ -86,11 +90,7 @@ namespace LuanSC.Data.Components
                 taken = ElementRules.Scale(taken, percent);
 
                 if (taken != before)
-                {
-                    string change = taken > before ? $"+{taken - before}" : (taken - before).ToString();
-                    string trait = percent >= 0 ? "weakness" : "resistance";
-                    GameEvents.Publish(new CombatEvent.GenericMessage($"{Owner?.Name}'s {element} {trait}: {change} damage."));
-                }
+                    GameEvents.Publish(new CombatEvent.ElementTrait(Owner, element, percent, taken - before));
             }
 
 
@@ -128,18 +128,59 @@ namespace LuanSC.Data.Components
             return taken;
         }
 
+        /// <summary>
+        /// Heal. Every source of healing goes through here, mirroring TakeDamage:
+        ///   1. the healer's effects (OnOutgoingHealing), e.g. a healing power buff
+        ///   2. the owner's effects (OnIncomingHealing), e.g. anti-heal
+        ///   3. capped so it never goes below 0 or past Max
+        ///   4. the owner's IHealingListeners and the healer's IHealingGivenListeners are told the final amount
+        /// Spells and effects just send the base amount.
+        /// </summary>
+        /// <param name="healthy">the amount of healing to receive</param>
+        /// <returns>the HP actually restored, after effects and the Max cap</returns>
         public int Heal(HealingRecord healthy)
         {
-            int amount = healthy.Amount;
-            int healed = Math.Min(amount, Max - Current);
+            // no raising the dead
+            if (!IsAlive) return 0;
 
-            // Opportunity for effects to modify healing
-            foreach(IHealingListener listener in Owner.Components.OfType<IHealingListener>())
+            // the healer's buffs and debuffs. Regen and the like may have no healer.
+            var healerEffects = healthy.Healer?.GetComponent<EffectComponent>();
+            if (healerEffects is not null)
             {
-                listener.OnHealingReceived(healthy with { Amount = healed });
+                healthy = healerEffects.ProcessOutgoingHealing(healthy);
             }
 
+            // Let the owner's effects modify the incoming healing
+            var effects = Owner?.GetComponent<EffectComponent>();
+            if (effects is not null)
+            {
+                healthy = effects.ProcessIncomingHealing(healthy);
+            }
+
+            // an effect overdoing it mustn't hurt, and you can't heal past full
+            int healed = Math.Clamp(healthy.Amount, 0, Max - Current);
+
             Current += healed;
+            HealingRecord final = healthy with { Amount = healed };
+
+            // notify healing listeners
+            if (Owner is not null)
+            {
+                foreach (IHealingListener listener in Owner.Components.OfType<IHealingListener>())
+                {
+                    listener.OnHealingReceived(final);
+                }
+            }
+
+            // notify the healer's listeners
+            if (healthy.Healer is not null)
+            {
+                foreach (IHealingGivenListener listener in healthy.Healer.Components.OfType<IHealingGivenListener>())
+                {
+                    listener.OnHealingGiven(final);
+                }
+            }
+
             return healed;
         }
     }

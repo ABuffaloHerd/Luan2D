@@ -42,6 +42,13 @@ public partial class CombatScene : IDisposable
             case CombatEvent.DamageBlocked damageBlocked:
                 fightFeed.AddLine($"{damageBlocked.Owner?.Name ?? "An unknown source"}'s {damageBlocked.EffectName} blocked {damageBlocked.Blocked} damage.", Color.LightBlue);
                 break;
+            case CombatEvent.ElementTrait trait:
+            {
+                string change = trait.Change > 0 ? $"+{trait.Change}" : trait.Change.ToString();
+                string label = trait.Percent >= 0 ? "weakness" : "resistance";
+                fightFeed.AddLine($"{trait.Target?.Name}'s {trait.Element} {label}: {change} damage.");
+                break;
+            }
             case CombatEvent.HealingDealt healingRecord:    
                 fightFeed.AddLine($"{healingRecord.Healer.Name} healed {healingRecord.Target.Name} for {healingRecord.Amount} HP.", Color.Green);
                 break;

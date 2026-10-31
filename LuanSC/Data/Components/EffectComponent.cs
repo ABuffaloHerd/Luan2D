@@ -130,6 +130,16 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
         return modifiedDamage;
     }
 
+    public HealingRecord ProcessOutgoingHealing(HealingRecord healing)
+    {
+        HealingRecord modifiedHealing = healing;
+        foreach (var effect in effects)
+        {
+            modifiedHealing = effect.OnOutgoingHealing(modifiedHealing);
+        }
+        return modifiedHealing;
+    }
+
     public HealingRecord ProcessIncomingHealing(HealingRecord healthy)
     {
         HealingRecord modifiedHealing = healthy;

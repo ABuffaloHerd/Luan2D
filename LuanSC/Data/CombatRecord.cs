@@ -16,6 +16,12 @@ namespace LuanSC.Data
         /// <param name="EffectName">What saved them</param>
         /// <param name="Blocked">How much was blocked</param>
         public sealed record DamageBlocked(GameObject Owner, string EffectName, int Blocked) : CombatEvent;
+        /// <summary>
+        /// A weakness or resistance on the target changed a hit.
+        /// </summary>
+        /// <param name="Percent">The trait, positive is a weakness, negative a resistance.</param>
+        /// <param name="Change">How much it added (positive) or took off (negative).</param>
+        public sealed record ElementTrait(GameObject Target, Element Element, int Percent, int Change) : CombatEvent;
         public sealed record HealingDealt(GameObject Healer, GameObject Target, int Amount) : CombatEvent;
         public sealed record EffectApplied(GameObject Target, string EffectName) : CombatEvent;
         public sealed record EffectExpired(GameObject Target, string EffectName) : CombatEvent;

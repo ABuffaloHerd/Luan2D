@@ -36,5 +36,12 @@ public interface IEffect : IComponent
     // if implemented, this will be called before damage is applied to the owner, after DEF/RES. This allows the effect to modify or negate the damage.
     // if not implemented, the damage will be applied as normal.
     DamageRecord OnIncomingDamage(DamageRecord damage) => damage;
+
+    // if implemented, this will be called when the owner heals someone (themselves included), before the target's effects.
+    // Runs for every source of healing because HPComponent.Heal calls it, so spells don't need to.
+    HealingRecord OnOutgoingHealing(HealingRecord healing) => healing;
+
+    // if implemented, this will be called before healing is applied to the owner, after the healer's effects.
+    // This allows the effect to boost, reduce or block the healing, e.g. anti-heal.
     HealingRecord OnIncomingHealing(HealingRecord healthy) => healthy;
 }
