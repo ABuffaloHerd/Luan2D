@@ -11,6 +11,7 @@ namespace LuanSC.Scenes;
 /// Zooming scales the font by a whole number and shrinks the view by the same amount, so the arena keeps
 /// roughly the same size on screen and just shows fewer, bigger cells. Whole numbers keep the glyphs crisp.
 ///
+/// The view is never bigger than GameSettings.ARENA_VIEW_SIZE, so big arenas scroll even at zoom 1.
 /// Once the view is smaller than the arena it scrolls (ViewPosition), so anything that turns a screen position
 /// into an arena cell has to add ViewPosition. Layers and entities already do this themselves, the mouse
 /// does too as long as you read state.CellPosition and not state.SurfaceCellPosition, and AnimatedEffect
@@ -24,8 +25,9 @@ public partial class CombatScene
     private static readonly int[] ZoomLevels = [1, 2, 3];
     private int zoomIndex = 0;
 
-    // the arena's font size at zoom 1
+    // the arena's font size and view size at zoom 1
     private Point baseFontSize;
+    private Point baseViewSize;
 
     private int ZoomFactor => ZoomLevels[zoomIndex];
 
@@ -38,6 +40,7 @@ public partial class CombatScene
     private void HookCamera()
     {
         baseFontSize = surface.FontSize;
+        baseViewSize = new(surface.ViewWidth, surface.ViewHeight); // not the arena size, big arenas scroll at zoom 1 too
 
         ArenaCameraMouse cameraMouse = new();
         cameraMouse.Dragged += () => cameraFollowing = false;
@@ -61,8 +64,8 @@ public partial class CombatScene
         surface.ViewPosition = Point.Zero;
 
         surface.FontSize = baseFontSize * ZoomFactor;
-        surface.ViewWidth = surface.Width / ZoomFactor;
-        surface.ViewHeight = surface.Height / ZoomFactor;
+        surface.ViewWidth = baseViewSize.X / ZoomFactor;
+        surface.ViewHeight = baseViewSize.Y / ZoomFactor;
 
         CenterView(middle);
         FollowCamera();

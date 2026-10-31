@@ -21,9 +21,9 @@ namespace LuanSC.Data
         /// </summary>
         public List<EffectSpec> StartEffects { get; init; } = new();
 
-        // default arena size
-        public int Width { get; init; } = 43;
-        public int Height { get; init; } = 43;
+        // default arena size, fills the view exactly. Bigger scrolls, smaller leaves a gap
+        public int Width { get; init; } = GameSettings.ARENA_VIEW_SIZE;
+        public int Height { get; init; } = GameSettings.ARENA_VIEW_SIZE;
 
         public float FontScale { get; init; } = 1;
 

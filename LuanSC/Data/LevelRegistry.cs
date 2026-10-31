@@ -138,8 +138,8 @@ public static class LevelRegistry
             },
         ],
 
-        //Width = 21,
-        //Height = 21,
+        Width = 45,
+        Height = 45,
         //FontScale = 1.9f,
     };
 }
