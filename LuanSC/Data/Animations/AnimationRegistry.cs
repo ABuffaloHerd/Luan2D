@@ -36,6 +36,114 @@ public static class AnimationRegistry
     }
 
     /// <summary>
+    /// Diagonal slashes through the origin, one after another. Strokes alternate '\' then '/', so 2 makes an X and
+    /// a third re-cuts the first. Cells where both diagonals are showing draw as 'X'.
+    /// Finished strokes stay dimly on screen until the last one is done, then everything fades out.
+    /// </summary>
+    /// <param name="origin">Arena cell the slashes cross at.</param>
+    /// <param name="length">Cells per stroke. Odd lengths centre exactly, even ones sit half a cell down and right.</param>
+    /// <param name="color">Colour of the strokes. Defaults to white.</param>
+    /// <param name="count">How many strokes.</param>
+    /// <param name="sweep">False flashes each stroke in whole. True draws it a cell per frame with a fading trail.</param>
+    /// <param name="frameTime">How long each frame is held. Defaults to 60ms.</param>
+    public static AnimatedEffect Slash(Point origin, int length = 3, Color? color = null, int count = 1, bool sweep = false, TimeSpan? frameTime = null)
+    {
+        length = Math.Max(length, 1);
+        count = Math.Max(count, 1);
+        Color c = color ?? Color.White;
+        TimeSpan duration = frameTime ?? TimeSpan.FromMilliseconds(60);
+
+        const byte Full = 255, Trail = 170, Settled = 90; // brightness of the head, just behind it, and done strokes
+        const int Back = 1, Forward = 2;                  // '\' and '/' as bits, both set is 'X'
+
+        // one square big enough for a whole stroke, with the origin in the middle
+        int half = length / 2;
+        int size = half * 2 + 1;
+        AnimatedEffect slash = new("Slash", size, size)
+        {
+            Center = new Point(half, half),
+            Cell = origin,
+            Repeat = false
+        };
+
+        // every frame is a map of offset -> which diagonals are on it and how bright
+        List<Dictionary<Point, (int Mask, byte Alpha)>> frames = new();
+        Dictionary<Point, int> settled = new();
+
+        void Mark(Dictionary<Point, (int Mask, byte Alpha)> frame, Point offset, int mask, byte alpha)
+        {
+            frame[offset] = frame.TryGetValue(offset, out var cell)
+                ? (cell.Mask | mask, Math.Max(cell.Alpha, alpha))
+                : (mask, alpha);
+        }
+
+        Dictionary<Point, (int Mask, byte Alpha)> SettledFrame(byte alpha)
+        {
+            Dictionary<Point, (int Mask, byte Alpha)> frame = new();
+            foreach ((Point offset, int mask) in settled)
+                Mark(frame, offset, mask, alpha);
+            return frame;
+        }
+
+        for (int s = 0; s < count; s++)
+        {
+            int mask = s % 2 == 0 ? Back : Forward;
+
+            // top-left to bottom-right for '\', top-right to bottom-left for '/'
+            List<Point> cells = new();
+            for (int i = 0; i < length; i++)
+            {
+                int k = i - (length - 1) / 2;
+                cells.Add(mask == Back ? new Point(k, k) : new Point(-k, k));
+            }
+
+            // sweep: head moves one cell per frame. Flash: whole stroke bright, then a beat dimmer
+            int steps = sweep ? length : 2;
+            for (int step = 0; step < steps; step++)
+            {
+                Dictionary<Point, (int Mask, byte Alpha)> frame = SettledFrame(Settled);
+
+                if (sweep)
+                {
+                    for (int i = 0; i <= step; i++)
+                        Mark(frame, cells[i], mask, i == step ? Full : i == step - 1 ? Trail : Settled);
+                }
+                else
+                {
+                    foreach (Point offset in cells)
+                        Mark(frame, offset, mask, step == 0 ? Full : Trail);
+                }
+
+                frames.Add(frame);
+            }
+
+            foreach (Point offset in cells)
+                settled[offset] = settled.TryGetValue(offset, out int m) ? m | mask : mask;
+        }
+
+        // fade everything out together
+        frames.Add(SettledFrame(Settled));
+        frames.Add(SettledFrame(Settled / 3));
+
+        foreach (Dictionary<Point, (int Mask, byte Alpha)> cells in frames)
+        {
+            ICellSurface frame = slash.CreateFrame();
+            frame.DefaultBackground = Color.Transparent; // frames are opaque black otherwise
+            frame.Clear();
+
+            foreach ((Point offset, (int mask, byte alpha)) in cells)
+            {
+                char glyph = mask == (Back | Forward) ? 'X' : mask == Back ? '\\' : '/';
+                frame.SetCellAppearance(half + offset.X, half + offset.Y, new ColoredGlyph(new Color(c.R, c.G, c.B, alpha), Color.Transparent, glyph));
+            }
+        }
+
+        slash.AnimationDuration = duration * frames.Count;
+        slash.Start();
+        return slash;
+    }
+
+    /// <summary>
     /// Shared by the blasts. A cell is on ring n when distance(offset) == n, so the shape is all in the distance function.
     /// </summary>
     private static AnimatedEffect RingBlast(string name, Point origin, int radius, Color? color, TimeSpan? frameTime, char[] glyphs, Func<Point, int> distance)

@@ -1,4 +1,5 @@
-﻿using LuanSC.Objects;
+﻿using LuanSC.Data.Components.AI;
+using LuanSC.Objects;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,7 +20,7 @@ public class BasicTrueDamageAttack : IAbility
         Damage = damage;
     }
 
-    public void Execute(GameObject owner, IReadOnlyList<GameObject> targets)
+    public void Execute(GameObject owner, IReadOnlyList<GameObject> targets, ICombatContext context)
     {
         // attack first target in targets
         if (targets.Count == 0)

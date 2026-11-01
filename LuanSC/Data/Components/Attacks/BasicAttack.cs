@@ -1,4 +1,6 @@
-﻿using LuanSC.Objects;
+﻿using LuanSC.Data.Animations;
+using LuanSC.Data.Components.AI;
+using LuanSC.Objects;
 using LuanSC.Objects.Weapons;
 using LuanSC.Scenes;
 using System;
@@ -19,7 +21,7 @@ namespace LuanSC.Data.Components.Attacks
             Damage = damage;
         }
 
-        public void Execute(GameObject owner, IReadOnlyList<GameObject> targets)
+        public void Execute(GameObject owner, IReadOnlyList<GameObject> targets, ICombatContext context)
         {
             // attack first target in targets
             if (targets.Count == 0)
@@ -50,6 +52,9 @@ namespace LuanSC.Data.Components.Attacks
             };
 
             int dealt = healthy.TakeDamage(pain);
+
+            // origin is the target's arena cell, so the slash crosses right on whoever got hit. Length 3 keeps it to them and their neighbours
+            context.PlayAnimation(AnimationRegistry.Slash(target.Position, 3, Color.White));
 
             // pUBLISH A DAMAGE DEALT EVENT
             var damageDealtEvent = new CombatEvent.DamageDealt

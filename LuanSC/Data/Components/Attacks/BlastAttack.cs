@@ -1,4 +1,6 @@
-﻿using LuanSC.Objects;
+﻿using LuanSC.Data.Animations;
+using LuanSC.Data.Components.AI;
+using LuanSC.Objects;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,7 +24,7 @@ public class BlastAttack : IAbility
         Damage = damage;
     }
 
-    public void Execute(GameObject owner, IReadOnlyList<GameObject> targets)
+    public void Execute(GameObject owner, IReadOnlyList<GameObject> targets, ICombatContext context)
     {
         if (targets.Count == 0)
         {
@@ -51,6 +53,9 @@ public class BlastAttack : IAbility
 
             int dealt = healthy.TakeDamage(pain);
             hitAnything = true;
+
+            // placeholder: Fireball's explosion, shrunk down. Origin is each hit target's arena cell, so every victim gets their own blast
+            context.PlayAnimation(AnimationRegistry.CircleBlast(target.Position, 1, Color.OrangeRed));
 
             GameEvents.Publish(new CombatEvent.DamageDealt(owner, target, dealt, Type, pain.Element));
         }

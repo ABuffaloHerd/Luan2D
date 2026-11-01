@@ -52,7 +52,7 @@ namespace LuanSC.Scenes
             {
                 if (ability.CanUse(user))
                 {
-                    ability.Execute(user, targets);
+                    ability.Execute(user, targets, this);
                 }
                 else
                 {
