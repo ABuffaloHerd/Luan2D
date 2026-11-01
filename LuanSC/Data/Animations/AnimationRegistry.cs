@@ -144,6 +144,66 @@ public static class AnimationRegistry
     }
 
     /// <summary>
+    /// Magic sparkles twinkling at random over a diamond, the same cells SquareBlast covers at this radius.
+    /// Each sparkle goes · * ☼ * · and its colour shades from color towards white, whitest at the ☼.
+    /// </summary>
+    /// <param name="origin">Arena cell at the centre of the diamond.</param>
+    /// <param name="radius">Size of the diamond, |x| + |y| &lt;= radius.</param>
+    /// <param name="color">The colour a sparkle starts and ends on. Defaults to dodger blue.</param>
+    /// <param name="density">Share of cells that sparkle, 0 to 1. Each picked cell twinkles once.</param>
+    /// <param name="frames">How long the whole effect runs, in frames. At least as long as one twinkle (5).</param>
+    /// <param name="frameTime">How long each frame is held. Defaults to 60ms.</param>
+    /// <param name="seed">Fixes which cells sparkle and when. Random every time if left out.</param>
+    public static AnimatedEffect Sparkle(Point origin, int radius = 2, Color? color = null, float density = 0.5f, int frames = 12,
+        TimeSpan? frameTime = null, int? seed = null)
+    {
+        Color c = color ?? Color.DodgerBlue;
+        TimeSpan duration = frameTime ?? TimeSpan.FromMilliseconds(60);
+        Random random = seed is int s ? new Random(s) : Random.Shared;
+
+        // code page 437: 250 is a middle dot, 15 is the little sun. Plain '·' would come out as something else
+        char[] glyphs = [(char)250, '*', (char)15, '*', (char)250];
+        float[] whiteness = [0f, 0.5f, 1f, 0.5f, 0f]; // how far each step shades from c towards white
+        frames = Math.Max(frames, glyphs.Length);
+
+        int size = radius * 2 + 1;
+        AnimatedEffect sparkle = new("Sparkle", size, size)
+        {
+            Center = new Point(radius, radius),
+            Cell = origin,
+            Repeat = false
+        };
+
+        // pick which diamond cells sparkle and the frame each one starts on, so the twinkle always finishes in time
+        List<(Point Offset, int Start)> sparks = new();
+        foreach (List<Point> ring in Rings(radius, offset => Math.Abs(offset.X) + Math.Abs(offset.Y)))
+            foreach (Point offset in ring)
+                if (random.NextSingle() < density)
+                    sparks.Add((offset, random.Next(frames - glyphs.Length + 1)));
+
+        for (int f = 0; f < frames; f++)
+        {
+            ICellSurface frame = sparkle.CreateFrame();
+            frame.DefaultBackground = Color.Transparent; // frames are opaque black otherwise
+            frame.Clear();
+
+            foreach ((Point offset, int start) in sparks)
+            {
+                int step = f - start;
+                if (step < 0 || step >= glyphs.Length) continue;
+
+                float w = whiteness[step];
+                Color shade = new((int)(c.R + (255 - c.R) * w), (int)(c.G + (255 - c.G) * w), (int)(c.B + (255 - c.B) * w));
+                frame.SetCellAppearance(radius + offset.X, radius + offset.Y, new ColoredGlyph(shade, Color.Transparent, glyphs[step]));
+            }
+        }
+
+        sparkle.AnimationDuration = duration * frames;
+        sparkle.Start();
+        return sparkle;
+    }
+
+    /// <summary>
     /// Shared by the blasts. A cell is on ring n when distance(offset) == n, so the shape is all in the distance function.
     /// </summary>
     private static AnimatedEffect RingBlast(string name, Point origin, int radius, Color? color, TimeSpan? frameTime, char[] glyphs, Func<Point, int> distance)

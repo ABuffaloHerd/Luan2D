@@ -114,11 +114,7 @@ namespace LuanSC.Objects.Weapons
             p.Mark(0, -5);
 
             Weapon m = new Weapon("Mana Lens", 20, p);
-            BasicAttack attack = new BasicAttack(m.Damage)
-            {
-                Type = DamageType.MAGIC
-            };
-            m.Abilities.Add(attack);
+            m.Abilities.Add(new MagicAttack(m.Damage));
             return m;
         }
     }
