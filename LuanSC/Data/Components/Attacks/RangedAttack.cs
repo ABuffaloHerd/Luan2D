@@ -10,6 +10,7 @@ namespace LuanSC.Data.Components.Attacks;
 /// <summary>
 /// Fires a projectile at the nearest target in range. Single target like BasicAttack, but anything closer blocks the shot,
 /// walls included. The hit lands straight away, the projectile is just for show.
+/// Preconfigured to use the projectile animation
 /// </summary>
 public class RangedAttack : IAbility
 {

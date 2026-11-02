@@ -27,6 +27,7 @@ public class ActionComponent : IComponent, IHudDisplay
     private class Slot
     {
         public int Max;
+        public int Bonus; // from effects, worked out in Refill
         public int Current;
         public int Taken;
         public Func<GameObject, int> Formula; // null means fixed maximum
@@ -93,7 +94,7 @@ public class ActionComponent : IComponent, IHudDisplay
         }
     }
 
-    public int Max(ActionType type) => slots.TryGetValue(type, out Slot slot) ? slot.Max : int.MaxValue;
+    public int Max(ActionType type) => slots.TryGetValue(type, out Slot slot) ? Math.Max(slot.Max + slot.Bonus, 0) : int.MaxValue;
     public int Remaining(ActionType type) => slots.TryGetValue(type, out Slot slot) ? slot.Current : int.MaxValue;
     public int Taken(ActionType type) => slots.TryGetValue(type, out Slot slot) ? slot.Taken : 0;
 
@@ -116,17 +117,20 @@ public class ActionComponent : IComponent, IHudDisplay
     }
 
     /// <summary>
-    /// Calculates each maximum and refills all counters.
+    /// Calculates each maximum, including bonuses from IActionModifier effects, and refills all counters.
     /// Call this at the start of the owner's turn, after effects tick.
     /// </summary>
     public void Refill()
     {
-        foreach (Slot slot in slots.Values)
+        EffectComponent effects = Owner?.GetComponent<EffectComponent>();
+
+        foreach ((ActionType type, Slot slot) in slots)
         {
             if (slot.Formula is not null && Owner is not null)
                 slot.Max = slot.Formula(Owner);
 
-            slot.Current = slot.Max;
+            slot.Bonus = effects?.BonusActions(type) ?? 0;
+            slot.Current = Math.Max(slot.Max + slot.Bonus, 0);
             slot.Taken = 0;
         }
     }

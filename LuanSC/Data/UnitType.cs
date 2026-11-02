@@ -17,4 +17,5 @@ public enum UnitType
     DWARF       = 1 << 6,
     WALL        = 1 << 7, // not a unit, but useful for filtering
     MAGICAL     = 1 << 8, // magical constructs, golems, elementals
+    FURNITURE   = 1 << 9, // not a unit, but useful for filtering
 }

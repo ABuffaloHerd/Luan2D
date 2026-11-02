@@ -48,6 +48,11 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
     /// </summary>
     public int BonusRES => Effects.OfType<IStatModifier>().Sum(m => m.RES);
 
+    /// <summary>
+    /// Extra actions of this type per turn from active action modifiers.
+    /// </summary>
+    public int BonusActions(ActionType type) => Effects.OfType<IActionModifier>().Sum(m => m.Bonus(type));
+
     public bool Has<T>() where T : IEffect => Effects.OfType<T>().Any();
 
     /// <summary>
