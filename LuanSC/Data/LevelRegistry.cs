@@ -115,7 +115,7 @@ public static class LevelRegistry
                 ],
                 ActionLimits = { [ActionType.SKILL] = 1, [ActionType.SPECIAL] = 1 }, // one sentry and one special per turn
                 Weapon = "Stick",
-                Spells = ["SentryGun", "TitanAplu"],
+                Spells = ["SentryGun", "Dispenser", "TitanAplu"],
             },
 
             new UnitSpec

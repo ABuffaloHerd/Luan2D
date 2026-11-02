@@ -40,6 +40,14 @@ public static class SpellRegistry
             new ResourceCost(ResourceType.METAL, 100));
     }
 
+    // engineer building, goes right in front so it can be hit straight away. Heals and refills metal next to it once built
+    public static ISpell Dispenser(int hitsRequired = 4)
+    {
+        return new SummonSpell("Dispenser", $"Hit {hitsRequired}x to build.", ActionType.SKILL,
+            owner => SummonRegistry.Dispenser(owner, hitsRequired),
+            new ResourceCost(ResourceType.METAL, 100));
+    }
+
     // flat magic damage to everything in the circle, friends included unless friendlyFire is off
     public static ISpell Fireball(int damage = 30, int radius = 2, int range = 10, int mpCost = 50, bool friendlyFire = true)
     {

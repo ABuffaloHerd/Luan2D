@@ -35,6 +35,7 @@ public static class SpecLookup
         ["SummonFamiliar"]  = SpellRegistry.SummonFamiliar,
         ["MagicCircle"]     = SpellRegistry.MagicCircle,
         ["SentryGun"]       = () => SpellRegistry.SentryGun(),
+        ["Dispenser"]       = () => SpellRegistry.Dispenser(),
         ["Fireball"]        = () => SpellRegistry.Fireball(),
         ["Unsheath"]        = () => SpellRegistry.Unsheath(),
         ["TitanAplu"]       = () => SpellRegistry.TitanAplu(),
@@ -48,6 +49,7 @@ public static class SpecLookup
         ["Familiar"]            = SummonRegistry.Familiar,
         ["MagicCircle"]         = SummonRegistry.MagicCircle,
         ["SentryGun"]           = owner => SummonRegistry.SentryGun(owner),
+        ["Dispenser"]           = owner => SummonRegistry.Dispenser(owner),
     };
 
     private static readonly Dictionary<string, Func<EffectSpec, IEffect>> effects = new(StringComparer.OrdinalIgnoreCase)

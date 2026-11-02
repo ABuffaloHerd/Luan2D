@@ -28,7 +28,7 @@ namespace LuanSC.Objects.Weapons
             Pattern p = new();
             p.Mark(0, -1).Mark(0, -2).Mark(0, -3).Mark(0, -4);
             p.Mark(1, 0).Mark(-1, 0).Mark(1, -1).Mark(-1, -1);
-            Weapon t = new Weapon("Throngler", 500, p); // five hundred damage.
+            Weapon t = new Weapon("The Throngler", 500, p); // five hundred damage.
 
             t.Abilities.Add(new BasicAttack(t.Damage));
 
@@ -60,6 +60,16 @@ namespace LuanSC.Objects.Weapons
             s.Abilities.Add(new BlastAttack(s.Damage));
             s.Costs.Add(new ResourceCost(ResourceType.AMMO, 1)); // a shell per shot, Reload to refill
             return s;
+        }
+
+        public static Weapon Crossbow()
+        {
+            Pattern p = new();
+            p.Mark(0, -4).Mark(0, -2).Mark(0, -3);
+            Weapon c = new Weapon("Crossbow", 10, p);
+            c.Abilities.Add(new BasicAttack(c.Damage));
+            c.Costs.Add(new ResourceCost(ResourceType.AMMO, 1)); // a bolt per shot, Reload to refill
+            return c;
         }
 
         public static Weapon Stick()
