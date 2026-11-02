@@ -91,7 +91,7 @@ public static class SummonRegistry
 
         d.GetComponent<EffectComponent>().Apply(new ConstructionEffect(hitsRequired, (char)233, built =>
         {
-            Dispense dispense = new(hpAmount, metalAmount) { CastMessage = "The {caster} hums." };
+            Dispense dispense = new(hpAmount, metalAmount) { CastMessage = "The dispenser works." };
 
             built.AddComponent(new SpeedComponent(1)); // act last in the round so players can move onto it before it dispenses
             built.AddComponent(new ActionComponent().Configure(ActionType.SKILL, 1));

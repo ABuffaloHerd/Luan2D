@@ -23,8 +23,6 @@ public class Heal : CastSpell
 
     public override void Resolve(GameObject caster, Point target, ICombatContext context)
     {
-        context.PlayAnimation(AnimationRegistry.CircleBlast(target, 0, Color.LimeGreen, glyphs: ['+', '+', '.']));
-
         GameObject patient = context.Objects.FirstOrDefault(obj =>
             obj.Position == target && obj.GetComponent<HPComponent>() is { IsAlive: true });
 
@@ -33,6 +31,8 @@ public class Heal : CastSpell
             GameEvents.Publish(new CombatEvent.GenericMessage($"{caster.Name}'s {Name} fizzles on empty ground."));
             return;
         }
+
+        context.PlayAnimation(AnimationRegistry.HealFlash(target));
 
         HealingRecord healing = new()
         {

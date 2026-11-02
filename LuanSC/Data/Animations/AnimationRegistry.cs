@@ -204,6 +204,67 @@ public static class AnimationRegistry
     }
 
     /// <summary>
+    /// Green + and hearts flashing over a circle, the same cells Pattern.Circle covers at this radius.
+    /// The two glyphs sit in a checkerboard and swap places every flash, with each flash dimmer than the last.
+    /// </summary>
+    /// <param name="origin">Arena cell at the centre of the circle.</param>
+    /// <param name="radius">Size of the circle. 0 is just the origin, 1 includes the diagonals.</param>
+    /// <param name="color">Colour of the first flash. Defaults to lime green.</param>
+    /// <param name="flashes">How many times it flashes.</param>
+    /// <param name="frameTime">How long each flash and each gap is held. Defaults to 80ms.</param>
+    public static AnimatedEffect HealFlash(Point origin, int radius = 1, Color? color = null, int flashes = 3, TimeSpan? frameTime = null)
+    {
+        radius = Math.Max(radius, 0);
+        flashes = Math.Max(flashes, 1);
+        Color c = color ?? Color.LimeGreen;
+        TimeSpan duration = frameTime ?? TimeSpan.FromMilliseconds(80);
+
+        const char Heart = (char)3; // glyph number in the font, not a character
+        const float LastBrightness = 0.5f;
+
+        int size = radius * 2 + 1;
+        AnimatedEffect flash = new("Heal Flash", size, size)
+        {
+            Center = new Point(radius, radius),
+            Cell = origin,
+            Repeat = false
+        };
+
+        List<Point>[] rings = Rings(radius, Pattern.CircleDistance);
+
+        for (int f = 0; f < flashes; f++)
+        {
+            ICellSurface frame = flash.CreateFrame();
+            frame.DefaultBackground = Color.Transparent; // frames are opaque black otherwise
+            frame.Clear();
+
+            // dims the colour itself rather than its alpha, so the brightness doesn't depend on how alpha blends
+            float brightness = flashes == 1 ? 1f : 1f - (1f - LastBrightness) * f / (flashes - 1);
+            Color shade = new((int)(c.R * brightness), (int)(c.G * brightness), (int)(c.B * brightness));
+
+            foreach (List<Point> ring in rings)
+            {
+                foreach (Point offset in ring)
+                {
+                    int x = radius + offset.X;
+                    int y = radius + offset.Y;
+                    char glyph = (offset.X + offset.Y + f) % 2 == 0 ? Heart : '+';
+                    frame.SetCellAppearance(x, y, new ColoredGlyph(shade, Color.Transparent, glyph));
+                }
+            }
+
+            // the gap that makes it a flash
+            ICellSurface gap = flash.CreateFrame();
+            gap.DefaultBackground = Color.Transparent;
+            gap.Clear();
+        }
+
+        flash.AnimationDuration = duration * flashes * 2;
+        flash.Start();
+        return flash;
+    }
+
+    /// <summary>
     /// Shared by the blasts. A cell is on ring n when distance(offset) == n, so the shape is all in the distance function.
     /// </summary>
     private static AnimatedEffect RingBlast(string name, Point origin, int radius, Color? color, TimeSpan? frameTime, char[] glyphs, Func<Point, int> distance)

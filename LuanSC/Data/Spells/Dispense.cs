@@ -1,3 +1,4 @@
+using LuanSC.Data.Animations;
 using LuanSC.Data.Components;
 using LuanSC.Data.Components.AI;
 using LuanSC.Objects;
@@ -53,7 +54,10 @@ public class Dispense : CastSpell
         {
             int healed = player.GetComponent<HPComponent>().Heal(new HealingRecord { Healer = caster, Target = player, Amount = HpAmount });
             if (healed > 0)
+            {
+                context.PlayAnimation(AnimationRegistry.HealFlash(player.Position));
                 GameEvents.Publish(new CombatEvent.HealingDealt(caster, player, healed));
+            }
 
             ResourceComponent metal = player.GetResource(ResourceType.METAL);
             if (metal is null) continue;
