@@ -74,7 +74,7 @@ public static class SpellRegistry
     {
         return new Reload
         {
-            CastMessage = "{caster} reloads."
+            CastMessage = "Alright, reload!"
         };
     }
 

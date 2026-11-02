@@ -178,7 +178,7 @@ public partial class CombatScene
     private void Inspect(GameObject obj)
     {
         if (windowInstances > 0) return;
-        Window inspect = new Window(40, 40)
+        Window inspect = new Window(70, 40)
         {
             Title = $"Inspecting {obj.Name}",
             CanDrag = true,

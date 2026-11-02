@@ -36,8 +36,11 @@ public class RangedAttack : IAbility
     /// </summary>
     public TimeSpan ProjectileFrameTime { get; init; } = TimeSpan.FromMilliseconds(30);
 
+    private Random rand;
+
     public RangedAttack(int damage)
     {
+        rand = new Random();
         Damage = damage;
     }
 
@@ -45,7 +48,15 @@ public class RangedAttack : IAbility
     {
         if (targets.Count == 0)
         {
-            GameEvents.Publish(new CombatEvent.GenericMessage($"{owner.Name} shot at the air for {Damage} damage"));
+            List<CombatEvent.GenericMessage> messages = new()
+            {
+                new CombatEvent.GenericMessage($"{owner.Name} tagged the air for {Damage} damage."),
+                new CombatEvent.GenericMessage($"{owner.Name} missed."),
+                new CombatEvent.GenericMessage($"Bro where you aiming at??"),
+                new CombatEvent.GenericMessage($"{owner.Name} wasted precious ammunition."),
+                new CombatEvent.GenericMessage($"Holding your weapon sideways will not help you."),
+            };
+            GameEvents.Publish(messages[rand.Next(messages.Count)]);
             return;
         }
 
