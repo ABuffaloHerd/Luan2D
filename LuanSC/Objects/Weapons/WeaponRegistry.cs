@@ -40,7 +40,7 @@ namespace LuanSC.Objects.Weapons
             Pattern p = new();
             p.Mark(0, -1).Mark(0, -2).Mark(0, -3);
             Weapon g = new Weapon("Gun", 8, p);
-            //g.Components.Add(new RangedAttack());
+            g.Abilities.Add(new RangedAttack(g.Damage));
             //g.Components.Add(new PiercingAttack());
             return g;
         }
@@ -67,7 +67,7 @@ namespace LuanSC.Objects.Weapons
             Pattern p = new();
             p.Mark(0, -4).Mark(0, -2).Mark(0, -3);
             Weapon c = new Weapon("Crossbow", 10, p);
-            c.Abilities.Add(new BasicAttack(c.Damage));
+            c.Abilities.Add(new RangedAttack(c.Damage));
             c.Costs.Add(new ResourceCost(ResourceType.AMMO, 1)); // a bolt per shot, Reload to refill
             return c;
         }
@@ -90,7 +90,7 @@ namespace LuanSC.Objects.Weapons
             p.Mark(0, -1).Mark(0, -2).Mark(0, -3).Mark(0, -4);
 
             Weapon g = new Weapon("Sentry Gun", 5, p);
-            g.Abilities.Add(new BasicAttack(g.Damage));
+            g.Abilities.Add(new RangedAttack(g.Damage));
             return g;
         }
 

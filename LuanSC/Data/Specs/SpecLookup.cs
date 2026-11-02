@@ -22,6 +22,7 @@ public static class SpecLookup
         ["Katana"]          = WeaponRegistry.Katana,
         ["Throngler"]       = WeaponRegistry.Throngler,
         ["Gun"]             = WeaponRegistry.Gun,
+        ["Crossbow"]        = WeaponRegistry.Crossbow,
         ["Shotgun"]         = WeaponRegistry.Shotgun,
         ["Stick"]           = WeaponRegistry.Stick,
         ["SentryGun"]       = WeaponRegistry.SentryGun,

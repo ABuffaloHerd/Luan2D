@@ -265,6 +265,57 @@ public static class AnimationRegistry
     }
 
     /// <summary>
+    /// One arrow flying a cell per frame from one arena cell to another, pointing the way it's going.
+    /// Starts on the first cell after from, so it comes out of the shooter instead of covering them, and finishes on to.
+    /// Off-axis shots point along whichever axis they travel furthest, exact diagonals point left or right.
+    /// </summary>
+    /// <param name="from">Arena cell it's fired from.</param>
+    /// <param name="to">Arena cell it lands on. If it's the same as from, it just shows there for a frame.</param>
+    /// <param name="color">Colour of the arrow. Defaults to white.</param>
+    /// <param name="frameTime">How long it's held on each cell. Defaults to 30ms.</param>
+    public static AnimatedEffect Projectile(Point from, Point to, Color? color = null, TimeSpan? frameTime = null)
+    {
+        Color c = color ?? Color.White;
+        TimeSpan duration = frameTime ?? TimeSpan.FromMilliseconds(30);
+
+        int dx = to.X - from.X;
+        int dy = to.Y - from.Y;
+        int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
+
+        // glyph numbers in the font, not characters. Up is -y in the arena
+        char glyph = Math.Abs(dx) >= Math.Abs(dy)
+            ? (dx >= 0 ? (char)26 : (char)27)
+            : (dy < 0 ? (char)24 : (char)25);
+
+        // one box around the whole flight, with from at its Center so the effect lines up with the arena
+        Point corner = new(Math.Min(from.X, to.X), Math.Min(from.Y, to.Y));
+        AnimatedEffect projectile = new("Projectile", Math.Abs(dx) + 1, Math.Abs(dy) + 1)
+        {
+            Center = from - corner,
+            Cell = from,
+            Repeat = false
+        };
+
+        int frames = Math.Max(steps, 1);
+        for (int i = 1; i <= frames; i++)
+        {
+            ICellSurface frame = projectile.CreateFrame();
+            frame.DefaultBackground = Color.Transparent; // frames are opaque black otherwise
+            frame.Clear();
+
+            // straight line, rounded to the nearest cell
+            float progress = steps == 0 ? 0f : (float)i / steps;
+            Point cell = new(from.X + (int)MathF.Round(dx * progress), from.Y + (int)MathF.Round(dy * progress));
+
+            frame.SetCellAppearance(cell.X - corner.X, cell.Y - corner.Y, new ColoredGlyph(c, Color.Transparent, glyph));
+        }
+
+        projectile.AnimationDuration = duration * frames;
+        projectile.Start();
+        return projectile;
+    }
+
+    /// <summary>
     /// Shared by the blasts. A cell is on ring n when distance(offset) == n, so the shape is all in the distance function.
     /// </summary>
     private static AnimatedEffect RingBlast(string name, Point origin, int radius, Color? color, TimeSpan? frameTime, char[] glyphs, Func<Point, int> distance)
