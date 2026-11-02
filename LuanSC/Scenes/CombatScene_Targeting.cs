@@ -20,6 +20,15 @@ public partial class CombatScene
     private static readonly Color RANGE_COLOR = new(0, 128, 255, 50);
     private static readonly Color AREA_COLOR = new(0, 255, 0, 128);         // in range, 0.5 alpha
     private static readonly Color AREA_INVALID_COLOR = new(255, 0, 0, 204); // out of range, 0.8 alpha
+    private static readonly Color WEAPON_RANGE_COLOR = new(255, 255, 0, 202); // the weapon range X's, shows at about half brightness
+
+    /// <summary>
+    /// A colour for the overlay layer, with its alpha scaled by the level's OverlayOpacity.
+    /// On empty arena cells an alpha shows on screen as (alpha / 255) cubed, measured from screenshots, e.g. 128 shows at 12.5%.
+    /// So the opacity gets a cube root here, which makes 0.5 come out half as bright as 1.
+    /// </summary>
+    private Color OverlayColor(Color color)
+        => new(color.R, color.G, color.B, (byte)(color.A * MathF.Cbrt(Math.Clamp(settings.OverlayOpacity, 0f, 1f))));
 
     /// <summary>
     /// Arena cell under the cursor.
@@ -166,12 +175,12 @@ public partial class CombatScene
             {
                 Point cell = origin + new Point(dx, dy);
                 if (InTargetRange(cell))
-                    overlay.SetBackground(cell.X, cell.Y, RANGE_COLOR);
+                    overlay.SetBackground(cell.X, cell.Y, OverlayColor(RANGE_COLOR));
             }
         }
 
         // the cursor cell always gets painted too, in case an area doesn't include (0, 0)
-        Color areaColor = InTargetRange(CursorPosition) ? AREA_COLOR : AREA_INVALID_COLOR;
+        Color areaColor = OverlayColor(InTargetRange(CursorPosition) ? AREA_COLOR : AREA_INVALID_COLOR);
         foreach (Point offset in targetingSpell.Area.GetRotated(targetingCaster.Direction).Append(Point.Zero))
         {
             Point cell = CursorPosition + offset;

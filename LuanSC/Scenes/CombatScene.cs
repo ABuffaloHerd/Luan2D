@@ -47,6 +47,9 @@ namespace LuanSC.Scenes
 
         private bool overlayVisible = true;
 
+        // drives the weapon range X's blinking, 500ms on then 500ms off
+        private TimeSpan overlayBlinkTimer;
+
         public CombatScene(SceneManager manager, CombatSettings settings) : base(manager)
         {
             // Setup use mouse
@@ -194,6 +197,8 @@ namespace LuanSC.Scenes
             if (currentControlledGameObject.GetComponent<ControllableComponent>() is null)
                 UpdateAI(delta);
 
+            overlayBlinkTimer += delta;
+
             // Refresh the overlay if it's visible and is dirty. Targeting always draws, H or not
             if (overlayVisible || IsTargeting)
                 UpdateOverlay();
@@ -229,6 +234,9 @@ namespace LuanSC.Scenes
             WeaponComponent w = currentControlledGameObject.GetComponent<WeaponComponent>();
             if (w == null) return;
 
+            // off half of the blink, the overlay's already cleared so there's nothing else to do
+            if (overlayBlinkTimer.TotalMilliseconds % 1000 >= 500) return;
+
             var pattern = w.Weapon.Range;
             foreach (var cell in pattern.GetRotated(currentControlledGameObject.Direction))
             {
@@ -236,13 +244,7 @@ namespace LuanSC.Scenes
                 int drawY = currentControlledGameObject.Position.Y + cell.Y;
                 if (drawX >= 0 && drawX < overlay.Width && drawY >= 0 && drawY < overlay.Height)
                 {
-                    ColoredGlyph g = new(Color.Yellow, Color.Transparent, 'X');
-                    Blinker b = new()
-                    {
-                        Duration = TimeSpan.MaxValue,
-                        BlinkSpeed = TimeSpan.FromMilliseconds(500)
-                    };
-
+                    ColoredGlyph g = new(OverlayColor(WEAPON_RANGE_COLOR), Color.Transparent, 'X');
                     overlay.SetCellAppearance(drawX, drawY, g);
                 }
             }

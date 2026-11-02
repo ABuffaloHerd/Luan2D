@@ -14,7 +14,7 @@ namespace LuanSC.Data.Components.Attacks;
 public class MagicAttack : IAbility
 {
     public string Name => "Magic Attack";
-    public string Description => "A bolt of magic that deals magic damage to a single target.";
+    public string Description => "A bolt of raw intuition that deals magic damage to a single target.";
     public int Damage { get; private set; }
     public DamageType Type => DamageType.MAGIC;
 

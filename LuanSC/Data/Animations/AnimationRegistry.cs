@@ -161,7 +161,7 @@ public static class AnimationRegistry
         TimeSpan duration = frameTime ?? TimeSpan.FromMilliseconds(60);
         Random random = seed is int s ? new Random(s) : Random.Shared;
 
-        // code page 437: 250 is a middle dot, 15 is the little sun. Plain '·' would come out as something else
+        // glyph numbers in the font, not characters: 250 is a middle dot, 15 is the little sun in Bisasam. Other fonts may differ
         char[] glyphs = [(char)250, '*', (char)15, '*', (char)250];
         float[] whiteness = [0f, 0.5f, 1f, 0.5f, 0f]; // how far each step shades from c towards white
         frames = Math.Max(frames, glyphs.Length);

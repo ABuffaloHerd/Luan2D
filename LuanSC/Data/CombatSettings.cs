@@ -28,6 +28,12 @@ namespace LuanSC.Data
         public float FontScale { get; init; } = 1;
 
         /// <summary>
+        /// How bright everything on the arena overlay shows: weapon range X's and targeting highlights.
+        /// 0 is invisible, 1 draws them at their own colours, 0.5 is half as bright as 1.
+        /// </summary>
+        public float OverlayOpacity { get; init; } = 1;
+
+        /// <summary>
         /// New game objects for every unit. Call once per fight, the objects keep their state.
         /// </summary>
         public List<GameObject> BuildObjects()
