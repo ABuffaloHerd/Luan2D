@@ -14,6 +14,13 @@ namespace LuanSC.Scenes
 
         protected SceneManager manager;
         protected SoundManager soundManager;
+
+        /// <summary>
+        /// True while the scene is fading in or out. It still updates and draws and the transition blocks input,
+        /// so only hold back things that happen by themselves, like AI turns.
+        /// </summary>
+        public bool IsPaused { get; set; }
+
         public Scene(SceneManager manager)
         {
             this.manager = manager;
