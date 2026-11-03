@@ -68,6 +68,11 @@ public partial class CombatScene : IDisposable
                 // default only. Per summon: CastMessage on the spell in SpellRegistry, or SummonerBehavior.Message for AI
                 fightFeed.AddLine(summoned.Message ?? $"{summoned.Owner.Name} summoned {summoned.Summon.Name}.", Color.Blue);
                 break;
+
+            case CombatEvent.FightEnded fightEnded:
+                bool victory = fightEnded.Outcome == CombatOutcome.VICTORY;
+                fightFeed.AddLine($"{(victory ? "Victory!" : "Defeat!")} ({fightEnded.Reason})", victory ? Color.Green : Color.Red);
+                break;
         }
     }
 

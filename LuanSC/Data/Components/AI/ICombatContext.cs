@@ -16,4 +16,14 @@ public interface ICombatContext
     /// Plays an animation on the arena. Fire and forget, it removes itself when done.
     /// </summary>
     void PlayAnimation(AnimatedEffect animation);
+
+    /// <summary>
+    /// The round being played, starting at 1.
+    /// </summary>
+    int Round { get; }
+
+    /// <summary>
+    /// Every condition that can end this fight, the fallback included, with its current progress.
+    /// </summary>
+    IReadOnlyList<ConditionStatus> GetConditions();
 }
