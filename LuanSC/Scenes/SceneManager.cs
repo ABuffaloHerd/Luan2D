@@ -13,6 +13,8 @@ namespace LuanSC.Scenes
 
             // When the current scene is unloaded i am assuming that it goes out of scope enough for the gc to kill it
             // otherwise i will be very, very pissed off.
+            // Anything it subscribed to would keep it alive, so let it unsubscribe first.
+            (currentScene as IDisposable)?.Dispose();
 
             currentScene = factory(this);
             Game.Instance.Screen = currentScene;
