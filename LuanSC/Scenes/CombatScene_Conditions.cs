@@ -82,6 +82,7 @@ public partial class CombatScene
         };
 
         windowInstances++;
+        window.Closed += (sender, args) => closedWindows.Add(window);
 
         int width = window.Width - 4;
         window.Controls.Add(new Label(width) { DisplayText = fightResult.Description, Position = new(2, 2), TextColor = victory ? Color.Green : Color.Red });

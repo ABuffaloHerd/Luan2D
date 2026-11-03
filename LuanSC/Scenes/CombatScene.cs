@@ -186,9 +186,11 @@ namespace LuanSC.Scenes
 
         public override void Update(TimeSpan delta)
         {
-            base.Update(delta);
-
+            // before base.Update so a result window gets updated before it's drawn, or its controls stay blank
+            DisposeClosedWindows();
             UpdateFightEnd(delta);
+
+            base.Update(delta);
 
             if (currentControlledGameObject is null) return;
 

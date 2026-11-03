@@ -18,6 +18,7 @@ namespace LuanSC.Scenes
             sentences = new();
 
             surface = new(GameSettings.GAME_WIDTH, GameSettings.GAME_HEIGHT);
+            surface.FocusOnMouseClick = false; // a click would take the keyboard off the scene and Esc would stop working
             surface.Print(0, 0, "Visual Novel Scene");
             surface.Print(0, 1, "Press ESC to return to menu");
             surface.Print(0, 2, "Press SPACE to advance text.");

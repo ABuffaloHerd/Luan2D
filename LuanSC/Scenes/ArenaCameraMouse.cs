@@ -89,6 +89,7 @@ public class ArenaCameraMouse : MouseConsoleComponent
             grabViewPosition = surface.Surface.ViewPosition;
 
             // keep getting the mouse if it leaves the arena mid drag
+            // NOTE: leaving the scene mid drag (Esc) doesn't clear this. Harmless for now, Scene.Dispose makes the mouse forget the old arena.
             previousExclusiveMouse = surface.IsExclusiveMouse;
             surface.IsExclusiveMouse = true;
 

@@ -15,6 +15,18 @@ namespace LuanSC.Scenes;
 public partial class CombatScene
 {
     private int windowInstances = 0;
+
+    // Closed fires from inside the window's own Hide, often from one of its buttons, so they get disposed later in Update
+    private readonly List<Window> closedWindows = new();
+
+    private void DisposeClosedWindows()
+    {
+        foreach (Window window in closedWindows)
+            DisposeTree(window);
+
+        closedWindows.Clear();
+    }
+
     private void DisplaySpellbook()
     {
         if (windowInstances > 0) return;
@@ -43,6 +55,7 @@ public partial class CombatScene
             if (closed) return;
             closed = true;
             windowInstances--;
+            closedWindows.Add(spellbook);
             RestoreFocus();
         }
 
@@ -140,6 +153,7 @@ public partial class CombatScene
         help.Closed += (sender, args) =>
         {
             windowInstances--;
+            closedWindows.Add(help);
             RestoreFocus();
         };
 
@@ -189,6 +203,7 @@ public partial class CombatScene
         inspect.Closed += (sender, args) =>
         {
             windowInstances--;
+            closedWindows.Add(inspect);
             RestoreFocus();
         };
         // content area, the tab control adds its headers and border around this
