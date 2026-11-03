@@ -31,5 +31,7 @@ namespace LuanSC.Data
         public sealed record EntityDied(GameObject Target, DamageRecord KillingBlow) : CombatEvent;
         /// <param name="Message">Already filled in. Null uses the default.</param>
         public sealed record Summoned(GameObject Owner, GameObject Summon, string Message = null) : CombatEvent;
+        /// <param name="Reason">The condition that ended it, ready to show.</param>
+        public sealed record FightEnded(CombatOutcome Outcome, string Reason) : CombatEvent;
     }
 }

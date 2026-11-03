@@ -11,6 +11,45 @@ namespace LuanSC.Data;
 /// </summary>
 public static class LevelRegistry
 {
+    public static CombatSettings ConditionTest() => new()
+    {
+        Units =
+        [
+            new UnitSpec
+            {
+                Kind = UnitKind.PLAYER,
+                Name = "Hirina",
+                UnitType = UnitType.HUMAN,
+                Glyph = 'H',
+                Colour = Color.Red,
+                Position = new(1, 1),
+                Hp = 250,
+                Speed = 100,
+                Resources =
+                [
+                    new(ResourceType.MP) { Max = 100 },
+                    new(ResourceType.OD) { Current = 100 }, // starts full so Unsheath can be used straight away
+                    new(ResourceType.GB) { Current = 50 },  // Unsheath takes the 50 GB first, then 50 OD
+                ],
+                ActionLimits = { [ActionType.SPECIAL] = 1 },
+                Weapon = "Throngler",
+                Spells = ["Unsheath", "Fireball"],
+            },
+            new UnitSpec
+            {
+                Kind = UnitKind.ENEMY,
+                Name = "Target Dummy",
+                UnitType = UnitType.MECHANICAL, // a construct, not alive
+                Glyph = 'T',
+                Colour = Color.White,
+                Position = new(5, 5),
+                Hp = 100,
+                Speed = 50,
+            },
+        ],
+        Width = 45,
+        Height = 45,
+    };
     public static CombatSettings Test() => new()
     {
         Units =

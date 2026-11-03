@@ -188,6 +188,8 @@ namespace LuanSC.Scenes
         {
             base.Update(delta);
 
+            UpdateFightEnd(delta);
+
             if (currentControlledGameObject is null) return;
 
             // keep the current unit on screen when zoomed in

@@ -42,8 +42,11 @@ namespace LuanSC.Scenes
                 entityManager.Add(obj);
             }
 
+            conditions = new CombatConditions(settings.Conditions, gameObjects);
+
             // build the turn queue
             BuildTurnQueue();
+            AnnounceRound();
 
             // Kick off the first turn or we're in trouble
             StartNextTurn();
@@ -62,11 +65,14 @@ namespace LuanSC.Scenes
 
         private void StartNextTurn()
         {
+            if (fightResult is not null) return;
+
             // finish up the previous turn, unless they died during it
             if (currentControlledGameObject is not null && gameObjects.Contains(currentControlledGameObject))
             {
                 currentControlledGameObject.GetComponent<EffectComponent>()?.TickEnd(msg => fightFeed.AddLine(msg));
                 Cull();
+                if (fightResult is not null) return;
             }
 
             // separate the previous turn's messages from the next one's
@@ -76,6 +82,15 @@ namespace LuanSC.Scenes
             if (queue.Count <= 0)
             {
                 BuildTurnQueue(); // the cycle begins anew
+
+                if (queue.Count > 0)
+                {
+                    conditions.RoundsCompleted++;
+                    CheckConditions();
+                    if (fightResult is not null) return;
+
+                    AnnounceRound();
+                }
             }
 
             // nobody left who can take a turn
@@ -98,6 +113,8 @@ namespace LuanSC.Scenes
 
             // Poison can kill the actor before they get to move
             Cull();
+            if (fightResult is not null) return;
+
             if (!gameObjects.Contains(currentControlledGameObject))
             {
                 StartNextTurn();
@@ -175,6 +192,8 @@ namespace LuanSC.Scenes
                 GameEvents.Publish(new CombatEvent.EntityDied(obj, obj.GetComponent<HPComponent>().LastHit));
                 RemoveGameObject(obj);
             }
+
+            CheckConditions();
         }
 
         private static ActionType? ActionTypeOf(TurnAction action)
