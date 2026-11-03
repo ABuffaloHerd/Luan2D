@@ -1,4 +1,5 @@
 ﻿using LuanSC.Data;
+using LuanSC.Scenes.Transitions;
 using SadConsole.Input;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
@@ -56,7 +57,7 @@ namespace LuanSC.Scenes
             };
             b4.Click += (s, e) =>
             {
-                GameRoot.sceneManger.ChangeScene(manager => new CombatScene(manager, LevelRegistry.ConditionTest()));
+                GameRoot.sceneManger.ChangeScene(manager => new CombatScene(manager, LevelRegistry.ConditionTest()), new RandomGarbageTransition(TimeSpan.FromMilliseconds(500)));
             };
 
             controls.Controls.Add(b);
