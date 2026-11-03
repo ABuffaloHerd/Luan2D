@@ -6,19 +6,17 @@ using System.Text;
 
 namespace LuanSC.Scenes;
 
-public partial class CombatScene : IDisposable
+public partial class CombatScene
 {
-    private bool disposed;
     private readonly Action<CombatEvent> combatEventHandler;
     private void Subscribe()
     {
         GameEvents.OnCombatEvent += combatEventHandler;
     }
-    public void Dispose()
+    protected override void OnDispose()
     {
-        if (disposed) return;
         GameEvents.OnCombatEvent -= combatEventHandler;
-        disposed = true;
+        DisposeClosedWindows();
     }
 
     private void HandleCombatEvent(CombatEvent e)

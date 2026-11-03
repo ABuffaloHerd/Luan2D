@@ -21,6 +21,7 @@ namespace LuanSC.Scenes
 
             surface.UseKeyboard = false;
             surface.IsFocused = false;
+            surface.FocusOnMouseClick = false; // a click would take the keyboard off the scene and Esc would stop working
 
             controls = new(20, 10);
             controls.Position = new(surface.Width / 2, surface.Height / 2);
