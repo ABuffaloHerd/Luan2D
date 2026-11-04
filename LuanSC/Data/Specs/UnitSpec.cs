@@ -9,7 +9,8 @@ public enum UnitKind
 {
     PLAYER, // friends
     ENEMY, // kill
-    WALL   // wall man
+    WALL,  // wall man
+    FURNITURE // wall man but you can break it
 }
 
 /// <summary>
