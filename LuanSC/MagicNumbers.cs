@@ -8,4 +8,5 @@ public static class MagicNumbers
 {
     public static readonly int GAMEOBJECT_INDEX = -1;
     public static readonly int FLOOR_INDEX = -2; // under game objects, for things you can stand on
+    public static readonly int FPS_TARGET = 60;
 }

@@ -188,7 +188,7 @@ namespace LuanSC.Scenes
         {
             // before base.Update so a result window gets updated before it's drawn, or its controls stay blank
             DisposeClosedWindows();
-            UpdateFightEnd(delta);
+            if (!IsPaused) UpdateFightEnd(delta);
 
             base.Update(delta);
 
@@ -198,7 +198,7 @@ namespace LuanSC.Scenes
             FollowCamera();
 
             // if there is an AI component run that instead
-            if (currentControlledGameObject.GetComponent<ControllableComponent>() is null)
+            if (!IsPaused && currentControlledGameObject.GetComponent<ControllableComponent>() is null)
                 UpdateAI(delta);
 
             overlayBlinkTimer += delta;
