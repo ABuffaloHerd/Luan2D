@@ -10,7 +10,7 @@ namespace LuanSC.Data.Spells;
 /// <summary>
 /// Refills the caster's ammo to max. Refused when it's already full, so the skill isn't wasted.
 /// </summary>
-public class Reload : CastSpell
+public class Reload : CastableSpell
 {
     /// <summary>
     /// Fight feed line when there's nothing to reload. {caster} gets filled in.

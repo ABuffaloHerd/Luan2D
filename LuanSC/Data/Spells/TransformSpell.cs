@@ -14,7 +14,7 @@ namespace LuanSC.Data.Spells;
 /// <remarks>
 /// FACING with an empty Area, it's cast on yourself so there's nothing to aim.
 /// </remarks>
-public class TransformSpell : CastSpell
+public class TransformSpell : CastableSpell
 {
     public string FormName { get; }
     public int Glyph { get; }

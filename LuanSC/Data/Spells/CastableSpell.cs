@@ -19,7 +19,7 @@ namespace LuanSC.Data.Spells;
 ///   4. Add a factory to SpellRegistry and put it in someone's SpellbookComponent.
 /// See Fireball.
 /// </summary>
-public abstract class CastSpell : ISpell
+public abstract class CastableSpell : ISpell
 {
     public string Name { get; }
     public string Description { get; }
@@ -30,7 +30,7 @@ public abstract class CastSpell : ISpell
     public Pattern Area { get; }
     public string CastMessage { get; init; }
 
-    protected CastSpell(string name, string description, ActionType type, IReadOnlyList<ResourceCost> costs, Targeting targeting, int range, Pattern area)
+    protected CastableSpell(string name, string description, ActionType type, IReadOnlyList<ResourceCost> costs, Targeting targeting, int range, Pattern area)
     {
         Name = name;
         Description = description;

@@ -28,5 +28,5 @@ public abstract record TurnAction
     /// Casts a spell that resolves itself (damage, healing...) at an arena position.
     /// The scene checks range and costs before calling Spell.Resolve.
     /// </summary>
-    public sealed record Cast(CastSpell Spell, Point Target) : TurnAction;
+    public sealed record Cast(CastableSpell Spell, Point Target) : TurnAction;
 }

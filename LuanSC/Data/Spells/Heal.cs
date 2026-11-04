@@ -11,7 +11,7 @@ namespace LuanSC.Data.Spells;
 /// <summary>
 /// Heals whoever is standing on the picked cell. Can't raise the dead or patch up walls.
 /// </summary>
-public class Heal : CastSpell
+public class Heal : CastableSpell
 {
     public int Amount { get; }
 

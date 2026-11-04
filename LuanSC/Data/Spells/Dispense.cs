@@ -13,7 +13,7 @@ namespace LuanSC.Data.Spells;
 /// A player is anything controllable on the caster's team, so sentries and other buildings get nothing.
 /// Someone without a metal bar, like a mage, still gets the HP.
 /// </summary>
-public class Dispense : CastSpell
+public class Dispense : CastableSpell
 {
     public int HpAmount { get; }
     public int MetalAmount { get; }

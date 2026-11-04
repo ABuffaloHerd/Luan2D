@@ -15,7 +15,7 @@ namespace LuanSC.Data.Spells;
 /// FACING, so it goes off straight away. Area is empty because the cells depend on whatever weapon is equipped
 /// at the time; the weapon range overlay (H) already shows them.
 /// </remarks>
-public class Unsheath : CastSpell
+public class Unsheath : CastableSpell
 {
     public int Damage { get; }
 

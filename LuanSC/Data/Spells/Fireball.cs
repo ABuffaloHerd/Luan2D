@@ -11,7 +11,7 @@ namespace LuanSC.Data.Spells;
 /// <summary>
 /// Flat magic damage to everything with HP inside a circle around the target. RES still reduces it.
 /// </summary>
-public class Fireball : CastSpell
+public class Fireball : CastableSpell
 {
     public int Damage { get; }
     public int Radius { get; }
