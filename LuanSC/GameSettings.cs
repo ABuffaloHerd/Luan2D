@@ -10,6 +10,10 @@
     public const int GAME_HEIGHT = 2 + ARENA_VIEW_SIZE + 2;
     public static readonly string FONT = FONTS.Bisasam.GetFont();
 
+    // OD gained per point of damage taken, after DEF, RES and effects, for every unit. The fraction is dropped,
+    // so at 0.1 a hit under 10 gives nothing, and neither does a blocked one. That's intended.
+    public const float OD_CHARGE_RATE = 0.1f;
+
     public static string GetFont(this FONTS font)
         => font switch
         {
