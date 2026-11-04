@@ -29,6 +29,10 @@ namespace LuanSC.Scenes
                 Text = "Start Game",
                 Position = new(controls.Width / 2 - 10, 5)
             };
+            b.Click += (s, e) =>
+            {
+                GameRoot.sceneManger.ChangeScene(manager => new BattleSelectionScene(manager));
+            };
 
             Button b2 = new(20, 1)
             {

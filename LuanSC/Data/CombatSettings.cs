@@ -38,6 +38,8 @@ namespace LuanSC.Data
         /// </summary>
         public float OverlayOpacity { get; init; } = 1;
 
+        public string Description { get; init; } = string.Empty;
+
         /// <summary>
         /// New game objects for every unit. Call once per fight, the objects keep their state.
         /// </summary>

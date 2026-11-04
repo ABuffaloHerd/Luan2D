@@ -8,9 +8,11 @@ namespace LuanSC.Data;
 
 /// <summary>
 /// Level factories. Each returns plain settings, CombatScene builds the units from them.
+/// Use the [Battle] attribute to make them show up in the battle selection scene.
 /// </summary>
 public static class LevelRegistry
 {
+    [Battle("Condition Test", BattleCategory.TEST, Order = 1)]
     public static CombatSettings ConditionTest() => new()
     {
         Units =
@@ -61,6 +63,7 @@ public static class LevelRegistry
         Width = 45,
         Height = 45,
     };
+    [Battle("Test Arena", BattleCategory.TEST, Order = 2)]
     public static CombatSettings Test() => new()
     {
         Units =
