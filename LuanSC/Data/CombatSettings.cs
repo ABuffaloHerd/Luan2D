@@ -55,7 +55,7 @@ namespace LuanSC.Data
                 if (effects is not null)
                 {
                     foreach (EffectSpec effect in unit.Effects.Concat(StartEffects))
-                        effects.Apply(SpecLookup.Effect(effect)); // a new effect every time, they count down their own duration
+                        effects.Apply(IdDictionary.Effect(effect)); // a new effect every time, they count down their own duration
                 }
 
                 objects.Add(obj);
@@ -71,7 +71,7 @@ namespace LuanSC.Data
             GameObject obj = unit.Kind switch
             {
                 UnitKind.PLAYER => new PlayerGameObject(glyph, MagicNumbers.GAMEOBJECT_INDEX),
-                UnitKind.ENEMY => new EnemyGameObject(glyph, MagicNumbers.GAMEOBJECT_INDEX, SpecLookup.Ai(unit.Ai)),
+                UnitKind.ENEMY => new EnemyGameObject(glyph, MagicNumbers.GAMEOBJECT_INDEX, IdDictionary.Ai(unit.Ai)),
                 UnitKind.WALL => Wall.GenerateWall(unit.Colour),
                 UnitKind.FURNITURE => new Furniture(glyph, MagicNumbers.GAMEOBJECT_INDEX),
                 _ => throw new ArgumentException($"Unknown unit kind {unit.Kind}")
@@ -105,10 +105,10 @@ namespace LuanSC.Data
                 actions?.Configure(type, max);
 
             if (unit.Weapon is not null && obj.GetComponent<WeaponComponent>() is WeaponComponent weapon)
-                weapon.Weapon = SpecLookup.Weapon(unit.Weapon);
+                weapon.Weapon = IdDictionary.Weapon(unit.Weapon);
 
             if (unit.Spells.Count > 0)
-                obj.AddComponent(new SpellbookComponent(unit.Spells.Select(SpecLookup.Spell).ToArray()));
+                obj.AddComponent(new SpellbookComponent(unit.Spells.Select(IdDictionary.Spell).ToArray()));
 
             return obj;
         }
@@ -118,7 +118,7 @@ namespace LuanSC.Data
             ResourceComponent resource = obj.GetResource(spec.Type);
             if (resource is null)
             {
-                resource = SpecLookup.Resource(spec.Type);
+                resource = IdDictionary.Resource(spec.Type);
                 obj.AddComponent(resource);
             }
 

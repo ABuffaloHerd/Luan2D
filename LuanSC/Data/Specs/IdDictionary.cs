@@ -15,7 +15,7 @@ namespace LuanSC.Data.Specs;
 /// Maps the IDs used in specs to the registries. Add a line here when you add something to a registry,
 /// or levels won't be able to use it. IDs ignore case.
 /// </summary>
-public static class SpecLookup
+public static class IdDictionary
 {
     private static readonly Dictionary<string, Func<Weapon>> weapons = new(StringComparer.OrdinalIgnoreCase)
     {
