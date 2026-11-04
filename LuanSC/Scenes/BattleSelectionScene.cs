@@ -34,16 +34,11 @@ public class BattleSelectionScene : Scene
             DrawBorder = true,
         };
 
-        // section headers are items too, so they scroll with their battles
-        foreach (IGrouping<BattleCategory, BattleEntry> category in BattleCatalog.All.GroupBy(battle => battle.Category))
-        {
-            battles.Items.Add(new ColoredString(category.Key.ToString(), Color.Yellow, Color.Transparent));
+        // sorted by category, so a category's battles stay together
+        foreach (BattleEntry battle in BattleCatalog.All)
+            battles.Items.Add(battle);
 
-            foreach (BattleEntry battle in category)
-                battles.Items.Add(battle);
-        }
-
-        battles.SelectedItemChanged += (s, e) => Select(e.Item as BattleEntry); // null for a section header
+        battles.SelectedItemChanged += (s, e) => Select(e.Item as BattleEntry);
 
         // right half, the launch button under the details of the selected battle
         launch = new(GameSettings.GAME_WIDTH - half - 3, 3)
@@ -69,7 +64,10 @@ public class BattleSelectionScene : Scene
             UseKeyboard = false,
             FocusOnMouseClick = false,
         };
-        Border.CreateForSurface(info, "Battle");
+        Border.BorderParameters bp = Border.BorderParameters.GetDefault();
+        bp.DrawBorder = true;
+
+        Border b = new(info, bp);
 
         Children.Add(controls);
         Children.Add(info);
