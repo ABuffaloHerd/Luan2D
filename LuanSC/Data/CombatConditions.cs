@@ -35,11 +35,11 @@ public sealed class CombatConditions
     public int Round => RoundsCompleted + 1;
 
     /// <param name="objects">The live list of units in the fight, already filled with the starting units.</param>
-    public CombatConditions(IEnumerable<ConditionSpec> specs, IReadOnlyList<GameObject> objects)
+    public CombatConditions(IEnumerable<ConditionDefinition> specs, IReadOnlyList<GameObject> objects)
     {
         this.objects = objects;
 
-        foreach (ConditionSpec spec in specs)
+        foreach (ConditionDefinition spec in specs)
             conditions.Add(Build(spec));
 
         // a side that starts empty has nobody to lose, otherwise a level with no enemies wins on the first turn
@@ -59,11 +59,11 @@ public sealed class CombatConditions
         return met.FirstOrDefault(c => c.Outcome == CombatOutcome.DEFEAT) ?? met.FirstOrDefault();
     }
 
-    private Condition Build(ConditionSpec spec)
+    private Condition Build(ConditionDefinition spec)
     {
         switch (spec)
         {
-            case ConditionSpec.UnitDead dead:
+            case ConditionDefinition.UnitDead dead:
                 List<GameObject> units = objects
                     .Where(obj => string.Equals(obj.Name, dead.UnitName, StringComparison.OrdinalIgnoreCase))
                     .ToList();
@@ -75,7 +75,7 @@ public sealed class CombatConditions
                     ? new Condition(dead.Outcome, () => $"Kill {dead.UnitName}", () => units.All(IsGone))
                     : new Condition(dead.Outcome, () => $"Keep {dead.UnitName} alive", () => units.Any(IsGone));
 
-            case ConditionSpec.RoundsCompleted rounds:
+            case ConditionDefinition.RoundsCompleted rounds:
                 string label = rounds.Outcome == CombatOutcome.VICTORY ? "Survive rounds" : "Round limit";
                 return new Condition(rounds.Outcome, () => $"{label}: {RoundsCompleted} / {rounds.Rounds}", () => RoundsCompleted >= rounds.Rounds);
 

@@ -24,7 +24,7 @@ namespace LuanSC.Data
         /// <summary>
         /// Extra ways for the fight to end. All friends dead or all enemies dead always applies, so don't list those.
         /// </summary>
-        public List<ConditionSpec> Conditions { get; init; } = new();
+        public List<ConditionDefinition> Conditions { get; init; } = new();
 
         // default arena size, fills the view exactly. Bigger scrolls, smaller leaves a gap
         public int Width { get; init; } = GameSettings.ARENA_VIEW_SIZE;

@@ -7,9 +7,11 @@ namespace LuanSC.Data;
 /// </summary>
 public enum BattleCategory
 {
-    TUTORIAL,
-    SPECIAL,
-    TEST,
+    TUTORIAL, // how play boring game
+    SPECIAL,  // angry birds golden eggs level type shit
+    STORY,   // the main campaign. i'm sure i'll get to it some day.
+    PARADOX, // character highlight
+    TEST, // TESTIFICATE
 }
 
 /// <summary>

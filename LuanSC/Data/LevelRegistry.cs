@@ -12,6 +12,48 @@ namespace LuanSC.Data;
 /// </summary>
 public static class LevelRegistry
 {
+    [Battle("Enigmatic Exercise: Minako", BattleCategory.PARADOX, Order = 4)]
+    public static CombatSettings MinakoP() => new()
+    {
+        Units =
+        [
+            new UnitDefinition
+            {
+                Kind = UnitKind.PLAYER,
+                Name = "Minako",
+                UnitType = UnitType.HUMAN,
+                Glyph = 'M',
+                Colour = Color.Gray,
+                Position = new(1, 1),
+                Hp = 150,
+                Speed = 90,
+                Weapon = "Crossbow",
+                Resources =
+                [
+                    new(ResourceType.MP) { Max = 50 },
+                    new(ResourceType.SP) { Max = 75 },
+                    new(ResourceType.AMMO) { Max = 1 }, // 1 bolt
+                ],
+                Spells = ["Reload", "Railgun"],
+            },
+            new UnitDefinition
+            {
+                Kind = UnitKind.ENEMY,
+                Name = "Target Dummy",
+                UnitType = UnitType.MECHANICAL, // a construct, not alive
+                Glyph = 'T',
+                Colour = Color.White,
+                Position = new(5, 5),
+                Hp = 100,
+                Speed = 50,
+            }
+        ],
+
+        Width = 45,
+        Height = 45,
+        Description = "Minako excels at single target damage but struggles when it gets close and personal. Despite being bad at magic, she has tools to get out such situaions. Use this to your advantage."
+    };
+
     [Battle("Condition Test", BattleCategory.TEST, Order = 1)]
     public static CombatSettings ConditionTest() => new()
     {

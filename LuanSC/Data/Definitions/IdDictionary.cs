@@ -42,6 +42,7 @@ public static class IdDictionary
         ["TitanAplu"]       = () => SpellRegistry.TitanAplu(),
         ["Reload"]          = () => SpellRegistry.Reload(),
         ["Heal"]            = () => SpellRegistry.Heal(),
+        ["Railgun"]         = () => SpellRegistry.Railgun(),
     };
 
     private static readonly Dictionary<string, Func<GameObject, SummonedGameObject>> summons = new(StringComparer.OrdinalIgnoreCase)
@@ -96,13 +97,13 @@ public static class IdDictionary
             "idle" => new IdleBehavior(),
             "zombie" => new ZombieBehavior(),
             "summoner" => new SummonerBehavior(Summon(spec.Minion ?? throw new ArgumentException("Summoner AI needs a Minion."))),
-            _ => throw new ArgumentException($"Unknown AI '{spec.Behavior}'. Add it to SpecLookup.Ai.")
+            _ => throw new ArgumentException($"Unknown AI '{spec.Behavior}'. Add it to IdDictionary.Ai.")
         };
     }
 
     private static T Find<T>(Dictionary<string, T> table, string id, string what)
     {
         if (id is not null && table.TryGetValue(id, out T found)) return found;
-        throw new ArgumentException($"Unknown {what} '{id}'. Known: {string.Join(", ", table.Keys)}.");
+        throw new ArgumentException($"Unknown {what} '{id}'. Known: {string.Join(", ", table.Keys)}.\nDid you forget to register it in IdDictionary?");
     }
 }

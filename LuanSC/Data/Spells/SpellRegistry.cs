@@ -18,6 +18,11 @@ namespace LuanSC.Data.Spells;
 /// </summary>
 public static class SpellRegistry
 {
+    public static ISpell Railgun()
+    {
+        return new RailgunSpell(100);
+    }
+
     public static ISpell SummonFamiliar()
     {
         return new SummonSpell("Familiar", "A helper you control.", ActionType.SPELL, SummonRegistry.Familiar);

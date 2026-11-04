@@ -38,7 +38,7 @@ public partial class CombatScene
         SpellbookComponent book = caster.GetComponent<SpellbookComponent>();
 
         // might need to make this a class var
-        Window spellbook = new Window(40, 40)
+        Window spellbook = new Window(90, 40)
         {
             Title = $"{caster.Name}'s Actions",
             CanDrag = true,

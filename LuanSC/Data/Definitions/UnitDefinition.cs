@@ -15,7 +15,7 @@ public enum UnitKind
 
 /// <summary>
 /// Describes one unit. CombatSettings.BuildObjects turns it into a GameObject, a fresh one every fight.
-/// Weapons, spells, AI and effects are named by their ID in SpecLookup so a level file can refer to them later.
+/// Weapons, spells, AI and effects are named by their ID in IdDictionary so a level file can refer to them later.
 /// Anything left null keeps the default from PlayerGameObject or EnemyGameObject.
 /// </summary>
 public sealed record UnitDefinition
@@ -73,7 +73,7 @@ public sealed record UnitDefinition
 /// <summary>
 /// A resource on one unit. Changes the unit's existing one of that type, or adds it if they don't have it.
 /// Everything is optional so a unit can just bump its MP, or carry a fully customised pool.
-/// Null keeps the default: the unit's own component, the SpecLookup factory, or failing both a plain white pool of 100.
+/// Null keeps the default: the unit's own component, the IdDictionary factory, or failing both a plain white pool of 100.
 /// </summary>
 public sealed record ResourceDefinition(ResourceType Type)
 {
