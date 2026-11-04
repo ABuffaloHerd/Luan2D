@@ -46,6 +46,17 @@ public static class LevelRegistry
                 Hp = 100,
                 Speed = 50,
             },
+            
+            new UnitSpec
+            {
+                Kind = UnitKind.FURNITURE,
+                Name = "Table",
+                UnitType = UnitType.FURNITURE,
+                Glyph = (char)210,
+                Colour = Color.Brown,
+                Position = new(3, 3),
+                Hp = 10,
+            }
         ],
         Width = 45,
         Height = 45,
