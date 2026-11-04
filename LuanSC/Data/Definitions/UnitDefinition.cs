@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LuanSC.Data.Specs;
+namespace LuanSC.Data.Definitions;
 
 public enum UnitKind
 {
@@ -18,7 +18,7 @@ public enum UnitKind
 /// Weapons, spells, AI and effects are named by their ID in SpecLookup so a level file can refer to them later.
 /// Anything left null keeps the default from PlayerGameObject or EnemyGameObject.
 /// </summary>
-public sealed record UnitSpec
+public sealed record UnitDefinition
 {
     public UnitKind Kind { get; init; } = UnitKind.ENEMY;
 
@@ -40,7 +40,7 @@ public sealed record UnitSpec
     /// <summary>
     /// Changes existing resources (MP, SP, OD) or adds missing ones (Metal).
     /// </summary>
-    public List<ResourceSpec> Resources { get; init; } = new();
+    public List<ResourceDefinition> Resources { get; init; } = new();
 
     /// <summary>
     /// Per-turn limits on top of the defaults, e.g. SPELL = 1.
@@ -62,12 +62,12 @@ public sealed record UnitSpec
     /// <summary>
     /// Enemies only. Null means idle.
     /// </summary>
-    public AiSpec Ai { get; init; }
+    public AiDefinition Ai { get; init; }
 
     /// <summary>
     /// Applied in order at the start of combat, so Vulnerable before Armour is not the same as Armour before Vulnerable.
     /// </summary>
-    public List<EffectSpec> Effects { get; init; } = new();
+    public List<EffectDefinition> Effects { get; init; } = new();
 }
 
 /// <summary>
@@ -75,7 +75,7 @@ public sealed record UnitSpec
 /// Everything is optional so a unit can just bump its MP, or carry a fully customised pool.
 /// Null keeps the default: the unit's own component, the SpecLookup factory, or failing both a plain white pool of 100.
 /// </summary>
-public sealed record ResourceSpec(ResourceType Type)
+public sealed record ResourceDefinition(ResourceType Type)
 {
     public int? Max { get; init; }
 
@@ -100,7 +100,7 @@ public sealed record ResourceSpec(ResourceType Type)
 /// Value is whatever number the effect takes: damage for Poison, percent for Empower, Weaken and Vulnerable, amount for Armour,
 /// percent for Elemental (positive weakness, negative resistance).
 /// </summary>
-public sealed record EffectSpec(string Id, int Duration, int Value = 0)
+public sealed record EffectDefinition(string Id, int Duration, int Value = 0)
 {
     /// <summary>
     /// Only used by Elemental for now, e.g. new("Elemental", -1, 50) { Element = Element.Electric }.
@@ -111,4 +111,4 @@ public sealed record EffectSpec(string Id, int Duration, int Value = 0)
 /// <summary>
 /// Minion is a summon ID, only used by Summoner.
 /// </summary>
-public sealed record AiSpec(string Behavior, string Minion = null);
+public sealed record AiDefinition(string Behavior, string Minion = null);

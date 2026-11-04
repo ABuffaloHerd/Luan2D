@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LuanSC.Data.Specs;
+namespace LuanSC.Data.Definitions;
 
 /// <summary>
 /// Maps the IDs used in specs to the registries. Add a line here when you add something to a registry,
@@ -53,7 +53,7 @@ public static class IdDictionary
         ["Dispenser"]           = owner => SummonRegistry.Dispenser(owner),
     };
 
-    private static readonly Dictionary<string, Func<EffectSpec, IEffect>> effects = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly Dictionary<string, Func<EffectDefinition, IEffect>> effects = new(StringComparer.OrdinalIgnoreCase)
     {
         ["Poison"] = e => new PoisonEffect(e.Duration, e.Value),
         ["Empower"] = e => new EmpowerEffect(e.Duration, e.Value),
@@ -79,7 +79,7 @@ public static class IdDictionary
     public static Weapon Weapon(string id) => Find(weapons, id, "weapon")();
     public static ISpell Spell(string id) => Find(spells, id, "spell")();
     public static Func<GameObject, SummonedGameObject> Summon(string id) => Find(summons, id, "summon");
-    public static IEffect Effect(EffectSpec spec) => Find(effects, spec.Id, "effect")(spec);
+    public static IEffect Effect(EffectDefinition spec) => Find(effects, spec.Id, "effect")(spec);
 
     /// <summary>
     /// A new resource of this type. Types without a factory get a plain pool, the spec fills in the rest.
@@ -87,7 +87,7 @@ public static class IdDictionary
     public static ResourceComponent Resource(ResourceType type)
         => resources.TryGetValue(type, out var make) ? make() : new ResourceComponent(type, type.ToString(), type.ToString(), Color.White, 100);
 
-    public static IAIBehavior Ai(AiSpec spec)
+    public static IAIBehavior Ai(AiDefinition spec)
     {
         if (spec is null) return new IdleBehavior();
 

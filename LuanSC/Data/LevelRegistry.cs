@@ -1,5 +1,5 @@
 using LuanSC.Data.Components;
-using LuanSC.Data.Specs;
+using LuanSC.Data.Definitions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,7 +17,7 @@ public static class LevelRegistry
     {
         Units =
         [
-            new UnitSpec
+            new UnitDefinition
             {
                 Kind = UnitKind.PLAYER,
                 Name = "Hirina",
@@ -37,7 +37,7 @@ public static class LevelRegistry
                 Weapon = "Throngler",
                 Spells = ["Unsheath", "Fireball"],
             },
-            new UnitSpec
+            new UnitDefinition
             {
                 Kind = UnitKind.ENEMY,
                 Name = "Target Dummy",
@@ -49,7 +49,7 @@ public static class LevelRegistry
                 Speed = 50,
             },
             
-            new UnitSpec
+            new UnitDefinition
             {
                 Kind = UnitKind.FURNITURE,
                 Name = "Table",
@@ -68,7 +68,7 @@ public static class LevelRegistry
     {
         Units =
         [
-            new UnitSpec
+            new UnitDefinition
             {
                 Kind = UnitKind.PLAYER,
                 Name = "Hirina",
@@ -100,7 +100,7 @@ public static class LevelRegistry
                 ],
             },
 
-            new UnitSpec
+            new UnitDefinition
             {
                 Kind = UnitKind.ENEMY,
                 Name = "Target Dummy",
@@ -112,7 +112,7 @@ public static class LevelRegistry
                 Speed = 50,
             },
 
-            new UnitSpec
+            new UnitDefinition
             {
                 Kind = UnitKind.PLAYER,
                 Name = "Minako",
@@ -133,7 +133,7 @@ public static class LevelRegistry
                 Effects = [new("Barrier", Duration: 1)],
             },
 
-            new UnitSpec
+            new UnitDefinition
             {
                 Kind = UnitKind.PLAYER,
                 Name = "Mariah",
@@ -149,7 +149,7 @@ public static class LevelRegistry
                 Spells = ["SummonFamiliar", "MagicCircle", "Fireball"],
             },
 
-            new UnitSpec
+            new UnitDefinition
             {
                 Kind = UnitKind.PLAYER,
                 Name = "Luna",
@@ -171,7 +171,7 @@ public static class LevelRegistry
                 Spells = ["SentryGun", "Dispenser", "TitanAplu"],
             },
 
-            new UnitSpec
+            new UnitDefinition
             {
                 Kind = UnitKind.PLAYER,
                 Name = "Yin Ling",
@@ -193,9 +193,9 @@ public static class LevelRegistry
                 Spells = ["Heal"],
             },
 
-            new UnitSpec { Kind = UnitKind.WALL, Position = new(4, 4) },
+            new UnitDefinition { Kind = UnitKind.WALL, Position = new(4, 4) },
 
-            new UnitSpec
+            new UnitDefinition
             {
                 Kind = UnitKind.ENEMY,
                 Name = "Zombie",
@@ -209,7 +209,7 @@ public static class LevelRegistry
                 ElementModifiers = { [Element.Fire] = 50 }, // weak to fire
             },
 
-            new UnitSpec
+            new UnitDefinition
             {
                 Kind = UnitKind.ENEMY,
                 Name = "Necromancer",

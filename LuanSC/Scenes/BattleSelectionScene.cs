@@ -1,5 +1,5 @@
 ﻿using LuanSC.Data;
-using LuanSC.Data.Specs;
+using LuanSC.Data.Definitions;
 using LuanSC.Scenes.Transitions;
 using SadConsole.Input;
 using SadConsole.UI;
@@ -108,7 +108,7 @@ public class BattleSelectionScene : Scene
     /// </summary>
     private int PrintUnits(string heading, UnitKind kind, CombatSettings settings, int y)
     {
-        List<IGrouping<string, UnitSpec>> units = settings.Units
+        List<IGrouping<string, UnitDefinition>> units = settings.Units
             .Where(unit => unit.Kind == kind)
             .GroupBy(unit => unit.Name ?? "Unnamed")
             .ToList();
@@ -117,7 +117,7 @@ public class BattleSelectionScene : Scene
 
         y = PrintWrapped(heading, Color.Gray, y);
 
-        foreach (IGrouping<string, UnitSpec> unit in units)
+        foreach (IGrouping<string, UnitDefinition> unit in units)
         {
             string name = unit.Count() > 1 ? $"{unit.Key} x{unit.Count()}" : unit.Key;
             y = PrintWrapped($"  {name}", Color.White, y);

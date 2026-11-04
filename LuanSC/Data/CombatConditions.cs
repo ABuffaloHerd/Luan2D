@@ -1,5 +1,5 @@
 using LuanSC.Data.Components;
-using LuanSC.Data.Specs;
+using LuanSC.Data.Definitions;
 using LuanSC.Objects;
 using System;
 using System.Collections.Generic;

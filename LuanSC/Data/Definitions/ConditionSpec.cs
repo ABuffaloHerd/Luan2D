@@ -1,4 +1,4 @@
-namespace LuanSC.Data.Specs;
+namespace LuanSC.Data.Definitions;
 
 /// <summary>
 /// An extra way for a level to end, on top of the fallback (all friends dead or all enemies dead).

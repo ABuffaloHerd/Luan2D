@@ -1,5 +1,5 @@
 ﻿using LuanSC.Data.Components;
-using LuanSC.Data.Specs;
+using LuanSC.Data.Definitions;
 using LuanSC.Objects;
 using System;
 using System.Collections.Generic;
@@ -14,12 +14,12 @@ namespace LuanSC.Data
     // TODO: Background tiles and audio.
     public sealed record CombatSettings
     {
-        public List<UnitSpec> Units { get; init; } = new();
+        public List<UnitDefinition> Units { get; init; } = new();
 
         /// <summary>
         /// Applied to every unit that can have effects, after their own. Each unit gets its own copy, e.g. a weather effect.
         /// </summary>
-        public List<EffectSpec> StartEffects { get; init; } = new();
+        public List<EffectDefinition> StartEffects { get; init; } = new();
 
         /// <summary>
         /// Extra ways for the fight to end. All friends dead or all enemies dead always applies, so don't list those.
@@ -47,14 +47,14 @@ namespace LuanSC.Data
         {
             List<GameObject> objects = new();
 
-            foreach (UnitSpec unit in Units)
+            foreach (UnitDefinition unit in Units)
             {
                 GameObject obj = BuildUnit(unit);
 
                 EffectComponent effects = obj.GetComponent<EffectComponent>();
                 if (effects is not null)
                 {
-                    foreach (EffectSpec effect in unit.Effects.Concat(StartEffects))
+                    foreach (EffectDefinition effect in unit.Effects.Concat(StartEffects))
                         effects.Apply(IdDictionary.Effect(effect)); // a new effect every time, they count down their own duration
                 }
 
@@ -64,7 +64,7 @@ namespace LuanSC.Data
             return objects;
         }
 
-        private static GameObject BuildUnit(UnitSpec unit)
+        private static GameObject BuildUnit(UnitDefinition unit)
         {
             ColoredGlyph glyph = new(unit.Colour, Color.Transparent, unit.Glyph);
 
@@ -97,7 +97,7 @@ namespace LuanSC.Data
             if (unit.Speed is int speed && obj.GetComponent<SpeedComponent>() is SpeedComponent speedComponent)
                 speedComponent.Speed = speed;
 
-            foreach (ResourceSpec spec in unit.Resources)
+            foreach (ResourceDefinition spec in unit.Resources)
                 ApplyResource(obj, spec);
 
             ActionComponent actions = obj.GetComponent<ActionComponent>();
@@ -113,7 +113,7 @@ namespace LuanSC.Data
             return obj;
         }
 
-        private static void ApplyResource(GameObject obj, ResourceSpec spec)
+        private static void ApplyResource(GameObject obj, ResourceDefinition spec)
         {
             ResourceComponent resource = obj.GetResource(spec.Type);
             if (resource is null)
