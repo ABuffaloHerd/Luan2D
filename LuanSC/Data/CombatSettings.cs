@@ -71,6 +71,7 @@ namespace LuanSC.Data
                 UnitKind.PLAYER => new PlayerGameObject(glyph, MagicNumbers.GAMEOBJECT_INDEX),
                 UnitKind.ENEMY => new EnemyGameObject(glyph, MagicNumbers.GAMEOBJECT_INDEX, SpecLookup.Ai(unit.Ai)),
                 UnitKind.WALL => Wall.GenerateWall(unit.Colour),
+                UnitKind.FURNITURE => new Furniture(glyph, MagicNumbers.GAMEOBJECT_INDEX),
                 _ => throw new ArgumentException($"Unknown unit kind {unit.Kind}")
             };
 
