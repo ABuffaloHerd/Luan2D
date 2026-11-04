@@ -52,6 +52,7 @@ public static class LevelRegistry
         Width = 45,
         Height = 45,
         Description = "Minako excels at single target damage but struggles when it gets close and personal. Despite being bad at magic, she has tools to get out such situaions. Use this to your advantage."
+        // TODO: teleport spell, barrier spell
     };
 
     [Battle("Condition Test", BattleCategory.TEST, Order = 1)]

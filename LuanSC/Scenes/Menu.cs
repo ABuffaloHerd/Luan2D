@@ -64,10 +64,21 @@ namespace LuanSC.Scenes
                 GameRoot.sceneManger.ChangeScene(manager => new CombatScene(manager, LevelRegistry.ConditionTest()), new RandomGarbageTransition(TimeSpan.FromMilliseconds(500)));
             };
 
+            Button b5 = new(20, 1)
+            {
+                Text = "Glyph Viewer",
+                Position = new(controls.Width / 2 - 10, 13)
+            };
+            b5.Click += (s, e) =>
+            {
+                GameRoot.sceneManger.ChangeScene(manager => new GlyphViewerScene(manager), new WipeTransition());
+            };
+
             controls.Controls.Add(b);
             controls.Controls.Add(b2);
             controls.Controls.Add(b3);
             controls.Controls.Add(b4);
+            controls.Controls.Add(b5);
 
             surface.Children.Add(controls);
 
