@@ -1,4 +1,6 @@
-﻿using LuanSC.Objects;
+﻿using LuanSC.Data.Animations;
+using LuanSC.Data.Components.AI;
+using LuanSC.Objects;
 using LuanSC.Objects.Weapons;
 using LuanSC.Scenes;
 using System;
@@ -10,15 +12,16 @@ namespace LuanSC.Data.Components.Attacks
     public class BasicAttack : IAbility
     {
         public string Name => "Slashing Attack";
-        public string Description => "A basic slashing attack that deals physical damage to a single target.";
+        public string Description => "A basic slashing attack that deals damage to a single target. Type configurable.";
         public int Damage { get; private set; }
+        public DamageType Type { get; set; } = DamageType.PHYSICAL;
 
         public BasicAttack(int damage)
         {
             Damage = damage;
         }
 
-        public void Execute(GameObject owner, IReadOnlyList<GameObject> targets)
+        public void Execute(GameObject owner, IReadOnlyList<GameObject> targets, ICombatContext context)
         {
             // attack first target in targets
             if (targets.Count == 0)
@@ -44,11 +47,14 @@ namespace LuanSC.Data.Components.Attacks
                 Attacker = owner,
                 Target = target,
                 Amount = Damage,
-                Type = DamageType.PHYSICAL,
+                Type = Type,
                 Source = Name
             };
 
             int dealt = healthy.TakeDamage(pain);
+
+            // origin is the target's arena cell, so the slash crosses right on whoever got hit. Length 3 keeps it to them and their neighbours
+            context.PlayAnimation(AnimationRegistry.Slash(target.Position, 3, Color.White));
 
             // pUBLISH A DAMAGE DEALT EVENT
             var damageDealtEvent = new CombatEvent.DamageDealt
@@ -56,7 +62,8 @@ namespace LuanSC.Data.Components.Attacks
                 owner,
                 target,
                 dealt,
-                DamageType.PHYSICAL
+                Type,
+                pain.Element
             );
             GameEvents.Publish(damageDealtEvent);
         }

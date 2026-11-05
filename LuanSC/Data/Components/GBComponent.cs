@@ -16,8 +16,9 @@ namespace LuanSC.Data.Components
         public GBComponent(int max = 100) : base(ResourceType.GB, "GB", $"GB{(char)225}", Color.Gold, max)
         {
             LabelColor = Color.DarkGray;
-            TextColor = Color.DarkGray;
+            TextColor = Color.Black;
             HudOrder = 31;
+            UseDimTrack();
             Current = 0;
         }
 

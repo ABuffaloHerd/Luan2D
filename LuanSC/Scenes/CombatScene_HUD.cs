@@ -49,9 +49,10 @@ public partial class CombatScene
         public const int SLOTS = 10;
         private const int LABEL_WIDTH = 5;
 
-        private readonly ProgressBar[] bars = new ProgressBar[SLOTS];
+        private readonly TrackedBar[] bars = new TrackedBar[SLOTS];
         private readonly Label[] labels = new Label[SLOTS];
         private Color? defaultTextColor;
+        private int defaultTrackGlyph;
 
         // what each slot is currently showing, null means hidden
         private readonly HudBar[] shown = new HudBar[SLOTS];
@@ -97,7 +98,7 @@ public partial class CombatScene
             {
                 int y = i * 2; // a blank line between bars
 
-                ProgressBar bar = new(this.Width - LABEL_WIDTH, 1, HorizontalAlignment.Left)
+                TrackedBar bar = new(this.Width - LABEL_WIDTH, 1, HorizontalAlignment.Left)
                 {
                     Position = new(LABEL_WIDTH, y),
                     IsVisible = false
@@ -117,6 +118,7 @@ public partial class CombatScene
             }
 
             defaultTextColor = bars[0].DisplayTextColor;
+            defaultTrackGlyph = bars[0].BackgroundGlyph;
         }
 
         /// <summary>
@@ -166,7 +168,7 @@ public partial class CombatScene
         /// </summary>
         private void Apply(int slot, HudBar hudBar)
         {
-            ProgressBar bar = bars[slot];
+            TrackedBar bar = bars[slot];
             Label label = labels[slot];
 
             shown[slot] = hudBar;
@@ -183,6 +185,7 @@ public partial class CombatScene
             bar.DisplayText = hudBar.Text;
             bar.BarColor = hudBar.BarColor;
             bar.DisplayTextColor = hudBar.TextColor ?? defaultTextColor;
+            bar.SetTrack(hudBar.TrackGlyph ?? defaultTrackGlyph, hudBar.TrackColor, hudBar.TrackBackground);
             bar.IsVisible = true;
 
             label.DisplayText = hudBar.Label;
@@ -194,6 +197,38 @@ public partial class CombatScene
             label.IsDirty = true;
             bar.UpdateAndRedraw(TimeSpan.Zero);
             label.UpdateAndRedraw(TimeSpan.Zero);
+        }
+    }
+
+    /// <summary>
+    /// A ProgressBar whose empty part can have its own glyph and colours (HudBar.TrackGlyph / TrackColor / TrackBackground).
+    /// The empty part is drawn with the control's theme colours, which a theme refresh resets,
+    /// so ours are put back after every refresh. Nulls leave the theme alone.
+    /// </summary>
+    private class TrackedBar : ProgressBar
+    {
+        private Color? trackColor;
+        private Color? trackBackground;
+
+        public TrackedBar(int width, int height, HorizontalAlignment alignment) : base(width, height, alignment) { }
+
+        public void SetTrack(int glyph, Color? color, Color? background)
+        {
+            BackgroundGlyph = glyph;
+            trackColor = color;
+            trackBackground = background;
+            RefreshThemeStateColors(FindThemeColors());
+            IsDirty = true;
+        }
+
+        protected override void RefreshThemeStateColors(Colors colors)
+        {
+            base.RefreshThemeStateColors(colors);
+
+            if (trackColor is Color color)
+                ThemeState.SetForeground(color);
+            if (trackBackground is Color background)
+                ThemeState.SetBackground(background);
         }
     }
 }

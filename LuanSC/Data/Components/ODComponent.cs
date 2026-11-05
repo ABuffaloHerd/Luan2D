@@ -13,15 +13,8 @@ namespace LuanSC.Data.Components
     {
         public override string Name => "OD Component";
 
-        /// <summary>
-        /// OD gained per point of damage taken, after DEF, RES and effects. The fraction is dropped,
-        /// so at 0.1 a hit under 10 gives nothing, and neither does a blocked one. That's intended.
-        /// </summary>
-        public float ChargeRate { get; set; }
-
-        public ODComponent(int max = 100, float chargeRate = 0.1f) : base(ResourceType.OD, "Overdrive", $"OD{(char)224}", Color.Purple, max)
+        public ODComponent(int max = 100) : base(ResourceType.OD, "Overdrive", $"OD{(char)224}", Color.Purple, max)
         {
-            ChargeRate = chargeRate;
             HudOrder = 30;
             Current = 0;
         }
@@ -49,7 +42,7 @@ namespace LuanSC.Data.Components
 
         public void OnDamageTaken(DamageRecord damage)
         {
-            int gain = (int)(damage.Amount * ChargeRate);
+            int gain = (int)(damage.Amount * GameSettings.OD_CHARGE_RATE);
             if (gain <= 0) return;
 
             int overflow = Math.Max(0, Current + gain - Max);

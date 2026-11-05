@@ -7,7 +7,7 @@ namespace LuanSC.Data
 {
     public abstract record CombatEvent
     {
-        public sealed record DamageDealt(GameObject Attacker, GameObject Target, int Amount, DamageType Type) : CombatEvent;
+        public sealed record DamageDealt(GameObject Attacker, GameObject Target, int Amount, DamageType Type, Element Element = Element.None) : CombatEvent;
 
         /// <summary>
         /// When damage is blocked
@@ -16,6 +16,12 @@ namespace LuanSC.Data
         /// <param name="EffectName">What saved them</param>
         /// <param name="Blocked">How much was blocked</param>
         public sealed record DamageBlocked(GameObject Owner, string EffectName, int Blocked) : CombatEvent;
+        /// <summary>
+        /// A weakness or resistance on the target changed a hit.
+        /// </summary>
+        /// <param name="Percent">The trait, positive is a weakness, negative a resistance.</param>
+        /// <param name="Change">How much it added (positive) or took off (negative).</param>
+        public sealed record ElementTrait(GameObject Target, Element Element, int Percent, int Change) : CombatEvent;
         public sealed record HealingDealt(GameObject Healer, GameObject Target, int Amount) : CombatEvent;
         public sealed record EffectApplied(GameObject Target, string EffectName) : CombatEvent;
         public sealed record EffectExpired(GameObject Target, string EffectName) : CombatEvent;
@@ -25,5 +31,7 @@ namespace LuanSC.Data
         public sealed record EntityDied(GameObject Target, DamageRecord KillingBlow) : CombatEvent;
         /// <param name="Message">Already filled in. Null uses the default.</param>
         public sealed record Summoned(GameObject Owner, GameObject Summon, string Message = null) : CombatEvent;
+        /// <param name="Reason">The condition that ended it, ready to show.</param>
+        public sealed record FightEnded(CombatOutcome Outcome, string Reason) : CombatEvent;
     }
 }

@@ -14,11 +14,16 @@ namespace LuanSC.Data.Spells;
 /// <remarks>
 /// FACING with an empty Area, it's cast on yourself so there's nothing to aim.
 /// </remarks>
-public class TransformSpell : CastSpell
+public class TransformSpell : CastableSpell
 {
     public string FormName { get; }
     public int Glyph { get; }
     public Func<IEnumerable<IComponent>> Kit { get; }
+
+    /// <summary>
+    /// What the caster counts as while transformed, e.g. MECHANICAL. Null keeps their own type.
+    /// </summary>
+    public UnitType? FormType { get; init; }
 
     public TransformSpell(string name, string description, ActionType type, string formName, int glyph, Func<IEnumerable<IComponent>> kit, params ResourceCost[] costs)
         : base(name, description, type, costs, Targeting.FACING, 1, new Pattern())
@@ -29,5 +34,5 @@ public class TransformSpell : CastSpell
     }
 
     public override void Resolve(GameObject caster, Point target, ICombatContext context)
-        => FormComponent.Enter(caster, FormName, Glyph, Kit());
+        => FormComponent.Enter(caster, FormName, Glyph, Kit(), FormType);
 }

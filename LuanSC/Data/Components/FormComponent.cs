@@ -26,19 +26,22 @@ public class FormComponent : IComponent
     private readonly List<IComponent> stashed = new();
     private string originalName;
     private int originalGlyph;
+    private UnitType originalUnitType;
 
     /// <summary>
     /// Puts obj into a new form. Effects are cleared first, they don't come along or come back.
     /// Everything except team and control is swapped for the kit.
     /// </summary>
-    public static void Enter(GameObject obj, string name, int glyph, IEnumerable<IComponent> kit)
+    /// <param name="unitType">What the form counts as, e.g. MECHANICAL for a mech. Null keeps the owner's own.</param>
+    public static void Enter(GameObject obj, string name, int glyph, IEnumerable<IComponent> kit, UnitType? unitType = null)
     {
         obj.GetComponent<EffectComponent>()?.Clear();
 
         FormComponent form = new()
         {
             originalName = obj.Name,
-            originalGlyph = obj.BaseAppearance?.Glyph ?? obj.AppearanceSingle.Appearance.Glyph
+            originalGlyph = obj.BaseAppearance?.Glyph ?? obj.AppearanceSingle.Appearance.Glyph,
+            originalUnitType = obj.UnitType
         };
 
         form.stashed.AddRange(obj.Components.Where(c => !IsKept(c)));
@@ -50,6 +53,7 @@ public class FormComponent : IComponent
         obj.AddComponent(form);
 
         obj.Name = name;
+        if (unitType is not null) obj.UnitType = unitType.Value;
         SetGlyph(obj, glyph);
     }
 
@@ -64,6 +68,7 @@ public class FormComponent : IComponent
             Owner.Components.Add(component); // still owned by them from before
 
         Owner.Name = originalName;
+        Owner.UnitType = originalUnitType;
         SetGlyph(Owner, originalGlyph);
     }
 

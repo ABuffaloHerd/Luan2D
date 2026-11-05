@@ -11,6 +11,7 @@ public class BarrierEffect : IEffect
     public int Duration { get; set; }
 
     public string Name => "Barrier";
+    public EffectTag Tags => EffectTag.Defensive | EffectTag.Buff;
 
     public GameObject Owner { get; private set; }
 
@@ -39,20 +40,27 @@ public class BarrierEffect : IEffect
         GameEvents.Publish(new CombatEvent.GenericMessage($"The barrier protects {Owner} for {Duration} more turn{((Duration > 1) ? 's' : '\0')}."));
     }
 
+    /// <summary>
+    /// Blocks every hit, true damage included. Each block costs a turn of duration, so a barrier under fire breaks early.
+    /// </summary>
     public DamageRecord OnIncomingDamage(DamageRecord damage)
     {
-        // if it ain't true damage it ain't getting past
-        if (damage.Type != DamageType.TRUE)
+        // already broken, it's only waiting for the next tick to be removed
+        if (Duration == 0) return damage;
+
+        // nothing got this far, don't wear the barrier down for it
+        if (damage.Amount <= 0) return damage;
+
+        GameEvents.Publish(new CombatEvent.DamageBlocked(Owner, "barrier", damage.Amount));
+
+        if (Duration > 0) // -1 is permanent
         {
-            GameEvents.Publish(new CombatEvent.DamageBlocked(Owner, "barrier", damage.Amount));
-            return damage with { Amount = 0 };
-        }
-        else
-        {
-            GameEvents.Publish(new CombatEvent.GenericMessage("The barrier fails to prevent true damage."));
+            Duration--;
+            if (Duration == 0)
+                GameEvents.Publish(new CombatEvent.GenericMessage($"{Owner.Name}'s barrier shatters."));
         }
 
-        return damage;
+        return damage with { Amount = 0 };
     }
 
     public void SetOwner(GameObject owner)

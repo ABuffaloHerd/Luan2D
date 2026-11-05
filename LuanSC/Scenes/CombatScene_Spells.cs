@@ -32,6 +32,13 @@ public partial class CombatScene
             return false;
         }
 
+        string refusal = cast.Spell.Refusal(caster);
+        if (refusal is not null)
+        {
+            GameEvents.Publish(new CombatEvent.GenericMessage(refusal));
+            return false;
+        }
+
         if (!TryPayCosts(caster, cast.Spell.Costs)) return false;
 
         // before Resolve, a transform renames the caster.

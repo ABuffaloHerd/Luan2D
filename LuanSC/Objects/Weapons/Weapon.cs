@@ -20,6 +20,11 @@ namespace LuanSC.Objects.Weapons
         public Pattern Range { get; private set; } = new Pattern(); // Default: single target
 
         public List<IAbility> Abilities{ get; } = new();
+
+        /// <summary>
+        /// Paid once per attack, e.g. one ammo. Nothing fires if any of them can't be paid.
+        /// </summary>
+        public List<ResourceCost> Costs { get; } = new();
         public Weapon(string name, int damage)
         {
             Name = name;

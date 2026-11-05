@@ -5,14 +5,28 @@ using SadConsole.Instructions;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
 using LuanSC.Data.Components;
+using LuanSC.Data.Components.Effects;
 using LuanSC.Data.Spells;
 using LuanSC.Objects;
+using LuanSC.Objects.Weapons;
 
 namespace LuanSC.Scenes;
 
 public partial class CombatScene
 {
     private int windowInstances = 0;
+
+    // Closed fires from inside the window's own Hide, often from one of its buttons, so they get disposed later in Update
+    private readonly List<Window> closedWindows = new();
+
+    private void DisposeClosedWindows()
+    {
+        foreach (Window window in closedWindows)
+            DisposeTree(window);
+
+        closedWindows.Clear();
+    }
+
     private void DisplaySpellbook()
     {
         if (windowInstances > 0) return;
@@ -24,7 +38,7 @@ public partial class CombatScene
         SpellbookComponent book = caster.GetComponent<SpellbookComponent>();
 
         // might need to make this a class var
-        Window spellbook = new Window(40, 40)
+        Window spellbook = new Window(90, 40)
         {
             Title = $"{caster.Name}'s Actions",
             CanDrag = true,
@@ -41,6 +55,7 @@ public partial class CombatScene
             if (closed) return;
             closed = true;
             windowInstances--;
+            closedWindows.Add(spellbook);
             RestoreFocus();
         }
 
@@ -138,6 +153,7 @@ public partial class CombatScene
         help.Closed += (sender, args) =>
         {
             windowInstances--;
+            closedWindows.Add(help);
             RestoreFocus();
         };
 
@@ -176,7 +192,7 @@ public partial class CombatScene
     private void Inspect(GameObject obj)
     {
         if (windowInstances > 0) return;
-        Window inspect = new Window(40, 40)
+        Window inspect = new Window(70, 40)
         {
             Title = $"Inspecting {obj.Name}",
             CanDrag = true,
@@ -187,13 +203,14 @@ public partial class CombatScene
         inspect.Closed += (sender, args) =>
         {
             windowInstances--;
+            closedWindows.Add(inspect);
             RestoreFocus();
         };
         // content area, the tab control adds its headers and border around this
         int contentWidth = inspect.Width - 2;
         int contentHeight = inspect.Height - 2;
         Panel panel = new(contentWidth, contentHeight);
-        panel.Add(new Label($"Name: {obj.Name}") { Position = new(1, 1) });
+        BuildInfoPanel(panel, obj, contentWidth - 2);
         TabControl tabs = new(
             [new TabItem("Info", panel)],
             contentWidth, contentHeight)
@@ -203,6 +220,84 @@ public partial class CombatScene
         inspect.Controls.Add(tabs);
         inspect.Position = new((GameSettings.GAME_WIDTH / 2) - (inspect.Width / 2) - 1, (GameSettings.GAME_HEIGHT / 2) - (inspect.Height / 2) + 1);
         inspect.Show(true);
+    }
+
+    /// <summary>
+    /// Name, type, HP, weapon and effects. Lines for things the object doesn't have (HP on a wall, a weapon) are left out.
+    /// A snapshot, it doesn't update while the window is open.
+    /// </summary>
+    
+    private static int width_offset = 2; // subtracted from width to make the info panel fit inside the window. SadConsole doesn't have a way to get the inner width of a window, so this is a workaround.
+    private static void BuildInfoPanel(Panel panel, GameObject obj, int width)
+    {
+        int y = 1;
+        width -= width_offset;
+        void Line(string text, Color? colour = null)
+        {
+            panel.Add(new Label(width) { DisplayText = text, Position = new(1, y), TextColor = colour ?? Color.White });
+            y++;
+        }
+
+        Line($"Name: {obj.Name}");
+        Line($"Type: {obj.UnitType.ToString().Replace(", ", "/")}");
+
+        HPComponent hp = obj.GetComponent<HPComponent>();
+        if (hp is not null)
+            Line($"HP  : {hp.Current} / {hp.Max}", Color.Red);
+
+        Weapon weapon = obj.GetComponent<WeaponComponent>()?.Weapon;
+        if (weapon is not null)
+        {
+            string costs = weapon.Costs.Count > 0
+                ? ", " + string.Join(", ", weapon.Costs.Select(c => $"{c.Amount} {c.Type}"))
+                : "";
+
+            // each ability has its own type, e.g. "PHYSICAL" or "PHYSICAL/TRUE". Plain "dmg" if it has no abilities
+            string types = string.Join("/", weapon.Abilities.Select(a => a.Type).Distinct());
+            if (types.Length == 0) types = "dmg";
+
+            Line($"Weapon: {weapon.Name} ({weapon.Damage} {types}{costs})", Color.Orange);
+        }
+
+        // what's left this turn. Refills at the start of the unit's own turn, so anyone else shows what they had left over
+        ActionComponent actions = obj.GetComponent<ActionComponent>();
+        if (actions is not null)
+        {
+            y++;
+            Line("Actions left:");
+
+            foreach (ActionType type in Enum.GetValues<ActionType>())
+            {
+                // a type that isn't configured has no limit
+                string left = actions.IsLimited(type) ? $"{actions.Remaining(type)} / {actions.Max(type)}" : "no limit";
+                Line($" {type}: {left}", Color.Yellow);
+            }
+        }
+
+        EffectComponent effects = obj.GetComponent<EffectComponent>();
+        if (effects is null) return;
+
+        y++;
+        Line("Effects:");
+
+        List<IEffect> active = effects.Effects.ToList();
+        if (active.Count == 0)
+        {
+            Line(" None", Color.Gray);
+            return;
+        }
+
+        foreach (IEffect effect in active)
+        {
+            string duration = effect.Duration < 0 ? "permanent" : $"{effect.Duration} turn{(effect.Duration == 1 ? "" : "s")}";
+
+            // buffs green, debuffs red, anything else plain
+            Color colour = effect.Tags.HasFlag(EffectTag.Buff) ? Color.Green
+                : effect.Tags.HasFlag(EffectTag.Debuff) ? Color.Red
+                : Color.White;
+
+            Line($" {effect.Name} ({duration})", colour);
+        }
     }
 
     private void RestoreFocus()

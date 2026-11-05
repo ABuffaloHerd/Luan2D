@@ -21,6 +21,54 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
         effect.OnApply();
     }
 
+    // QUERIES. Expired effects are skipped, they're only waiting for the next tick to be removed.
+
+    /// <summary>
+    /// Every active effect, oldest first.
+    /// </summary>
+    public IEnumerable<IEffect> Effects => effects.Where(e => !e.IsExpired);
+
+    /// <summary>
+    /// The oldest active effect of type T, or null. Works for any effect class, including ones private to a weapon.
+    /// </summary>
+    public T Get<T>() where T : IEffect => Effects.OfType<T>().FirstOrDefault();
+
+    /// <summary>
+    /// Every active effect of type T, for stacks like two Poisons.
+    /// </summary>
+    public IEnumerable<T> GetAll<T>() where T : IEffect => Effects.OfType<T>();
+
+    /// <summary>
+    /// DEF added by active stat modifiers, e.g. Armour.
+    /// </summary>
+    public int BonusDEF => Effects.OfType<IStatModifier>().Sum(m => m.DEF);
+
+    /// <summary>
+    /// RES added by active stat modifiers.
+    /// </summary>
+    public int BonusRES => Effects.OfType<IStatModifier>().Sum(m => m.RES);
+
+    /// <summary>
+    /// Extra actions of this type per turn from active action modifiers.
+    /// </summary>
+    public int BonusActions(ActionType type) => Effects.OfType<IActionModifier>().Sum(m => m.Bonus(type));
+
+    public bool Has<T>() where T : IEffect => Effects.OfType<T>().Any();
+
+    /// <summary>
+    /// Active effects with all of the given tags, e.g. WithTag(EffectTag.Debuff | EffectTag.DoT).
+    /// </summary>
+    public IEnumerable<IEffect> WithTag(EffectTag tags) => Effects.Where(e => tags != EffectTag.None && e.Tags.HasFlag(tags));
+
+    public bool HasTag(EffectTag tags) => WithTag(tags).Any();
+
+    /// <summary>
+    /// Active effects with all of the given elements, same rules as WithTag.
+    /// </summary>
+    public IEnumerable<IEffect> WithElement(Element element) => Effects.Where(e => element != Element.None && e.Element.HasFlag(element));
+
+    public bool HasElement(Element element) => WithElement(element).Any();
+
     public void Remove(IEffect effect)
     {
         if (effects.Remove(effect))
@@ -97,6 +145,16 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
         return modifiedDamage;
     }
 
+    public HealingRecord ProcessOutgoingHealing(HealingRecord healing)
+    {
+        HealingRecord modifiedHealing = healing;
+        foreach (var effect in effects)
+        {
+            modifiedHealing = effect.OnOutgoingHealing(modifiedHealing);
+        }
+        return modifiedHealing;
+    }
+
     public HealingRecord ProcessIncomingHealing(HealingRecord healthy)
     {
         HealingRecord modifiedHealing = healthy;
@@ -134,7 +192,11 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
         foreach (var effect in effects.ToList())
         {
             effect.OnTurnEnd();
-            effect.Duration--;
+
+            // only count down live timed effects. One already at 0 (a broken barrier, a finished building) would hit -1,
+            // which means permanent. Permanent ones stay negative either way.
+            if (effect.Duration > 0)
+                effect.Duration--;
         }
     }
 }

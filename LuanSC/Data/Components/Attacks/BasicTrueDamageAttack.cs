@@ -1,4 +1,5 @@
-﻿using LuanSC.Objects;
+﻿using LuanSC.Data.Components.AI;
+using LuanSC.Objects;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,13 +13,14 @@ public class BasicTrueDamageAttack : IAbility
     public string Description => "Deals true damage to the target.";
 
     public int Damage { get; private set; }
+    public DamageType Type => DamageType.TRUE;
 
     public BasicTrueDamageAttack(int damage)
     {
         Damage = damage;
     }
 
-    public void Execute(GameObject owner, IReadOnlyList<GameObject> targets)
+    public void Execute(GameObject owner, IReadOnlyList<GameObject> targets, ICombatContext context)
     {
         // attack first target in targets
         if (targets.Count == 0)
@@ -44,7 +46,7 @@ public class BasicTrueDamageAttack : IAbility
             Attacker = owner,
             Target = target,
             Amount = Damage,
-            Type = DamageType.TRUE,
+            Type = Type,
             Source = Name
         };
 
@@ -56,7 +58,8 @@ public class BasicTrueDamageAttack : IAbility
             owner,
             target,
             dealt,
-            DamageType.TRUE
+            Type,
+            pain.Element
         );
         GameEvents.Publish(damageDealtEvent);
     }

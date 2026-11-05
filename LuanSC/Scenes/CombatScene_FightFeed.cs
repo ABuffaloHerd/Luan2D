@@ -111,6 +111,7 @@ namespace LuanSC.Scenes
             {
                 // wrap here so Print never runs off the end of a row and into the next one
                 string[] wrapped = line.WordWrap(Width).ToArray();
+                if (wrapped.Length == 0) wrapped = [" "]; // WordWrap drops blank lines, keep them as padding
                 latestRowCount = wrapped.Length;
                 rows.AddRange(wrapped.Select(text => (text, color)));
 

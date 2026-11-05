@@ -11,6 +11,7 @@ namespace LuanSC.Data.Components.Effects;
 public class VulnerableEffect(int duration, int percent) : DamageModifierEffect(duration)
 {
     public override string Name => "Vulnerable";
+    public override EffectTag Tags => EffectTag.Defensive | EffectTag.Debuff;
     public int Percent { get; set; } = percent;
 
     public override DamageRecord OnIncomingDamage(DamageRecord damage) => Modify(damage, Scale(damage.Amount, Percent));

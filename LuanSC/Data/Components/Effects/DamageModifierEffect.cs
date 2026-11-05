@@ -12,6 +12,7 @@ namespace LuanSC.Data.Components.Effects;
 public abstract class DamageModifierEffect : IEffect
 {
     public abstract string Name { get; }
+    public abstract EffectTag Tags { get; }
     public int Duration { get; set; }
     public GameObject Owner { get; private set; }
 
@@ -44,10 +45,7 @@ public abstract class DamageModifierEffect : IEffect
     /// <summary>
     /// amount scaled by percent, e.g. 50 is +50%, -20 is -20%. The cast drops the fraction, same as RES. Never below 0.
     /// </summary>
-    protected static int Scale(int amount, int percent)
-    {
-        return Math.Max(0, (int)(amount * (1 + percent / 100f)));
-    }
+    protected static int Scale(int amount, int percent) => ElementRules.Scale(amount, percent);
 
     /// <summary>
     /// Changes the damage and says so in the fight feed, if it actually changed.

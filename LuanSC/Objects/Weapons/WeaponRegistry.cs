@@ -1,4 +1,5 @@
 ﻿using LuanSC.Data;
+using LuanSC.Data.Components;
 using LuanSC.Data.Components.Attacks;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace LuanSC.Objects.Weapons
             Pattern p = new();
             p.Mark(0, -1).Mark(0, -2).Mark(0, -3).Mark(0, -4);
             p.Mark(1, 0).Mark(-1, 0).Mark(1, -1).Mark(-1, -1);
-            Weapon t = new Weapon("Throngler", 500, p); // five hundred damage.
+            Weapon t = new Weapon("The Throngler", 500, p); // five hundred damage.
 
             t.Abilities.Add(new BasicAttack(t.Damage));
 
@@ -39,9 +40,36 @@ namespace LuanSC.Objects.Weapons
             Pattern p = new();
             p.Mark(0, -1).Mark(0, -2).Mark(0, -3);
             Weapon g = new Weapon("Gun", 8, p);
-            //g.Components.Add(new RangedAttack());
+            g.Abilities.Add(new RangedAttack(g.Damage));
             //g.Components.Add(new PiercingAttack());
             return g;
+        }
+
+        // Hits everything in range
+        public static Weapon Shotgun()
+        {
+            Pattern p = new();
+            p.Mark(0, -1);
+            p.Mark(1, -1);
+            p.Mark(-1, -1);
+            p.Mark(0, -2);
+            p.Mark(1, -2);
+            p.Mark(-1, -2);
+
+            Weapon s = new Weapon("Shotgun", 6, p);
+            s.Abilities.Add(new BlastAttack(s.Damage));
+            s.Costs.Add(new ResourceCost(ResourceType.AMMO, 1)); // a shell per shot, Reload to refill
+            return s;
+        }
+
+        public static Weapon Crossbow()
+        {
+            Pattern p = new();
+            p.Mark(0, -4).Mark(0, -2).Mark(0, -3);
+            Weapon c = new Weapon("Crossbow", 10, p);
+            c.Abilities.Add(new RangedAttack(c.Damage));
+            c.Costs.Add(new ResourceCost(ResourceType.AMMO, 1)); // a bolt per shot, Reload to refill
+            return c;
         }
 
         public static Weapon Stick()
@@ -62,7 +90,7 @@ namespace LuanSC.Objects.Weapons
             p.Mark(0, -1).Mark(0, -2).Mark(0, -3).Mark(0, -4);
 
             Weapon g = new Weapon("Sentry Gun", 5, p);
-            g.Abilities.Add(new BasicAttack(g.Damage));
+            g.Abilities.Add(new RangedAttack(g.Damage));
             return g;
         }
 
@@ -86,6 +114,18 @@ namespace LuanSC.Objects.Weapons
             Weapon h = new Weapon("The Hands", 1);
             h.Abilities.Add(new BasicAttack(h.Damage));
             return h;
+        }
+
+        public static Weapon ManaLens()
+        {
+            Pattern p = new();
+            p.Mark(0, -3);
+            p.Mark(0, -4);
+            p.Mark(0, -5);
+
+            Weapon m = new Weapon("Mana Lens", 20, p);
+            m.Abilities.Add(new MagicAttack(m.Damage));
+            return m;
         }
     }
 }

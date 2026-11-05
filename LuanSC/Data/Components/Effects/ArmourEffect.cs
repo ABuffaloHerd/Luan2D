@@ -6,16 +6,14 @@ using System.Text;
 namespace LuanSC.Data.Components.Effects;
 
 /// <summary>
-/// The owner takes Amount less damage per hit. True damage ignores it, like it ignores DEF and barriers.
+/// Adds Amount to the owner's DEF while it lasts, so it works exactly like DEF:
+/// only physical hits are reduced, and it's taken off before elemental weakness or resistance.
 /// </summary>
-public class ArmourEffect(int duration, int amount) : DamageModifierEffect(duration)
+public class ArmourEffect(int duration, int amount) : DamageModifierEffect(duration), IStatModifier
 {
     public override string Name => "Armour";
+    public override EffectTag Tags => EffectTag.Defensive | EffectTag.Buff;
     public int Amount { get; set; } = amount;
 
-    public override DamageRecord OnIncomingDamage(DamageRecord damage)
-    {
-        if (damage.Type == DamageType.TRUE) return damage;
-        return Modify(damage, Math.Max(0, damage.Amount - Amount));
-    }
+    int IStatModifier.DEF => Amount;
 }

@@ -1,5 +1,5 @@
 ﻿using LuanSC.Data.Components;
-using LuanSC.Data.Specs;
+using LuanSC.Data.Definitions;
 using LuanSC.Objects;
 using System;
 using System.Collections.Generic;
@@ -14,12 +14,17 @@ namespace LuanSC.Data
     // TODO: Background tiles and audio.
     public sealed record CombatSettings
     {
-        public List<UnitSpec> Units { get; init; } = new();
+        public List<UnitDefinition> Units { get; init; } = new();
 
         /// <summary>
         /// Applied to every unit that can have effects, after their own. Each unit gets its own copy, e.g. a weather effect.
         /// </summary>
-        public List<EffectSpec> StartEffects { get; init; } = new();
+        public List<EffectDefinition> StartEffects { get; init; } = new();
+
+        /// <summary>
+        /// Extra ways for the fight to end. All friends dead or all enemies dead always applies, so don't list those.
+        /// </summary>
+        public List<ConditionDefinition> Conditions { get; init; } = new();
 
         // default arena size, fills the view exactly. Bigger scrolls, smaller leaves a gap
         public int Width { get; init; } = GameSettings.ARENA_VIEW_SIZE;
@@ -28,21 +33,29 @@ namespace LuanSC.Data
         public float FontScale { get; init; } = 1;
 
         /// <summary>
+        /// How bright everything on the arena overlay shows: weapon range X's and targeting highlights.
+        /// 0 is invisible, 1 draws them at their own colours, 0.5 is half as bright as 1.
+        /// </summary>
+        public float OverlayOpacity { get; init; } = 1;
+
+        public string Description { get; init; } = string.Empty;
+
+        /// <summary>
         /// New game objects for every unit. Call once per fight, the objects keep their state.
         /// </summary>
         public List<GameObject> BuildObjects()
         {
             List<GameObject> objects = new();
 
-            foreach (UnitSpec unit in Units)
+            foreach (UnitDefinition unit in Units)
             {
                 GameObject obj = BuildUnit(unit);
 
                 EffectComponent effects = obj.GetComponent<EffectComponent>();
                 if (effects is not null)
                 {
-                    foreach (EffectSpec effect in unit.Effects.Concat(StartEffects))
-                        effects.Apply(SpecLookup.Effect(effect)); // a new effect every time, they count down their own duration
+                    foreach (EffectDefinition effect in unit.Effects.Concat(StartEffects))
+                        effects.Apply(IdDictionary.Effect(effect)); // a new effect every time, they count down their own duration
                 }
 
                 objects.Add(obj);
@@ -51,19 +64,21 @@ namespace LuanSC.Data
             return objects;
         }
 
-        private static GameObject BuildUnit(UnitSpec unit)
+        private static GameObject BuildUnit(UnitDefinition unit)
         {
             ColoredGlyph glyph = new(unit.Colour, Color.Transparent, unit.Glyph);
 
             GameObject obj = unit.Kind switch
             {
-                UnitType.PLAYER => new PlayerGameObject(glyph, MagicNumbers.GAMEOBJECT_INDEX),
-                UnitType.ENEMY => new EnemyGameObject(glyph, MagicNumbers.GAMEOBJECT_INDEX, SpecLookup.Ai(unit.Ai)),
-                UnitType.WALL => Wall.GenerateWall(unit.Colour),
+                UnitKind.PLAYER => new PlayerGameObject(glyph, MagicNumbers.GAMEOBJECT_INDEX),
+                UnitKind.ENEMY => new EnemyGameObject(glyph, MagicNumbers.GAMEOBJECT_INDEX, IdDictionary.Ai(unit.Ai)),
+                UnitKind.WALL => Wall.GenerateWall(unit.Colour),
+                UnitKind.FURNITURE => new Furniture(glyph, MagicNumbers.GAMEOBJECT_INDEX),
                 _ => throw new ArgumentException($"Unknown unit kind {unit.Kind}")
             };
 
             obj.Position = unit.Position;
+            if (unit.UnitType != UnitType.UNKNOWN) obj.UnitType = unit.UnitType; // walls tag themselves
             if (unit.Name is not null) obj.Name = unit.Name;
 
             // start at full health
@@ -73,10 +88,16 @@ namespace LuanSC.Data
                 health.Current = hp;
             }
 
+            if (obj.GetComponent<HPComponent>() is HPComponent hpComponent)
+            {
+                foreach ((Element element, int percent) in unit.ElementModifiers)
+                    hpComponent.ElementModifiers[element] = percent;
+            }
+
             if (unit.Speed is int speed && obj.GetComponent<SpeedComponent>() is SpeedComponent speedComponent)
                 speedComponent.Speed = speed;
 
-            foreach (ResourceSpec spec in unit.Resources)
+            foreach (ResourceDefinition spec in unit.Resources)
                 ApplyResource(obj, spec);
 
             ActionComponent actions = obj.GetComponent<ActionComponent>();
@@ -84,20 +105,20 @@ namespace LuanSC.Data
                 actions?.Configure(type, max);
 
             if (unit.Weapon is not null && obj.GetComponent<WeaponComponent>() is WeaponComponent weapon)
-                weapon.Weapon = SpecLookup.Weapon(unit.Weapon);
+                weapon.Weapon = IdDictionary.Weapon(unit.Weapon);
 
             if (unit.Spells.Count > 0)
-                obj.AddComponent(new SpellbookComponent(unit.Spells.Select(SpecLookup.Spell).ToArray()));
+                obj.AddComponent(new SpellbookComponent(unit.Spells.Select(IdDictionary.Spell).ToArray()));
 
             return obj;
         }
 
-        private static void ApplyResource(GameObject obj, ResourceSpec spec)
+        private static void ApplyResource(GameObject obj, ResourceDefinition spec)
         {
             ResourceComponent resource = obj.GetResource(spec.Type);
             if (resource is null)
             {
-                resource = SpecLookup.Resource(spec.Type);
+                resource = IdDictionary.Resource(spec.Type);
                 obj.AddComponent(resource);
             }
 

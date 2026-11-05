@@ -11,6 +11,7 @@ namespace LuanSC.Data.Components.Effects;
 public class WeakenEffect(int duration, int percent) : DamageModifierEffect(duration)
 {
     public override string Name => "Weaken";
+    public override EffectTag Tags => EffectTag.Offensive | EffectTag.Debuff;
     public int Percent { get; set; } = percent;
 
     public override DamageRecord OnOutgoingDamage(DamageRecord damage) => Modify(damage, Scale(damage.Amount, -Percent));

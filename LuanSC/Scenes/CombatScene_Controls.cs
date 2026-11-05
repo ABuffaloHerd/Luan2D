@@ -23,7 +23,7 @@ namespace LuanSC.Scenes
 
             if (keyboard.IsKeyPressed(SadConsole.Input.Keys.Escape))
             {
-                manager.ChangeScene(sceneManager => new Menu(sceneManager));
+                manager.PopScene();
                 return true;
             }
 
@@ -175,6 +175,7 @@ namespace LuanSC.Scenes
             if (keyboard.IsKeyPressed(Keys.OemTilde))
             {
                 RecenterCamera();
+                currentControlledGameObject.Blink();
                 return true;
             }
 

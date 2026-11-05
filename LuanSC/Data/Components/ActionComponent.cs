@@ -27,6 +27,7 @@ public class ActionComponent : IComponent, IHudDisplay
     private class Slot
     {
         public int Max;
+        public int Bonus; // from effects, worked out in Refill
         public int Current;
         public int Taken;
         public Func<GameObject, int> Formula; // null means fixed maximum
@@ -45,7 +46,7 @@ public class ActionComponent : IComponent, IHudDisplay
     public IEnumerable<ActionType> Types => slots.Keys;
 
     /// <summary>
-    /// Standard setup: speed-based movement and one attack.
+    /// Standard setup: speed-based movement, one attack and one skill. Change them per unit with ActionLimits.
     /// </summary>
     public static ActionComponent CreateDefault()
     {
@@ -57,7 +58,10 @@ public class ActionComponent : IComponent, IHudDisplay
                     ? Math.Max(1, speed.Speed / SPEED_PER_MOVE)
                     : 0;
             })
-            .Configure(ActionType.ATTACK, 1);
+            .Configure(ActionType.ATTACK, 1)
+            .Configure(ActionType.SKILL, 1)
+            .Configure(ActionType.SPELL, 1)
+            .Configure(ActionType.SPECIAL, 1);
     }
 
     public ActionComponent Configure(ActionType type, int max)
@@ -78,13 +82,21 @@ public class ActionComponent : IComponent, IHudDisplay
     public IEnumerable<HudBar> GetHudBars()
     {
         if (IsLimited(ActionType.MOVE))
-            yield return new HudBar(50, "MV :", Color.Green, Color.Green, HudBar.Ratio(Remaining(ActionType.MOVE), Max(ActionType.MOVE)), $"{Remaining(ActionType.MOVE)} / {Max(ActionType.MOVE)}", Color.Black);
+        {
+            var track = HudBar.DimTrack(Color.Green);
+            yield return new HudBar(50, "MV :", Color.Green, Color.Green, HudBar.Ratio(Remaining(ActionType.MOVE), Max(ActionType.MOVE)), $"{Remaining(ActionType.MOVE)} / {Max(ActionType.MOVE)}", Color.Black,
+                track.Glyph, track.Color, track.Background);
+        }
 
         if (IsLimited(ActionType.ATTACK))
-            yield return new HudBar(51, "AT :", Color.Orange, Color.Orange, HudBar.Ratio(Remaining(ActionType.ATTACK), Max(ActionType.ATTACK)), $"{Remaining(ActionType.ATTACK)} / {Max(ActionType.ATTACK)}", Color.Black);
+        {
+            var track = HudBar.DimTrack(Color.Orange);
+            yield return new HudBar(51, "AT :", Color.Orange, Color.Orange, HudBar.Ratio(Remaining(ActionType.ATTACK), Max(ActionType.ATTACK)), $"{Remaining(ActionType.ATTACK)} / {Max(ActionType.ATTACK)}", Color.Black,
+                track.Glyph, track.Color, track.Background);
+        }
     }
 
-    public int Max(ActionType type) => slots.TryGetValue(type, out Slot slot) ? slot.Max : int.MaxValue;
+    public int Max(ActionType type) => slots.TryGetValue(type, out Slot slot) ? Math.Max(slot.Max + slot.Bonus, 0) : int.MaxValue;
     public int Remaining(ActionType type) => slots.TryGetValue(type, out Slot slot) ? slot.Current : int.MaxValue;
     public int Taken(ActionType type) => slots.TryGetValue(type, out Slot slot) ? slot.Taken : 0;
 
@@ -107,17 +119,20 @@ public class ActionComponent : IComponent, IHudDisplay
     }
 
     /// <summary>
-    /// Calculates each maximum and refills all counters.
+    /// Calculates each maximum, including bonuses from IActionModifier effects, and refills all counters.
     /// Call this at the start of the owner's turn, after effects tick.
     /// </summary>
     public void Refill()
     {
-        foreach (Slot slot in slots.Values)
+        EffectComponent effects = Owner?.GetComponent<EffectComponent>();
+
+        foreach ((ActionType type, Slot slot) in slots)
         {
             if (slot.Formula is not null && Owner is not null)
                 slot.Max = slot.Formula(Owner);
 
-            slot.Current = slot.Max;
+            slot.Bonus = effects?.BonusActions(type) ?? 0;
+            slot.Current = Math.Max(slot.Max + slot.Bonus, 0);
             slot.Taken = 0;
         }
     }

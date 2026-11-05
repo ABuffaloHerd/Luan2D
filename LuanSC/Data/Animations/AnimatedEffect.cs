@@ -73,6 +73,6 @@ public class AnimatedEffect : AnimatedScreenObject
     {
         // the parent updates a copy of its children, so leaving mid update is fine
         if (e.NewState == AnimationState.Finished && RemoveOnFinished)
-            Parent = null;
+            Parent = null; // GC will collect this so no need to manually dispose
     }
 }

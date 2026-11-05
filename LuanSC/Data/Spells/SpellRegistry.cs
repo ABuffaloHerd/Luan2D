@@ -18,6 +18,16 @@ namespace LuanSC.Data.Spells;
 /// </summary>
 public static class SpellRegistry
 {
+    public static ISpell Teleport()
+    {
+        return new TeleportSpell();
+    }
+
+    public static ISpell Railgun()
+    {
+        return new RailgunSpell(100);
+    }
+
     public static ISpell SummonFamiliar()
     {
         return new SummonSpell("Familiar", "A helper you control.", ActionType.SPELL, SummonRegistry.Familiar);
@@ -40,6 +50,14 @@ public static class SpellRegistry
             new ResourceCost(ResourceType.METAL, 100));
     }
 
+    // engineer building, goes right in front so it can be hit straight away. Heals and refills metal next to it once built
+    public static ISpell Dispenser(int hitsRequired = 4)
+    {
+        return new SummonSpell("Dispenser", $"Hit {hitsRequired}x to build.", ActionType.SKILL,
+            owner => SummonRegistry.Dispenser(owner, hitsRequired),
+            new ResourceCost(ResourceType.METAL, 100));
+    }
+
     // flat magic damage to everything in the circle, friends included unless friendlyFire is off
     public static ISpell Fireball(int damage = 30, int radius = 2, int range = 10, int mpCost = 50, bool friendlyFire = true)
     {
@@ -49,19 +67,35 @@ public static class SpellRegistry
         };
     }
 
+    // single target heal on whoever is under the cursor
+    public static ISpell Heal(int amount = 50, int range = 5, int mpCost = 20)
+    {
+        return new Heal(amount, range, new ResourceCost(ResourceType.MP, mpCost));
+    }
+
     // overdrive special: magic damage across the current weapon's range
     public static ISpell Unsheath(int damage = 50, int spCost = 10, int odCost = 100)
     {
         return new Unsheath(damage, new ResourceCost(ResourceType.SP, spCost), new ResourceCost(ResourceType.OD, odCost));
     }
 
+    // free skill, refills ammo. Refused when already full
+    public static ISpell Reload()
+    {
+        return new Reload
+        {
+            CastMessage = "Alright, reload!"
+        };
+    }
+
     // Luna's overdrive: she pilots the mech until it's destroyed
     public static ISpell TitanAplu(int odCost = 100)
     {
-        return new TransformSpell("Titanfall", "Protocol 1: Protect the Pilot", ActionType.SPECIAL, "TITAN APLU", 'T',
+        return new TransformSpell("Titanfall", "Protocol 3: Protect the Pilot", ActionType.SPECIAL, "TITAN APLU", 'T',
             MechRegistry.TitanAplu, new ResourceCost(ResourceType.GB, odCost))
         {
-            CastMessage = "Prepare for Titanfall!"
+            CastMessage = "Prepare for Titanfall!",
+            FormType = UnitType.MECHANICAL // back to human when she ejects
         };
     }
 }

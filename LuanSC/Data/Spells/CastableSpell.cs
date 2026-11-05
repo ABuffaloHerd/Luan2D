@@ -19,7 +19,7 @@ namespace LuanSC.Data.Spells;
 ///   4. Add a factory to SpellRegistry and put it in someone's SpellbookComponent.
 /// See Fireball.
 /// </summary>
-public abstract class CastSpell : ISpell
+public abstract class CastableSpell : ISpell
 {
     public string Name { get; }
     public string Description { get; }
@@ -30,7 +30,7 @@ public abstract class CastSpell : ISpell
     public Pattern Area { get; }
     public string CastMessage { get; init; }
 
-    protected CastSpell(string name, string description, ActionType type, IReadOnlyList<ResourceCost> costs, Targeting targeting, int range, Pattern area)
+    protected CastableSpell(string name, string description, ActionType type, IReadOnlyList<ResourceCost> costs, Targeting targeting, int range, Pattern area)
     {
         Name = name;
         Description = description;
@@ -42,6 +42,12 @@ public abstract class CastSpell : ISpell
     }
 
     public TurnAction CreateAction(GameObject caster, Point target) => new TurnAction.Cast(this, target);
+
+    /// <summary>
+    /// Checked before anything is paid. Return a fight feed line to refuse the cast, or null to let it through.
+    /// The action and costs aren't spent when it's refused.
+    /// </summary>
+    public virtual string Refusal(GameObject caster) => null;
 
     /// <summary>
     /// Applies the spell. Costs are already paid and the target is already in range.

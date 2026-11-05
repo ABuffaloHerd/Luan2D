@@ -1,4 +1,5 @@
 ﻿using LuanSC.Data;
+using LuanSC.Scenes.Transitions;
 using SadConsole.Input;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
@@ -28,6 +29,10 @@ namespace LuanSC.Scenes
                 Text = "Start Game",
                 Position = new(controls.Width / 2 - 10, 5)
             };
+            b.Click += (s, e) =>
+            {
+                GameRoot.sceneManger.PushScene(manager => new BattleSelectionScene(manager));
+            };
 
             Button b2 = new(20, 1)
             {
@@ -36,7 +41,7 @@ namespace LuanSC.Scenes
             };
             b2.Click += (s, e) =>
             {
-                GameRoot.sceneManger.ChangeScene(manager => new TestScene(manager));
+                GameRoot.sceneManger.PushScene(manager => new TestScene(manager));
             };
 
             Button b3 = new(20, 1)
@@ -46,7 +51,7 @@ namespace LuanSC.Scenes
             };
             b3.Click += (s, e) =>
             {
-                GameRoot.sceneManger.ChangeScene(manager => new VisualNovelScene(manager));
+                GameRoot.sceneManger.PushScene(manager => new VisualNovelScene(manager));
             };
 
             Button b4 = new(20, 1)
@@ -56,13 +61,24 @@ namespace LuanSC.Scenes
             };
             b4.Click += (s, e) =>
             {
-                GameRoot.sceneManger.ChangeScene(manager => new CombatScene(manager, LevelRegistry.Test()));
+                GameRoot.sceneManger.PushScene(manager => new CombatScene(manager, LevelRegistry.ConditionTest()), new RandomGarbageTransition(TimeSpan.FromMilliseconds(500)));
+            };
+
+            Button b5 = new(20, 1)
+            {
+                Text = "Glyph Viewer",
+                Position = new(controls.Width / 2 - 10, 13)
+            };
+            b5.Click += (s, e) =>
+            {
+                GameRoot.sceneManger.PushScene(manager => new GlyphViewerScene(manager), new WipeTransition());
             };
 
             controls.Controls.Add(b);
             controls.Controls.Add(b2);
             controls.Controls.Add(b3);
             controls.Controls.Add(b4);
+            controls.Controls.Add(b5);
 
             surface.Children.Add(controls);
 

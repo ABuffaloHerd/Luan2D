@@ -13,6 +13,11 @@ namespace LuanSC.Data
         public DamageType Type { get; init; }
 
         /// <summary>
+        /// Fire, Electric and so on, on top of Type. None for plain hits.
+        /// </summary>
+        public Element Element { get; init; }
+
+        /// <summary>
         /// What did the damage, e.g. "Fireball" or "Poison". Null if nobody said.
         /// </summary>
         public string Source { get; init; }

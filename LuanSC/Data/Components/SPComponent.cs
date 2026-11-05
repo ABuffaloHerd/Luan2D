@@ -28,6 +28,7 @@ namespace LuanSC.Data.Components
         {
             TextColor = Color.Black;
             HudOrder = 20;
+            UseDimTrack();
         }
     }
 }

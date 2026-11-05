@@ -1,6 +1,8 @@
+using LuanSC.Data;
 using LuanSC.Data.Components;
 using LuanSC.Data.Components.AI;
 using LuanSC.Data.Components.Effects;
+using LuanSC.Data.Spells;
 using LuanSC.Objects.Weapons;
 using System;
 using System.Collections.Generic;
@@ -20,6 +22,7 @@ public static class SummonRegistry
     {
         SummonedGameObject s = new(new ColoredGlyph(OwnerColor(owner), Color.Transparent, 's'), owner, MagicNumbers.GAMEOBJECT_INDEX);
         s.Name = "Skeleton";
+        s.UnitType = UnitType.UNDEAD;
         s.GetComponent<HPComponent>().Max = 30;
 
         s.AddComponent(new SpeedComponent(80));
@@ -34,6 +37,7 @@ public static class SummonRegistry
     {
         SummonedGameObject f = new(new ColoredGlyph(OwnerColor(owner), Color.Transparent, 'f'), owner, MagicNumbers.GAMEOBJECT_INDEX);
         f.Name = "Familiar";
+        f.UnitType = UnitType.BEAST;
         f.GetComponent<HPComponent>().Max = 40;
 
         f.AddComponent(new SpeedComponent(120));
@@ -48,6 +52,7 @@ public static class SummonRegistry
     {
         SummonedGameObject c = new(new ColoredGlyph(Color.MediumPurple, Color.Transparent, (char)15), owner, MagicNumbers.FLOOR_INDEX);
         c.Name = "Magic Circle";
+        c.UnitType = UnitType.MAGICAL;
         c.GetComponent<HPComponent>().Max = 20;
 
         c.RemoveComponent<CollisionComponent>();
@@ -61,6 +66,7 @@ public static class SummonRegistry
     {
         SummonedGameObject g = new(new ColoredGlyph(OwnerColor(owner), Color.Transparent, ConstructionEffect.UNBUILT_GLYPH), owner, MagicNumbers.GAMEOBJECT_INDEX);
         g.Name = "Sentry Gun";
+        g.UnitType = UnitType.MECHANICAL;
         g.GetComponent<HPComponent>().Max = 50;
 
         g.GetComponent<EffectComponent>().Apply(new ConstructionEffect(hitsRequired, builtGlyph, built =>
@@ -72,6 +78,27 @@ public static class SummonRegistry
         }));
 
         return g;
+    }
+
+    // Building. Shows a half block until the owner hits it hitsRequired times, then becomes a theta (glyph 233).
+    // On its turn it gives every friendly player on the 8 cells around it HP and metal. Joins the turn order at the start of the next round.
+    public static SummonedGameObject Dispenser(GameObject owner, int hitsRequired = 4, int hpAmount = 10, int metalAmount = 25)
+    {
+        SummonedGameObject d = new(new ColoredGlyph(OwnerColor(owner), Color.Transparent, ConstructionEffect.UNBUILT_GLYPH), owner, MagicNumbers.GAMEOBJECT_INDEX);
+        d.Name = "Dispenser";
+        d.UnitType = UnitType.MECHANICAL;
+        d.GetComponent<HPComponent>().Max = 50;
+
+        d.GetComponent<EffectComponent>().Apply(new ConstructionEffect(hitsRequired, (char)233, built =>
+        {
+            Dispense dispense = new(hpAmount, metalAmount) { CastMessage = "The dispenser works." };
+
+            built.AddComponent(new SpeedComponent(1)); // act last in the round so players can move onto it before it dispenses
+            built.AddComponent(new ActionComponent().Configure(ActionType.SKILL, 1));
+            built.AddComponent(new AIComponent(new DispenserBehavior(dispense)));
+        }));
+
+        return d;
     }
 
     // summons wear their owner's colour so you can tell whose is whose

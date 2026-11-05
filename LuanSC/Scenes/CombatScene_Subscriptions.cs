@@ -6,19 +6,17 @@ using System.Text;
 
 namespace LuanSC.Scenes;
 
-public partial class CombatScene : IDisposable
+public partial class CombatScene
 {
-    private bool disposed;
     private readonly Action<CombatEvent> combatEventHandler;
     private void Subscribe()
     {
         GameEvents.OnCombatEvent += combatEventHandler;
     }
-    public void Dispose()
+    protected override void OnDispose()
     {
-        if (disposed) return;
         GameEvents.OnCombatEvent -= combatEventHandler;
-        disposed = true;
+        DisposeClosedWindows();
     }
 
     private void HandleCombatEvent(CombatEvent e)
@@ -26,26 +24,38 @@ public partial class CombatScene : IDisposable
         switch (e)
         {
             case CombatEvent.DamageDealt damageDealt:
+                // "MAGIC Fire", "PHYSICAL Fire/Electric", or just "MAGIC"
+                string kind = damageDealt.Element == Element.None
+                    ? $"{damageDealt.Type}"
+                    : $"{damageDealt.Type} {damageDealt.Element.ToString().Replace(", ", "/")}";
+
                 if (damageDealt.Attacker is null) // it's probably from an effect but c# doesn't have unions. the one time those are actually useful
                 {
-                    fightFeed.AddLine($"{damageDealt.Target.Name} took {damageDealt.Amount} {damageDealt.Type} damage.");
+                    fightFeed.AddLine($"{damageDealt.Target.Name} took {damageDealt.Amount} {kind} damage.");
                     break;
                 }
-                fightFeed.AddLine($"{damageDealt.Attacker.Name} dealt {damageDealt.Amount} {damageDealt.Type} damage to {damageDealt.Target.Name}.");
+                fightFeed.AddLine($"{damageDealt.Attacker.Name} dealt {damageDealt.Amount} {kind} damage to {damageDealt.Target.Name}.", Color.Red);
                 break;
 
             case CombatEvent.DamageBlocked damageBlocked:
-                fightFeed.AddLine($"{damageBlocked.Owner?.Name ?? "An unknown source"}'s {damageBlocked.EffectName} blocked {damageBlocked.Blocked} damage.");
+                fightFeed.AddLine($"{damageBlocked.Owner?.Name ?? "An unknown source"}'s {damageBlocked.EffectName} blocked {damageBlocked.Blocked} damage.", Color.LightBlue);
                 break;
-            case CombatEvent.HealingDealt healingRecord:
-                fightFeed.AddLine($"{healingRecord.Healer.Name} healed {healingRecord.Target.Name} for {healingRecord.Amount} HP.");
+            case CombatEvent.ElementTrait trait:
+            {
+                string change = trait.Change > 0 ? $"+{trait.Change}" : trait.Change.ToString();
+                string label = trait.Percent >= 0 ? "weakness" : "resistance";
+                fightFeed.AddLine($"{trait.Target?.Name}'s {trait.Element} {label}: {change} damage.");
+                break;
+            }
+            case CombatEvent.HealingDealt healingRecord:    
+                fightFeed.AddLine($"{healingRecord.Healer.Name} healed {healingRecord.Target.Name} for {healingRecord.Amount} HP.", Color.Green);
                 break;
             case CombatEvent.GenericMessage genericMessage:
                 fightFeed.AddLine(genericMessage.Message);
                 break;
 
             case CombatEvent.EffectExpired effectExpired:
-                fightFeed.AddLine($"{effectExpired.Target.Name}'s {effectExpired.EffectName} expired.");
+                fightFeed.AddLine($"{effectExpired.Target.Name}'s {effectExpired.EffectName} expired.", Color.Gray);
                 break;
 
             case CombatEvent.EntityDied entityDied:
@@ -54,7 +64,12 @@ public partial class CombatScene : IDisposable
 
             case CombatEvent.Summoned summoned:
                 // default only. Per summon: CastMessage on the spell in SpellRegistry, or SummonerBehavior.Message for AI
-                fightFeed.AddLine(summoned.Message ?? $"{summoned.Owner.Name} summoned {summoned.Summon.Name}.");
+                fightFeed.AddLine(summoned.Message ?? $"{summoned.Owner.Name} summoned {summoned.Summon.Name}.", Color.Blue);
+                break;
+
+            case CombatEvent.FightEnded fightEnded:
+                bool victory = fightEnded.Outcome == CombatOutcome.VICTORY;
+                fightFeed.AddLine($"{(victory ? "Victory!" : "Defeat!")} ({fightEnded.Reason})", victory ? Color.Green : Color.Red);
                 break;
         }
     }

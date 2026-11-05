@@ -23,5 +23,6 @@ public class Wall : GameObject
     private Wall(ColoredGlyphBase coloredGlyphBase, int zIndex) : base(coloredGlyphBase, zIndex)
     {
         Components.Add(new CollisionComponent());
+        UnitType = Data.UnitType.WALL;
     }
 }
