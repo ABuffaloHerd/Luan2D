@@ -4,7 +4,7 @@ using System;
 namespace LuanSC.Scenes;
 
 /// <summary>
-/// Runs the transition between scenes. ChangeScene starts it, SwapScene runs at the midpoint.
+/// Runs the transition between scenes. ChangeScene, PushScene or PopScene starts it, SwapScene runs at the midpoint.
 /// To make a new transition see ISceneTransition.
 /// </summary>
 public partial class SceneManager

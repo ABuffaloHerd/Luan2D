@@ -7,7 +7,7 @@ namespace LuanSC.Scenes.Transitions;
 /// </summary>
 /// <remarks>
 /// USING ONE
-/// Pass it as the second argument to ChangeScene. Leave it out to get the default FadeTransition.
+/// Pass it as the second argument to ChangeScene or PushScene, or the only argument to PopScene. Leave it out to get the default FadeTransition.
 ///     manager.ChangeScene(sceneManager => new Menu(sceneManager), new WipeTransition());
 ///
 /// MAKING ONE

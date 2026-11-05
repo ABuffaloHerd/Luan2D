@@ -48,7 +48,7 @@ namespace LuanSC.Scenes
         {
             if (keyboard.IsKeyPressed(SadConsole.Input.Keys.Escape))
             {
-                manager.ChangeScene(sceneManager => new Menu(sceneManager));
+                manager.PopScene();
                 return true;
             }
 

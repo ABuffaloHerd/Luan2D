@@ -90,13 +90,13 @@ public partial class CombatScene
 
         Button menu = new(width, 1)
         {
-            Text = "Back to Menu",
+            Text = "Back",
             Position = new(2, 5),
         };
         menu.Click += (sender, args) =>
         {
             window.Hide(); // otherwise the modal window outlives the scene
-            manager.ChangeScene(sceneManager => new Menu(sceneManager));
+            manager.PopScene();
         };
         window.Controls.Add(menu);
 

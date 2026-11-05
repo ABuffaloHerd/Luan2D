@@ -51,7 +51,7 @@ public class BattleSelectionScene : Scene
         {
             if (selected is not CombatSettings settings) return;
 
-            GameRoot.sceneManger.ChangeScene(manager => new CombatScene(manager, settings), new RandomGarbageTransition(TimeSpan.FromMilliseconds(500)));
+            GameRoot.sceneManger.PushScene(manager => new CombatScene(manager, settings), new RandomGarbageTransition(TimeSpan.FromMilliseconds(500)));
         };
 
         controls.Controls.Add(battles);
@@ -141,7 +141,7 @@ public class BattleSelectionScene : Scene
     {
         if (keyboard.IsKeyPressed(SadConsole.Input.Keys.Escape))
         {
-            GameRoot.sceneManger.ChangeScene(manager => new Menu(manager));
+            GameRoot.sceneManger.PopScene();
             return true;
         }
 
