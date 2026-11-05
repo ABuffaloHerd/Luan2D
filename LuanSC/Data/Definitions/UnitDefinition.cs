@@ -97,7 +97,7 @@ public sealed record ResourceDefinition(ResourceType Type)
 }
 
 /// <summary>
-/// Value is whatever number the effect takes: damage for Poison, percent for Empower, Weaken and Vulnerable, amount for Armour,
+/// Value is whatever number the effect takes: damage for Poison and Volatile, percent for Empower, Weaken and Vulnerable, amount for Armour,
 /// percent for Elemental (positive weakness, negative resistance).
 /// </summary>
 public sealed record EffectDefinition(string Id, int Duration, int Value = 0)

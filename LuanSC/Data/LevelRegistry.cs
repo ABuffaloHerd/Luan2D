@@ -91,6 +91,55 @@ public static class LevelRegistry
         Description = "A spawner that summons a skeleton or a zombie every 3 of its turns. Kill it and they go with it.",
     };
 
+    [Battle("Penguin Test", BattleCategory.TEST, Order = 4)]
+    public static CombatSettings PenguinTest()
+    {
+        static UnitDefinition Penguin(int x, int y) => new()
+        {
+            Kind = UnitKind.ENEMY,
+            Name = "Penguin",
+            UnitType = UnitType.BEAST,
+            Glyph = 'p',
+            Colour = Color.LightBlue,
+            Position = new(x, y),
+            Hp = 10,
+            Speed = 60,
+            Ai = new("Zombie"),
+            Effects = [new("Volatile", Duration: -1, Value: 40)],
+        };
+
+        return new()
+        {
+            Units =
+            [
+                new UnitDefinition
+                {
+                    Kind = UnitKind.PLAYER,
+                    Name = "Hirina",
+                    UnitType = UnitType.HUMAN,
+                    Glyph = 'H',
+                    Colour = Color.Red,
+                    Position = new(5, 5),
+                    Hp = 25,
+                    Speed = 100,
+                    Weapon = "Katana",
+                },
+
+                // close enough to chain
+                Penguin(10, 10),
+                Penguin(12, 10),
+                Penguin(14, 10),
+
+                // on its own, blows up with nothing around it
+                Penguin(25, 25),
+            ],
+
+            Width = 45,
+            Height = 45,
+            Description = "These seemingly pleasant birds have adapted flawlessly to the hostile environment. But explorers beware! Few are prepared for the consequences when penguins TURN!",
+        };
+    }
+
     [Battle("Condition Test", BattleCategory.TEST, Order = 1)]
     public static CombatSettings ConditionTest() => new()
     {

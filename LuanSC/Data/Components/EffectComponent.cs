@@ -1,4 +1,5 @@
-﻿using LuanSC.Data.Components.Effects;
+﻿using LuanSC.Data.Components.AI;
+using LuanSC.Data.Components.Effects;
 using LuanSC.Objects;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace LuanSC.Data.Components;
 
-public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener, IHealingListener, IHealingGivenListener
+public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener, IHealingListener, IHealingGivenListener, IDeathListener
 {
     public string Name => "Effect Component";
     public GameObject Owner { get; private set; }
@@ -117,6 +118,15 @@ public class EffectComponent : IComponent, IDamageDealtListener, IDamageListener
         foreach (var effect in effects.OfType<IHealingGivenListener>())
         {
             effect.OnHealingGiven(healing);
+        }
+    }
+
+    // active effects only, a bomb that ran out but hasn't been removed yet stays quiet
+    public void OnDeath(ICombatContext context)
+    {
+        foreach (var effect in Effects.OfType<IDeathListener>().ToList())
+        {
+            effect.OnDeath(context);
         }
     }
 

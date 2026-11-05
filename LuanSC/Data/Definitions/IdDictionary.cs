@@ -65,6 +65,7 @@ public static class IdDictionary
         ["Armour"] = e => new ArmourEffect(e.Duration, e.Value),
         ["MagicArmour"] = e => new MagicArmourEffect(e.Duration, e.Value),
         ["Barrier"] = e => new BarrierEffect { Duration = e.Duration },
+        ["Volatile"] = e => new VolatileEffect(e.Duration, e.Value),
         ["Elemental"] = e => new ElementalModifierEffect(e.Duration, e.Element, e.Value),
     };
 
