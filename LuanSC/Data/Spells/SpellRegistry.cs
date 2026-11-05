@@ -18,6 +18,11 @@ namespace LuanSC.Data.Spells;
 /// </summary>
 public static class SpellRegistry
 {
+    public static ISpell Teleport()
+    {
+        return new TeleportSpell();
+    }
+
     public static ISpell Railgun()
     {
         return new RailgunSpell(100);

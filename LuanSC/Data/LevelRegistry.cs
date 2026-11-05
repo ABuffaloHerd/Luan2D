@@ -34,7 +34,7 @@ public static class LevelRegistry
                     new(ResourceType.SP) { Max = 75 },
                     new(ResourceType.AMMO) { Max = 1 }, // 1 bolt
                 ],
-                Spells = ["Reload", "Railgun"],
+                Spells = ["Reload", "Railgun", "Teleport"],
             },
             new UnitDefinition
             {

@@ -43,6 +43,7 @@ public static class IdDictionary
         ["Reload"]          = () => SpellRegistry.Reload(),
         ["Heal"]            = () => SpellRegistry.Heal(),
         ["Railgun"]         = () => SpellRegistry.Railgun(),
+        ["Teleport"]        = () => SpellRegistry.Teleport(),
     };
 
     private static readonly Dictionary<string, Func<GameObject, SummonedGameObject>> summons = new(StringComparer.OrdinalIgnoreCase)
