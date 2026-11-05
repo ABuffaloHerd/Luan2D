@@ -175,6 +175,7 @@ namespace LuanSC.Scenes
             if (keyboard.IsKeyPressed(Keys.OemTilde))
             {
                 RecenterCamera();
+                currentControlledGameObject.Blink();
                 return true;
             }
 
