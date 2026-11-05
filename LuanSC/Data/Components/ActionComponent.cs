@@ -59,7 +59,9 @@ public class ActionComponent : IComponent, IHudDisplay
                     : 0;
             })
             .Configure(ActionType.ATTACK, 1)
-            .Configure(ActionType.SKILL, 1);
+            .Configure(ActionType.SKILL, 1)
+            .Configure(ActionType.SPELL, 1)
+            .Configure(ActionType.SPECIAL, 1);
     }
 
     public ActionComponent Configure(ActionType type, int max)
