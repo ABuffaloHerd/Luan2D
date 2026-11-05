@@ -259,6 +259,21 @@ public partial class CombatScene
             Line($"Weapon: {weapon.Name} ({weapon.Damage} {types}{costs})", Color.Orange);
         }
 
+        // what's left this turn. Refills at the start of the unit's own turn, so anyone else shows what they had left over
+        ActionComponent actions = obj.GetComponent<ActionComponent>();
+        if (actions is not null)
+        {
+            y++;
+            Line("Actions left:");
+
+            foreach (ActionType type in Enum.GetValues<ActionType>())
+            {
+                // a type that isn't configured has no limit
+                string left = actions.IsLimited(type) ? $"{actions.Remaining(type)} / {actions.Max(type)}" : "no limit";
+                Line($" {type}: {left}", Color.Yellow);
+            }
+        }
+
         EffectComponent effects = obj.GetComponent<EffectComponent>();
         if (effects is null) return;
 
