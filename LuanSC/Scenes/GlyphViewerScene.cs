@@ -134,7 +134,7 @@ internal class GlyphViewerScene : Scene
     {
         if (keyboard.IsKeyPressed(Keys.Escape))
         {
-            GameRoot.sceneManger.ChangeScene(manager => new Menu(manager));
+            GameRoot.sceneManger.PopScene();
             return true;
         }
         return base.ProcessKeyboard(keyboard);
