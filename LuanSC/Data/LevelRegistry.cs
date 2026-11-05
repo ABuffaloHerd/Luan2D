@@ -55,6 +55,42 @@ public static class LevelRegistry
         // TODO: teleport spell, barrier spell
     };
 
+    [Battle("Spawner Test", BattleCategory.TEST, Order = 3)]
+    public static CombatSettings SpawnerTest() => new()
+    {
+        Units =
+        [
+            new UnitDefinition
+            {
+                Kind = UnitKind.PLAYER,
+                Name = "Hirina",
+                UnitType = UnitType.HUMAN,
+                Glyph = 'H',
+                Colour = Color.Red,
+                Position = new(5, 5),
+                Hp = 250,
+                Speed = 100,
+                Weapon = "Katana",
+            },
+            new UnitDefinition
+            {
+                Kind = UnitKind.ENEMY,
+                Name = "Spawner",
+                UnitType = UnitType.MAGICAL,
+                Glyph = (char)0x08,
+                Colour = Color.Purple,
+                Position = new(15, 15),
+                Hp = 100,
+                Speed = 50,
+                Ai = new("Spawner") { Spawns = ["Skeleton", "Zombie"], Interval = 3 },
+            },
+        ],
+
+        Width = 45,
+        Height = 45,
+        Description = "A spawner that summons a skeleton or a zombie every 3 of its turns. Kill it and they go with it.",
+    };
+
     [Battle("Condition Test", BattleCategory.TEST, Order = 1)]
     public static CombatSettings ConditionTest() => new()
     {

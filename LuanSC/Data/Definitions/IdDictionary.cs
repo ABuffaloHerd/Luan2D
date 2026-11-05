@@ -49,6 +49,7 @@ public static class IdDictionary
     private static readonly Dictionary<string, Func<GameObject, SummonedGameObject>> summons = new(StringComparer.OrdinalIgnoreCase)
     {
         ["Skeleton"]            = SummonRegistry.Skeleton,
+        ["Zombie"]              = SummonRegistry.Zombie,
         ["Familiar"]            = SummonRegistry.Familiar,
         ["MagicCircle"]         = SummonRegistry.MagicCircle,
         ["SentryGun"]           = owner => SummonRegistry.SentryGun(owner),
@@ -98,6 +99,7 @@ public static class IdDictionary
             "idle" => new IdleBehavior(),
             "zombie" => new ZombieBehavior(),
             "summoner" => new SummonerBehavior(Summon(spec.Minion ?? throw new ArgumentException("Summoner AI needs a Minion."))),
+            "spawner" => new SpawnerBehavior(spec.Spawns.Select(Summon).ToList(), spec.Interval, spec.InitialDelay),
             _ => throw new ArgumentException($"Unknown AI '{spec.Behavior}'. Add it to IdDictionary.Ai.")
         };
     }

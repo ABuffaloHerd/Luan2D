@@ -111,4 +111,20 @@ public sealed record EffectDefinition(string Id, int Duration, int Value = 0)
 /// <summary>
 /// Minion is a summon ID, only used by Summoner.
 /// </summary>
-public sealed record AiDefinition(string Behavior, string Minion = null);
+public sealed record AiDefinition(string Behavior, string Minion = null)
+{
+    /// <summary>
+    /// Spawner only. Summon IDs to pick from at random, list one twice to make it twice as likely.
+    /// </summary>
+    public List<string> Spawns { get; init; } = new();
+
+    /// <summary>
+    /// Spawner only. Its own turns between spawns, 3 spawns on turns 1, 4, 7.
+    /// </summary>
+    public int Interval { get; init; } = 1;
+
+    /// <summary>
+    /// Spawner only. Its own turns to wait before the first spawn, 0 spawns on its first turn.
+    /// </summary>
+    public int InitialDelay { get; init; }
+}
