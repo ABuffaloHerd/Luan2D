@@ -59,15 +59,15 @@ public static class IdDictionary
 
     private static readonly Dictionary<string, Func<EffectDefinition, IEffect>> effects = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["Poison"] = e => new PoisonEffect(e.Duration, e.Value),
-        ["Empower"] = e => new EmpowerEffect(e.Duration, e.Value),
-        ["Weaken"] = e => new WeakenEffect(e.Duration, e.Value),
-        ["Vulnerable"] = e => new VulnerableEffect(e.Duration, e.Value),
-        ["Armour"] = e => new ArmourEffect(e.Duration, e.Value),
+        ["Poison"]      = e => new PoisonEffect(e.Duration, e.Value),
+        ["Empower"]     = e => new EmpowerEffect(e.Duration, e.Value),
+        ["Weaken"]      = e => new WeakenEffect(e.Duration, e.Value),
+        ["Vulnerable"]  = e => new VulnerableEffect(e.Duration, e.Value),
+        ["Armour"]      = e => new ArmourEffect(e.Duration, e.Value),
         ["MagicArmour"] = e => new MagicArmourEffect(e.Duration, e.Value),
-        ["Barrier"] = e => new BarrierEffect { Duration = e.Duration },
-        ["Volatile"] = e => new VolatileEffect(e.Duration, e.Value),
-        ["Elemental"] = e => new ElementalModifierEffect(e.Duration, e.Element, e.Value),
+        ["Barrier"]     = e => new BarrierEffect { Duration = e.Duration },
+        ["Volatile"]    = e => new VolatileEffect(e.Duration, e.Value),
+        ["Elemental"]   = e => new ElementalModifierEffect(e.Duration, e.Element, e.Value),
     };
 
     // resources a unit doesn't have by default, e.g. Metal on an engineer
@@ -102,7 +102,7 @@ public static class IdDictionary
             "zombie" => new ZombieBehavior(),
             "summoner" => new SummonerBehavior(Summon(spec.Minion ?? throw new ArgumentException("Summoner AI needs a Minion."))),
             "spawner" => new SpawnerBehavior(spec.Spawns.Select(Summon).ToList(), spec.Interval, spec.InitialDelay, spec.Count),
-            _ => throw new ArgumentException($"Unknown AI '{spec.Behavior}'. Add it to IdDictionary.Ai.")
+            _ => throw new ArgumentException($"Unknown AI '{spec.Behavior}'. Did you forget to add it to IdDictionary.Ai?")
         };
     }
 
