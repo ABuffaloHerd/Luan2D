@@ -10,6 +10,8 @@ namespace LuanSC.Data.Components.Attacks;
 /// <summary>
 /// Whacks everything in range
 /// </summary>
+// TODO: this works more like a shotgun blast than an explosion. It hits the targets it's given, it has no centre or radius of its own,
+// and the animation is a radius 1 blast on each target. VolatileEffect works out its own radius and plays its own explosion to make up for it.
 public class BlastAttack : IAbility
 {
     public string Name => "Blast Attack";
