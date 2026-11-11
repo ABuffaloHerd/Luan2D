@@ -136,7 +136,7 @@ public static class LevelRegistry
 
             Width = 45,
             Height = 45,
-            Description = "These seemingly pleasant birds have adapted flawlessly to the hostile environment. But explorers beware! Few are prepared for the consequences when penguins TURN!",
+            Description = "These seemingly pleasant birds have adapted perfectly to the hostile environment. But explorers beware! Few are prepared for the consequences when penguins TURN!",
         };
     }
 
@@ -354,6 +354,7 @@ public static class LevelRegistry
 
         Width = 45,
         Height = 45,
+        Description = "The original test arena."
         //FontScale = 1.9f,
     };
 }
