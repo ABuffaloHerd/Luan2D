@@ -82,7 +82,8 @@ public static class LevelRegistry
                 Position = new(15, 15),
                 Hp = 100,
                 Speed = 50,
-                Ai = new("Spawner") { Spawns = ["Skeleton", "Zombie"], Interval = 3 },
+                Ai = new("Spawner") { Spawns = ["Skeleton", "Zombie"], Interval = 1, Count = 4 },
+                ActionLimits = { [ActionType.SPELL] = 4 }, 
             },
         ],
 
