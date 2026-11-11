@@ -3,6 +3,7 @@
 [c:r f:cyan]L[c:r f:white] - Attack
 [c:r f:cyan]G[c:r f:white] - Spellbook
 [c:r f:cyan]Space[c:r f:white] - End turn
+[c:r f:cyan]Hold Tab[c:r f:white] - Fast forward enemy turns
 [c:r f:cyan]H[c:r f:white] - Toggle overlay
 [c:r f:cyan]+ / - or Scroll wheel[c:r f:white] - Zoom
 [c:r f:cyan]Middle mouse drag[c:r f:white] - Pan camera

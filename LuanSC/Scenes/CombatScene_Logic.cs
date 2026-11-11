@@ -304,6 +304,10 @@ namespace LuanSC.Scenes
             AIComponent ai = currentControlledGameObject.GetComponent<AIComponent>();
             if (ai is null) return;
 
+            // hold Tab to fast forward. Scaling the time shortens the wait for the blink and the wait between actions
+            if (GameHost.Instance.Keyboard.IsKeyDown(SadConsole.Input.Keys.Tab))
+                delta *= GameSettings.FAST_FORWARD_SPEED;
+
             aiTimer += delta;
             if (aiTimer < ai.ActionDelay) return;
             aiTimer = TimeSpan.Zero;
