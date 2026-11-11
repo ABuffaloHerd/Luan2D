@@ -100,7 +100,7 @@ public static class IdDictionary
             "idle" => new IdleBehavior(),
             "zombie" => new ZombieBehavior(),
             "summoner" => new SummonerBehavior(Summon(spec.Minion ?? throw new ArgumentException("Summoner AI needs a Minion."))),
-            "spawner" => new SpawnerBehavior(spec.Spawns.Select(Summon).ToList(), spec.Interval, spec.InitialDelay),
+            "spawner" => new SpawnerBehavior(spec.Spawns.Select(Summon).ToList(), spec.Interval, spec.InitialDelay, spec.Count),
             _ => throw new ArgumentException($"Unknown AI '{spec.Behavior}'. Add it to IdDictionary.Ai.")
         };
     }
