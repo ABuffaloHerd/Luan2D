@@ -10,7 +10,7 @@ namespace LuanSC.Data.Components.Attacks;
 /// <summary>
 /// Whacks everything in range
 /// </summary>
-public class BlastAttack : IAbility
+public class ShotgunAttack : IAbility
 {
     public string Name => "Blast Attack";
 
@@ -19,7 +19,7 @@ public class BlastAttack : IAbility
     public int Damage { get; private set; }
     public DamageType Type => DamageType.PHYSICAL;
 
-    public BlastAttack(int damage)
+    public ShotgunAttack(int damage)
     {
         Damage = damage;
     }

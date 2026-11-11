@@ -51,9 +51,206 @@ public static class LevelRegistry
 
         Width = 45,
         Height = 45,
-        Description = "Minako excels at single target damage but struggles when it gets close and personal. Despite being bad at magic, she has tools to get out such situaions. Use this to your advantage."
+        Description = "Minako excels at single target damage but struggles when it gets close and personal. Practice using her tools to get out of these situations."
         // TODO: teleport spell, barrier spell
     };
+
+    [Battle("Spawner Test", BattleCategory.TEST, Order = 3)]
+    public static CombatSettings SpawnerTest() => new()
+    {
+        Units =
+        [
+            new UnitDefinition
+            {
+                Kind = UnitKind.PLAYER,
+                Name = "Hirina",
+                UnitType = UnitType.HUMAN,
+                Glyph = 'H',
+                Colour = Color.Red,
+                Position = new(5, 5),
+                Hp = 250,
+                Speed = 100,
+                Weapon = "Katana",
+            },
+            new UnitDefinition
+            {
+                Kind = UnitKind.ENEMY,
+                Name = "Spawner",
+                UnitType = UnitType.MAGICAL,
+                Glyph = (char)0x08,
+                Colour = Color.Purple,
+                Position = new(15, 15),
+                Hp = 100,
+                Speed = 50,
+                Ai = new("Spawner") { Spawns = ["Skeleton", "Zombie"], Interval = 1, Count = 4 },
+                ActionLimits = { [ActionType.SPELL] = 4 }, 
+            },
+        ],
+
+        Width = 45,
+        Height = 45,
+        Description = "A spawner that summons a skeleton or a zombie every 3 of its turns. Kill it and they go with it.",
+    };
+
+    [Battle("Penguin Test", BattleCategory.TEST, Order = 4)]
+    public static CombatSettings PenguinTest()
+    {
+        static UnitDefinition Penguin(int x, int y) => new()
+        {
+            Kind = UnitKind.ENEMY,
+            Name = "Penguin",
+            UnitType = UnitType.BEAST,
+            Glyph = 'p',
+            Colour = Color.LightBlue,
+            Position = new(x, y),
+            Hp = 10,
+            Speed = 60,
+            Ai = new("Zombie"),
+            Effects = [new("Volatile1", Duration: -1)],
+        };
+
+        static UnitDefinition Penguin2(int x, int y) => new()
+        {
+            Kind = UnitKind.ENEMY,
+            Name = "Penguin",
+            UnitType = UnitType.BEAST,
+            Glyph = 'p',
+            Colour = Color.LightBlue,
+            Position = new(x, y),
+            Hp = 10,
+            Speed = 60,
+            Ai = new("Zombie"),
+            Effects = [new("Volatile2", Duration: -1)],
+        };
+
+        static UnitDefinition Penguin3(int x, int y) => new()
+        {
+            Kind = UnitKind.ENEMY,
+            Name = "Penguin",
+            UnitType = UnitType.BEAST,
+            Glyph = 'p',
+            Colour = Color.LightBlue,
+            Position = new(x, y),
+            Hp = 10,
+            Speed = 60,
+            Ai = new("Zombie"),
+            Effects = [new("Volatile3", Duration: -1)],
+        };
+
+        return new()
+        {
+            Units =
+            [
+                new UnitDefinition
+                {
+                    Kind = UnitKind.PLAYER,
+                    Name = "Hirina",
+                    UnitType = UnitType.HUMAN,
+                    Glyph = 'H',
+                    Colour = Color.Red,
+                    Position = new(5, 5),
+                    Hp = 25,
+                    Speed = 100,
+                    Weapon = "Katana",
+                },
+
+                // close enough to chain
+                Penguin(10, 10),
+                Penguin2(12, 10),
+                Penguin3(14, 10),
+
+                // on its own, blows up with nothing around it
+                Penguin(25, 25),
+            ],
+
+            Width = 45,
+            Height = 45,
+            Description = "These seemingly pleasant birds have adapted perfectly to the hostile environment. But explorers beware! Few are prepared for the consequences when penguins TURN!",
+        };
+    }
+
+    [Battle("Explosion Test", BattleCategory.TEST, Order = 5)]
+    public static CombatSettings ExplosionTest()
+    {
+        static UnitDefinition Dummy(int x, int y) => new()
+        {
+            Kind = UnitKind.ENEMY,
+            Name = "Target Dummy",
+            UnitType = UnitType.MECHANICAL,
+            Glyph = 'T',
+            Colour = Color.White,
+            Position = new(x, y),
+            Hp = 100,
+            Speed = 50,
+        };
+
+        static UnitDefinition Penguin(int x, int y) => new()
+        {
+            Kind = UnitKind.ENEMY,
+            Name = "Penguin",
+            UnitType = UnitType.BEAST,
+            Glyph = 'p',
+            Colour = Color.LightBlue,
+            Position = new(x, y),
+            Hp = 10,
+            Speed = 60,
+            Effects = [new("Volatile1", Duration: -1)], // no AI, so they stay in a group
+        };
+
+        return new()
+        {
+            Units =
+            [
+                new UnitDefinition
+                {
+                    Kind = UnitKind.PLAYER,
+                    Name = "Minako",
+                    UnitType = UnitType.HUMAN,
+                    Glyph = 'M',
+                    Colour = Color.Gray,
+                    Position = new(5, 10), // faces right, so the first shot lands on the dummy at (10, 10)
+                    Hp = 200,
+                    Speed = 90,
+                    Weapon = "RocketLauncher",
+                    Resources = [new(ResourceType.AMMO) { Max = 3 }],
+                    Spells = ["Reload"],
+                    ActionLimits = {[ActionType.MOVE] = 40}
+                },
+
+                // falloff: the centre, then distance 1 and distance 2
+                Dummy(10, 10),
+                Dummy(11, 10),
+                Dummy(10, 11),
+                Dummy(12, 10),
+                Dummy(10, 8),
+
+                // blocking: shoot the bait. The dummy behind the wall takes nothing, the table takes a hit but shields the dummy behind it
+                Dummy(15, 20),
+                new UnitDefinition { Kind = UnitKind.WALL, Position = new(15, 21) },
+                Dummy(15, 22),
+                new UnitDefinition
+                {
+                    Kind = UnitKind.FURNITURE,
+                    Name = "Table",
+                    UnitType = UnitType.FURNITURE,
+                    Glyph = (char)210,
+                    Colour = Color.Brown,
+                    Position = new(16, 20),
+                    Hp = 50,
+                },
+                Dummy(17, 20),
+
+                // chain reaction with the new explosion, 2 apart takes 10 from 40 at the edge
+                Penguin(25, 10),
+                Penguin(27, 10),
+                Penguin(29, 10),
+            ],
+
+            Width = 45,
+            Height = 45,
+            Description = "A rocket launcher and things to point it at. Dummies to see the falloff, a wall and a table to hide behind, and penguins to set off.",
+        };
+    }
 
     [Battle("Condition Test", BattleCategory.TEST, Order = 1)]
     public static CombatSettings ConditionTest() => new()
@@ -269,6 +466,7 @@ public static class LevelRegistry
 
         Width = 45,
         Height = 45,
+        Description = "The original test arena."
         //FontScale = 1.9f,
     };
 }

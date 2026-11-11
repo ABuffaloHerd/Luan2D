@@ -17,7 +17,7 @@ public class RailgunSpell : CastableSpell
     public int Damage { get; }
 
     public RailgunSpell(int damage = 100) : base(
-        name: "only mu railgun",
+        name: "only my railgun",
         description: "Shoot a projectile that hits every target in a straight line. Penetrates walls.",
         type: ActionType.SPECIAL,
         costs: new ResourceCost[] { new(ResourceType.OD, 100) },
