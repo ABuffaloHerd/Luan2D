@@ -106,7 +106,35 @@ public static class LevelRegistry
             Hp = 10,
             Speed = 60,
             Ai = new("Zombie"),
-            Effects = [new("Volatile", Duration: -1, Value: 40)],
+            Effects = [new("Volatile1", Duration: -1)],
+        };
+
+        static UnitDefinition Penguin2(int x, int y) => new()
+        {
+            Kind = UnitKind.ENEMY,
+            Name = "Penguin",
+            UnitType = UnitType.BEAST,
+            Glyph = 'p',
+            Colour = Color.LightBlue,
+            Position = new(x, y),
+            Hp = 10,
+            Speed = 60,
+            Ai = new("Zombie"),
+            Effects = [new("Volatile2", Duration: -1)],
+        };
+
+        static UnitDefinition Penguin3(int x, int y) => new()
+        {
+            Kind = UnitKind.ENEMY,
+            Name = "Penguin",
+            UnitType = UnitType.BEAST,
+            Glyph = 'p',
+            Colour = Color.LightBlue,
+            Position = new(x, y),
+            Hp = 10,
+            Speed = 60,
+            Ai = new("Zombie"),
+            Effects = [new("Volatile3", Duration: -1)],
         };
 
         return new()
@@ -128,8 +156,8 @@ public static class LevelRegistry
 
                 // close enough to chain
                 Penguin(10, 10),
-                Penguin(12, 10),
-                Penguin(14, 10),
+                Penguin2(12, 10),
+                Penguin3(14, 10),
 
                 // on its own, blows up with nothing around it
                 Penguin(25, 25),
@@ -166,7 +194,7 @@ public static class LevelRegistry
             Position = new(x, y),
             Hp = 10,
             Speed = 60,
-            Effects = [new("Volatile", Duration: -1, Value: 40)], // no AI, so they stay in a group
+            Effects = [new("Volatile1", Duration: -1)], // no AI, so they stay in a group
         };
 
         return new()

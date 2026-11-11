@@ -66,7 +66,10 @@ public static class IdDictionary
         ["Armour"]      = e => new ArmourEffect(e.Duration, e.Value),
         ["MagicArmour"] = e => new MagicArmourEffect(e.Duration, e.Value),
         ["Barrier"]     = e => new BarrierEffect { Duration = e.Duration },
-        ["Volatile"]    = e => new VolatileEffect(e.Duration, e.Value),
+        // presets, Value is ignored. Each level doubles the damage and radius
+        ["Volatile1"]   = e => new VolatileEffect(e.Duration, damage: 40, radius: 2),
+        ["Volatile2"]   = e => new VolatileEffect(e.Duration, damage: 80, radius: 4),
+        ["Volatile3"]   = e => new VolatileEffect(e.Duration, damage: 160, radius: 8),
         ["Elemental"]   = e => new ElementalModifierEffect(e.Duration, e.Element, e.Value),
     };
 
