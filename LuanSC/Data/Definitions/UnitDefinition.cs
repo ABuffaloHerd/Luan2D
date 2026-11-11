@@ -60,7 +60,7 @@ public sealed record UnitDefinition
     public List<string> Spells { get; init; } = new();
 
     /// <summary>
-    /// Enemies only. Null means idle.
+    /// Enemies only. Null means no AI, so the unit never takes a turn (target dummies). "Idle" takes turns and does nothing.
     /// </summary>
     public AiDefinition Ai { get; init; }
 

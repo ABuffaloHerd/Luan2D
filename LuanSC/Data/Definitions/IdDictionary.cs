@@ -94,7 +94,7 @@ public static class IdDictionary
 
     public static IAIBehavior Ai(AiDefinition spec)
     {
-        if (spec is null) return new IdleBehavior();
+        if (spec is null) return null; // no AI, no turns. Use "Idle" for a unit that takes turns and does nothing
 
         return spec.Behavior.ToLowerInvariant() switch
         {
