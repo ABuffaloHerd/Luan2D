@@ -29,6 +29,7 @@ public static class IdDictionary
         ["Hands"]           = WeaponRegistry.Hands,
         ["HydraulicFists"]  = WeaponRegistry.HydraulicFists,
         ["ManaLens"]        = WeaponRegistry.ManaLens,
+        ["RocketLauncher"]  = WeaponRegistry.RocketLauncher,
     };
 
     private static readonly Dictionary<string, Func<ISpell>> spells = new(StringComparer.OrdinalIgnoreCase)

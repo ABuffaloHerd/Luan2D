@@ -141,6 +141,89 @@ public static class LevelRegistry
         };
     }
 
+    [Battle("Explosion Test", BattleCategory.TEST, Order = 5)]
+    public static CombatSettings ExplosionTest()
+    {
+        static UnitDefinition Dummy(int x, int y) => new()
+        {
+            Kind = UnitKind.ENEMY,
+            Name = "Target Dummy",
+            UnitType = UnitType.MECHANICAL,
+            Glyph = 'T',
+            Colour = Color.White,
+            Position = new(x, y),
+            Hp = 100,
+            Speed = 50,
+        };
+
+        static UnitDefinition Penguin(int x, int y) => new()
+        {
+            Kind = UnitKind.ENEMY,
+            Name = "Penguin",
+            UnitType = UnitType.BEAST,
+            Glyph = 'p',
+            Colour = Color.LightBlue,
+            Position = new(x, y),
+            Hp = 10,
+            Speed = 60,
+            Effects = [new("Volatile", Duration: -1, Value: 40)], // no AI, so they stay in a group
+        };
+
+        return new()
+        {
+            Units =
+            [
+                new UnitDefinition
+                {
+                    Kind = UnitKind.PLAYER,
+                    Name = "Minako",
+                    UnitType = UnitType.HUMAN,
+                    Glyph = 'M',
+                    Colour = Color.Gray,
+                    Position = new(5, 10), // faces right, so the first shot lands on the dummy at (10, 10)
+                    Hp = 200,
+                    Speed = 90,
+                    Weapon = "RocketLauncher",
+                    Resources = [new(ResourceType.AMMO) { Max = 3 }],
+                    Spells = ["Reload"],
+                    ActionLimits = {[ActionType.MOVE] = 40}
+                },
+
+                // falloff: the centre, then distance 1 and distance 2
+                Dummy(10, 10),
+                Dummy(11, 10),
+                Dummy(10, 11),
+                Dummy(12, 10),
+                Dummy(10, 8),
+
+                // blocking: shoot the bait. The dummy behind the wall takes nothing, the table takes a hit but shields the dummy behind it
+                Dummy(15, 20),
+                new UnitDefinition { Kind = UnitKind.WALL, Position = new(15, 21) },
+                Dummy(15, 22),
+                new UnitDefinition
+                {
+                    Kind = UnitKind.FURNITURE,
+                    Name = "Table",
+                    UnitType = UnitType.FURNITURE,
+                    Glyph = (char)210,
+                    Colour = Color.Brown,
+                    Position = new(16, 20),
+                    Hp = 50,
+                },
+                Dummy(17, 20),
+
+                // chain reaction with the new explosion, 2 apart takes 10 from 40 at the edge
+                Penguin(25, 10),
+                Penguin(27, 10),
+                Penguin(29, 10),
+            ],
+
+            Width = 45,
+            Height = 45,
+            Description = "A rocket launcher and things to point it at. Dummies to see the falloff, a wall and a table to hide behind, and penguins to set off.",
+        };
+    }
+
     [Battle("Condition Test", BattleCategory.TEST, Order = 1)]
     public static CombatSettings ConditionTest() => new()
     {
