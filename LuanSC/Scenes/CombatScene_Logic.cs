@@ -56,12 +56,19 @@ namespace LuanSC.Scenes
         {
             // objects in gameObjects sorted by speed
             List<GameObject> ordered = gameObjects
-                .Where(e => e.GetComponent<SpeedComponent>() is not null)
+                .Where(TakesTurns)
                 .OrderByDescending(e => e.GetComponent<SpeedComponent>().Speed)
                 .ToList();
 
             queue = new Queue<GameObject>(ordered);
         }
+
+        /// <summary>
+        /// Needs speed and something to drive it, an AI or the player. A target dummy has speed but no AI, so it never gets a turn.
+        /// </summary>
+        private static bool TakesTurns(GameObject obj)
+            => obj.GetComponent<SpeedComponent>() is not null
+            && (obj.GetComponent<AIComponent>() is not null || obj.GetComponent<ControllableComponent>() is not null);
 
         private void StartNextTurn()
         {

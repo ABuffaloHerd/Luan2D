@@ -1,4 +1,3 @@
-using LuanSC.Data.Animations;
 using LuanSC.Data.Components.AI;
 using LuanSC.Data.Components.Attacks;
 using LuanSC.Objects;
@@ -41,15 +40,6 @@ public class VolatileEffect : IEffect, IDeathListener
     public void OnDeath(ICombatContext context)
     {
         GameEvents.Publish(new CombatEvent.GenericMessage($"{Owner.Name} explodes!"));
-        context.PlayAnimation(AnimationRegistry.CircleBlast(Owner.Position, Radius, Color.OrangeRed));
-
-        // only the living, so BlastAttack doesn't complain about hitting nothing. Walls and corpses are left out here too.
-        List<GameObject> targets = context.Objects
-            .Where(obj => obj.GetComponent<HPComponent>() is { IsAlive: true })
-            .Where(obj => Pattern.CircleDistance(obj.Position - Owner.Position) <= Radius)
-            .ToList();
-
-        if (targets.Count > 0)
-            new BlastAttack(Damage).Execute(Owner, targets, context);
+        new ExplosionAttack(Damage, Radius).Explode(Owner, Owner.Position, context);
     }
 }
