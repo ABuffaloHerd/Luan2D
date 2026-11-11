@@ -315,7 +315,19 @@ namespace LuanSC.Scenes
                 aiPlan.Enqueue(new TurnAction.EndTurn()); // the plan always ends the turn
             }
 
-            Execute(currentControlledGameObject, aiPlan.Dequeue());
+            // Face and EndTurn show nothing, so they don't get a delay of their own.
+            // Face runs with the action after it, EndTurn runs with the action before it.
+            GameObject actor = currentControlledGameObject;
+            while (true)
+            {
+                TurnAction action = aiPlan.Dequeue();
+                Execute(actor, action);
+
+                // the turn ended or the actor died, the plan is gone
+                if (fightResult is not null || currentControlledGameObject != actor || aiPlan is null || aiPlan.Count == 0) break;
+
+                if (action is not TurnAction.Face && aiPlan.Peek() is not TurnAction.EndTurn) break;
+            }
         }
 
         public bool IsWalkable(Point targetPos)
