@@ -168,32 +168,47 @@ namespace LuanSC.Scenes
         /// </summary>
         private void Cull()
         {
-            // copy first, RemoveGameObject changes gameObjects
-            List<GameObject> dead = gameObjects
-                .Where(obj => obj.GetComponent<HPComponent>() is { IsAlive: false })
-                .ToList();
-
-            foreach (GameObject obj in dead)
+            // keep going until nobody's left, a death listener can kill more units on the way out
+            List<GameObject> dead;
+            while ((dead = FindDead()).Count > 0)
             {
-                if (!gameObjects.Contains(obj)) continue; // already vanished with their owner
-
-                // a broken form throws its owner back out instead of killing them.
-                // The message is the same for every form for now, change it here.
-                if (obj.GetComponent<FormComponent>() is FormComponent form)
+                foreach (GameObject obj in dead)
                 {
-                    string formName = obj.Name;
-                    form.Revert();
+                    if (!gameObjects.Contains(obj)) continue; // already vanished with their owner
 
-                    GameEvents.Publish(new CombatEvent.GenericMessage($"The {formName} is destroyed! {obj.Name} is thrown clear."));
-                    RefreshTurnOrder();
-                    continue;
+                    // a broken form throws its owner back out instead of killing them.
+                    // The message is the same for every form for now, change it here.
+                    if (obj.GetComponent<FormComponent>() is FormComponent form)
+                    {
+                        string formName = obj.Name;
+                        form.Revert();
+
+                        GameEvents.Publish(new CombatEvent.GenericMessage($"The {formName} is destroyed! {obj.Name} is thrown clear."));
+                        RefreshTurnOrder();
+                        continue;
+                    }
+
+                    GameEvents.Publish(new CombatEvent.EntityDied(obj, obj.GetComponent<HPComponent>().LastHit));
+
+                    // before removing them, so their summons are still around to get hit
+                    foreach (IDeathListener listener in obj.Components.OfType<IDeathListener>().ToList())
+                    {
+                        listener.OnDeath(this);
+                    }
+
+                    RemoveGameObject(obj);
                 }
-
-                GameEvents.Publish(new CombatEvent.EntityDied(obj, obj.GetComponent<HPComponent>().LastHit));
-                RemoveGameObject(obj);
             }
 
             CheckConditions();
+        }
+
+        // a copy, RemoveGameObject changes gameObjects
+        private List<GameObject> FindDead()
+        {
+            return gameObjects
+                .Where(obj => obj.GetComponent<HPComponent>() is { IsAlive: false })
+                .ToList();
         }
 
         private static ActionType? ActionTypeOf(TurnAction action)

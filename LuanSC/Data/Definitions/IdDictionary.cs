@@ -65,6 +65,7 @@ public static class IdDictionary
         ["Armour"] = e => new ArmourEffect(e.Duration, e.Value),
         ["MagicArmour"] = e => new MagicArmourEffect(e.Duration, e.Value),
         ["Barrier"] = e => new BarrierEffect { Duration = e.Duration },
+        ["Volatile"] = e => new VolatileEffect(e.Duration, e.Value),
         ["Elemental"] = e => new ElementalModifierEffect(e.Duration, e.Element, e.Value),
     };
 
@@ -99,7 +100,7 @@ public static class IdDictionary
             "idle" => new IdleBehavior(),
             "zombie" => new ZombieBehavior(),
             "summoner" => new SummonerBehavior(Summon(spec.Minion ?? throw new ArgumentException("Summoner AI needs a Minion."))),
-            "spawner" => new SpawnerBehavior(spec.Spawns.Select(Summon).ToList(), spec.Interval, spec.InitialDelay),
+            "spawner" => new SpawnerBehavior(spec.Spawns.Select(Summon).ToList(), spec.Interval, spec.InitialDelay, spec.Count),
             _ => throw new ArgumentException($"Unknown AI '{spec.Behavior}'. Add it to IdDictionary.Ai.")
         };
     }
