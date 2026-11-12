@@ -99,7 +99,7 @@ public class ExplosionAttack : IAbility
         List<GameObject> objects = context.Objects.ToList();
 
         // worked out before anything is hit, so furniture broken by this blast still shields what's behind it
-        HashSet<Point> blockers = objects.Where(IsBlocker).Select(obj => obj.Position).ToHashSet();
+        HashSet<Point> blockers = LineOfSight.Blockers(objects);
 
         foreach (GameObject obj in objects)
         {
@@ -108,7 +108,7 @@ public class ExplosionAttack : IAbility
 
             int distance = Pattern.CircleDistance(obj.Position - centre);
             if (distance > Radius) continue;
-            if (IsShielded(centre, obj.Position, blockers)) continue;
+            if (!LineOfSight.HasLineOfSight(centre, obj.Position, blockers)) continue;
 
             DamageRecord pain = new()
             {
@@ -138,30 +138,6 @@ public class ExplosionAttack : IAbility
         double progress = (double)(distance - Core) / (Radius - Core); // Radius > Core here, or distance <= Core caught it
         double percent = 100 - (100 - EdgePercent) * progress;
         return (int)Math.Round(Damage * percent / 100, MidpointRounding.AwayFromZero);
-    }
-
-    // walls, and furniture that's still standing
-    private static bool IsBlocker(GameObject obj)
-        => obj is Wall || (obj is Furniture && obj.GetComponent<HPComponent>() is { IsAlive: true });
-
-    /// <summary>
-    /// True if a blocker sits on the straight line between the two, ends left out so the blocker itself still gets hit.
-    /// Same rounded line as AnimationRegistry.Projectile, so what the shot passes through and what shields agree.
-    /// </summary>
-    private static bool IsShielded(Point from, Point to, HashSet<Point> blockers)
-    {
-        int dx = to.X - from.X;
-        int dy = to.Y - from.Y;
-        int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
-
-        for (int i = 1; i < steps; i++)
-        {
-            float progress = (float)i / steps;
-            Point cell = new(from.X + (int)MathF.Round(dx * progress), from.Y + (int)MathF.Round(dy * progress));
-            if (blockers.Contains(cell)) return true;
-        }
-
-        return false;
     }
 
     /// <summary>
