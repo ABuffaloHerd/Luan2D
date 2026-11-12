@@ -6,6 +6,7 @@ using SadConsole.UI.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using LuanSC.Data.Levels;
 
 namespace LuanSC.Scenes
 {

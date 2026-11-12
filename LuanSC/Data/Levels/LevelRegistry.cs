@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LuanSC.Data;
+namespace LuanSC.Data.Levels;
 
 /// <summary>
 /// Level factories. Each returns plain settings, CombatScene builds the units from them.

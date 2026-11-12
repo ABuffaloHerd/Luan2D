@@ -1,7 +1,7 @@
 using LuanSC.Data.Components;
 using LuanSC.Objects;
 
-namespace LuanSC.Data;
+namespace LuanSC.Utils;
 
 /// <summary>
 /// What blocks shots and blasts, and whether one cell can see another. Shared by the attacks so they all agree.

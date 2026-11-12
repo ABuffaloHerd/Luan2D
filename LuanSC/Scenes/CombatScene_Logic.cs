@@ -11,6 +11,8 @@ using System.Text;
 using LuanSC.Data.Components.AI;
 using System.Diagnostics;
 using System.Security.AccessControl;
+using LuanSC.Data.Levels;
+using LuanSC.Data.Combat;
 
 namespace LuanSC.Scenes
 {

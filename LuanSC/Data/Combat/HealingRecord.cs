@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LuanSC.Data;
+namespace LuanSC.Data.Combat;
 
 /// <summary>
 /// A damage record except... the exact opposite

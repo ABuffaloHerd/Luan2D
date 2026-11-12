@@ -7,6 +7,7 @@ using SadConsole.UI.Controls;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using LuanSC.Data.Levels;
 
 namespace LuanSC.Scenes;
 

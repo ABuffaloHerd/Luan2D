@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace LuanSC.Data;
+namespace LuanSC.Data.Levels;
 
 /// <summary>
 /// The sections of the battle selection screen, shown in this order. Empty ones are left out.

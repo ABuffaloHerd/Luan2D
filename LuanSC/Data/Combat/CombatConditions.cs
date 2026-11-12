@@ -4,7 +4,7 @@ using LuanSC.Objects;
 using System;
 using System.Collections.Generic;
 
-namespace LuanSC.Data;
+namespace LuanSC.Data.Combat;
 
 public enum CombatOutcome
 {

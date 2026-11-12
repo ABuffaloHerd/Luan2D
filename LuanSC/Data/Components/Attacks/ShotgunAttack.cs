@@ -1,9 +1,11 @@
 ﻿using LuanSC.Data.Animations;
 using LuanSC.Data.Components.AI;
 using LuanSC.Objects;
+using LuanSC.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using LuanSC.Data.Combat;
 
 namespace LuanSC.Data.Components.Attacks;
 
