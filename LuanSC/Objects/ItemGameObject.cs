@@ -1,4 +1,4 @@
-using LuanSC.Data.Items;
+using LuanSC.Objects.Items;
 
 namespace LuanSC.Objects;
 

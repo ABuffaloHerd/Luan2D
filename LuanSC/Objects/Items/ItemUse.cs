@@ -1,9 +1,10 @@
+using LuanSC.Data;
 using LuanSC.Data.Components;
 using LuanSC.Data.Components.AI;
 using LuanSC.Data.Spells;
 using LuanSC.Objects;
 
-namespace LuanSC.Data.Items;
+namespace LuanSC.Objects.Items;
 
 /// <summary>
 /// Makes an item's Use spell look like an ITEM action, so the spellbook window, targeting and CanCast work on it as they are.

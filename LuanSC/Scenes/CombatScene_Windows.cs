@@ -6,10 +6,10 @@ using SadConsole.UI;
 using SadConsole.UI.Controls;
 using LuanSC.Data.Components;
 using LuanSC.Data.Components.Effects;
-using LuanSC.Data.Items;
 using LuanSC.Data.Spells;
 using LuanSC.Objects;
 using LuanSC.Objects.Weapons;
+using LuanSC.Objects.Items;
 
 namespace LuanSC.Scenes;
 

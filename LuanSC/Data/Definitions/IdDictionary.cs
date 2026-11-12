@@ -1,9 +1,9 @@
 using LuanSC.Data.Components;
 using LuanSC.Data.Components.AI;
 using LuanSC.Data.Components.Effects;
-using LuanSC.Data.Items;
 using LuanSC.Data.Spells;
 using LuanSC.Objects;
+using LuanSC.Objects.Items;
 using LuanSC.Objects.Summons;
 using LuanSC.Objects.Weapons;
 using System;

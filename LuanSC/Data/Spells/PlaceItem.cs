@@ -1,7 +1,7 @@
 using LuanSC.Data.Components;
 using LuanSC.Data.Components.AI;
-using LuanSC.Data.Items;
 using LuanSC.Objects;
+using LuanSC.Objects.Items;
 
 namespace LuanSC.Data.Spells;
 

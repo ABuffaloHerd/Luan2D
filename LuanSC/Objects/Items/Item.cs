@@ -1,8 +1,7 @@
-﻿
-using LuanSC.Data.Components.Effects;
+﻿using LuanSC.Data.Components.Effects;
 using LuanSC.Data.Spells;
 
-namespace LuanSC.Data.Items;
+namespace LuanSC.Objects.Items;
 
 /// <summary>
 /// One kind of item. There's only this class, what an item does depends on which of the optional parts are set:

@@ -3,7 +3,7 @@ using LuanSC.Data.Components.Attacks;
 using LuanSC.Data.Components.Effects;
 using LuanSC.Data.Spells;
 
-namespace LuanSC.Data.Items;
+namespace LuanSC.Objects.Items;
 
 /// <summary>
 /// Item factories. Add an ID for each in IdDictionary so levels can hand them out or leave them on the floor.

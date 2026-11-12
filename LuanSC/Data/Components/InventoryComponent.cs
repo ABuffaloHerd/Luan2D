@@ -1,6 +1,6 @@
 using LuanSC.Data.Components.Effects;
-using LuanSC.Data.Items;
 using LuanSC.Objects;
+using LuanSC.Objects.Items;
 
 namespace LuanSC.Data.Components;
 

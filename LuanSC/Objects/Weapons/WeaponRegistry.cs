@@ -128,6 +128,15 @@ namespace LuanSC.Objects.Weapons
             return h;
         }
 
+        public static Weapon ZaHando()
+        {
+            Weapon z = Hands();
+            z.Name = "Za Hando";
+            z.Damage = 100;
+            z.Abilities.Clear();
+            z.Abilities.Add(new BasicTrueDamageAttack(z.Damage));
+            return z;
+        }
         public static Weapon ManaLens()
         {
             Pattern p = new();

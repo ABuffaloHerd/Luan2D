@@ -1,6 +1,6 @@
-﻿using LuanSC.Data.Items;
-using LuanSC.Data.Spells;
+﻿using LuanSC.Data.Spells;
 using LuanSC.Objects;
+using LuanSC.Objects.Items;
 using System;
 using System.Collections.Generic;
 using System.Text;
