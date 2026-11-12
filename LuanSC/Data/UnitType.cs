@@ -18,4 +18,5 @@ public enum UnitType
     WALL        = 1 << 7, // not a unit, but useful for filtering
     MAGICAL     = 1 << 8, // magical constructs, golems, elementals
     FURNITURE   = 1 << 9, // not a unit, but useful for filtering
+    ITEM        = 1 << 10, // not a unit, but useful for filtering
 }

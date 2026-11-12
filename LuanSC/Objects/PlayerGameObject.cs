@@ -50,6 +50,7 @@ namespace LuanSC.Objects
             Components.Add(new GBComponent());
             Components.Add(new EffectComponent());
             Components.Add(new TeamComponent(Team.PLAYER));
+            Components.Add(new InventoryComponent()); // empty, so players can always pick things up
 
             Components.Add(ActionComponent.CreateDefault());
 

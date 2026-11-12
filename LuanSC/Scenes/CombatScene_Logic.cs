@@ -228,6 +228,7 @@ namespace LuanSC.Scenes
                 TurnAction.Attack => ActionType.ATTACK,
                 TurnAction.Summon summon => summon.Cost,
                 TurnAction.Cast cast => cast.Spell.Type,
+                TurnAction.UseItem => ActionType.ITEM, // whatever the item's own action is
                 _ => null // if they ain't declared it's free dawg it's lit
             };
         }
@@ -245,42 +246,8 @@ namespace LuanSC.Scenes
                 return;
             }
 
-            bool success = false; // track if successful and only spend points if it was
-
-            // now execute the action
-            switch (action)
-            {
-                case TurnAction.Move move:
-                    Point target = actor.Position + move.Direction.ToVector();
-                    if (IsWalkable(target))
-                    {
-                        actor.Position = target;
-                        success = true;
-                    }
-                    break;
-
-                case TurnAction.Face face:
-                    actor.Direction = face.Direction;
-                    break;
-
-                case TurnAction.Attack:
-                    success = Attack(actor);
-                    break;
-
-                case TurnAction.Summon summon:
-                    success = Summon(actor, summon);
-                    break;
-
-                case TurnAction.Cast cast:
-                    success = ResolveCast(actor, cast);
-                    break;
-
-                case TurnAction.EndTurn:
-                    // Notify the fight feed that the turn has ended
-                    fightFeed.AddLine($"{actor.Name} ends their turn.");
-                    StartNextTurn();
-                    break;
-            }
+            // track if successful and only spend points if it was
+            bool success = Perform(actor, action);
 
             // now spend the points
             if (success && type is not null)
@@ -291,11 +258,56 @@ namespace LuanSC.Scenes
             // EndTurn already culled inside StartNextTurn
             if (action is TurnAction.EndTurn) return;
 
+            // after anything that worked, not only Move, so teleporting onto an item counts too
+            if (success && gameObjects.Contains(actor))
+                PickUp(actor);
+
             Cull();
 
             // the actor died on their own turn, move on
             if (!gameObjects.Contains(actor))
                 StartNextTurn();
+        }
+
+        /// <summary>
+        /// Does the action, without the action counters. UseItem comes back through here for the item's own action.
+        /// </summary>
+        /// <returns>false if nothing happened, so Execute doesn't spend the action.</returns>
+        private bool Perform(GameObject actor, TurnAction action)
+        {
+            switch (action)
+            {
+                case TurnAction.Move move:
+                    Point target = actor.Position + move.Direction.ToVector();
+                    if (!IsWalkable(target)) return false;
+
+                    actor.Position = target;
+                    return true;
+
+                case TurnAction.Face face:
+                    actor.Direction = face.Direction;
+                    return false; // free
+
+                case TurnAction.Attack:
+                    return Attack(actor);
+
+                case TurnAction.Summon summon:
+                    return Summon(actor, summon);
+
+                case TurnAction.Cast cast:
+                    return ResolveCast(actor, cast);
+
+                case TurnAction.UseItem use:
+                    return UseItem(actor, use);
+
+                case TurnAction.EndTurn:
+                    // Notify the fight feed that the turn has ended
+                    fightFeed.AddLine($"{actor.Name} ends their turn.");
+                    StartNextTurn();
+                    return false;
+            }
+
+            return false;
         }
 
         private void UpdateAI(TimeSpan delta)

@@ -1,4 +1,5 @@
-﻿using LuanSC.Data.Spells;
+﻿using LuanSC.Data.Items;
+using LuanSC.Data.Spells;
 using LuanSC.Objects;
 using System;
 using System.Collections.Generic;
@@ -29,4 +30,10 @@ public abstract record TurnAction
     /// The scene checks range and costs before calling Spell.Resolve.
     /// </summary>
     public sealed record Cast(CastableSpell Spell, Point Target) : TurnAction;
+
+    /// <summary>
+    /// Uses an item from the actor's inventory. Inner is what the item does, a Cast or a Summon.
+    /// Costs an ITEM action whatever Inner is, and the item is only taken if Inner works.
+    /// </summary>
+    public sealed record UseItem(Item Item, TurnAction Inner) : TurnAction;
 }

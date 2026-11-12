@@ -25,8 +25,8 @@ public abstract class CastableSpell : ISpell
     public string Description { get; }
     public ActionType Type { get; }
     public IReadOnlyList<ResourceCost> Costs { get; }
-    public Targeting Targeting { get; }
-    public int Range { get; }
+    public Targeting Targeting { get; init; }
+    public int Range { get; init; }
     public Pattern Area { get; }
     public string CastMessage { get; init; }
 
@@ -48,6 +48,11 @@ public abstract class CastableSpell : ISpell
     /// The action and costs aren't spent when it's refused.
     /// </summary>
     public virtual string Refusal(GameObject caster) => null;
+
+    /// <summary>
+    /// Same as Refusal(caster) but it can look at the target too, e.g. nobody there to heal. This is the one the scene calls.
+    /// </summary>
+    public virtual string Refusal(GameObject caster, Point target, ICombatContext context) => Refusal(caster);
 
     /// <summary>
     /// Applies the spell. Costs are already paid and the target is already in range.

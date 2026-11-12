@@ -33,7 +33,7 @@ public partial class CombatScene
             return false;
         }
 
-        string refusal = cast.Spell.Refusal(caster);
+        string refusal = cast.Spell.Refusal(caster, target, this);
         if (refusal is not null)
         {
             GameEvents.Publish(new CombatEvent.GenericMessage(refusal));

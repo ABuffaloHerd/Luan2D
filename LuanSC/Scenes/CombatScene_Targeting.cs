@@ -82,7 +82,7 @@ public partial class CombatScene
     }
 
     /// <summary>
-    /// Casts straight away for FACING spells, starts targeting for CURSOR spells.
+    /// Casts straight away for FACING and SELF spells, starts targeting for CURSOR spells.
     /// </summary>
     public void Cast(GameObject caster, ISpell spell)
     {
@@ -96,6 +96,10 @@ public partial class CombatScene
         {
             case Targeting.FACING:
                 Execute(caster, spell.CreateAction(caster, caster.Position + caster.Direction.ToVector()));
+                break;
+
+            case Targeting.SELF:
+                Execute(caster, spell.CreateAction(caster, caster.Position));
                 break;
 
             case Targeting.CURSOR:

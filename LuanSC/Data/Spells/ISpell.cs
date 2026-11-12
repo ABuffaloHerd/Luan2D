@@ -10,6 +10,7 @@ namespace LuanSC.Data.Spells;
 public enum Targeting
 {
     FACING, // the cell in front of the caster, casts straight away
+    SELF,   // the caster's own cell, casts straight away
     CURSOR  // pick a cell within Range with the cursor
 }
 

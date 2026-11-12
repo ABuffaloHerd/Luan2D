@@ -60,6 +60,11 @@ public sealed record UnitDefinition
     public List<string> Spells { get; init; } = new();
 
     /// <summary>
+    /// What the unit carries at the start, e.g. [new("Potion", 3), new("ArmourCharm")]. Position is ignored here.
+    /// </summary>
+    public List<ItemDefinition> Items { get; init; } = new();
+
+    /// <summary>
     /// Enemies only. Null means no AI, so the unit never takes a turn (target dummies). "Idle" takes turns and does nothing.
     /// </summary>
     public AiDefinition Ai { get; init; }
@@ -107,6 +112,16 @@ public sealed record EffectDefinition(string Id, int Duration, int Value = 0)
     /// Only used by Elemental for now, e.g. new("Elemental", -1, 50) { Element = Element.Electric }.
     /// </summary>
     public Element Element { get; init; }
+}
+
+/// <summary>
+/// Count of one item, by its ID in IdDictionary. On a unit it's what they carry.
+/// In CombatSettings.Items it's a pile on the arena floor, and Position says where:
+///   new("Potion", 2) { Position = new(5, 13) }
+/// </summary>
+public sealed record ItemDefinition(string Id, int Count = 1)
+{
+    public Point Position { get; init; }
 }
 
 /// <summary>

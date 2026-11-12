@@ -1,6 +1,7 @@
 using LuanSC.Data.Components;
 using LuanSC.Data.Components.AI;
 using LuanSC.Data.Components.Effects;
+using LuanSC.Data.Items;
 using LuanSC.Data.Spells;
 using LuanSC.Objects;
 using LuanSC.Objects.Summons;
@@ -73,6 +74,15 @@ public static class IdDictionary
         ["Elemental"]   = e => new ElementalModifierEffect(e.Duration, e.Element, e.Value),
     };
 
+    private static readonly Dictionary<string, Func<Item>> items = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Potion"]      = () => ItemRegistry.Potion(),
+        ["Grenade"]     = () => ItemRegistry.Grenade(),
+        ["Flare"]       = () => ItemRegistry.Flare(),
+        ["LitFlare"]    = ItemRegistry.LitFlare,
+        ["ArmourCharm"] = () => ItemRegistry.ArmourCharm(),
+    };
+
     // resources a unit doesn't have by default, e.g. Metal on an engineer
     private static readonly Dictionary<ResourceType, Func<ResourceComponent>> resources = new()
     {
@@ -88,6 +98,7 @@ public static class IdDictionary
     public static ISpell Spell(string id) => Find(spells, id, "spell")();
     public static Func<GameObject, SummonedGameObject> Summon(string id) => Find(summons, id, "summon");
     public static IEffect Effect(EffectDefinition spec) => Find(effects, spec.Id, "effect")(spec);
+    public static Item Item(string id) => Find(items, id, "item")();
 
     /// <summary>
     /// A new resource of this type. Types without a factory get a plain pool, the spec fills in the rest.
