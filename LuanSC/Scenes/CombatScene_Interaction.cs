@@ -29,8 +29,8 @@ namespace LuanSC.Scenes
                     {
                         // Upcast to GameObject
                         GameObject gameobj = (GameObject)entity;
-                        // Check that the entity is not the attacker itself
-                        if (entity != user)
+                        // Check that the entity is not the attacker itself. Items on the floor aren't targets either
+                        if (entity != user && entity is not ItemGameObject)
                         {
                             targets.Add(gameobj);
                         }

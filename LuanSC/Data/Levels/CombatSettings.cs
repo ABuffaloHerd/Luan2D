@@ -22,6 +22,11 @@ namespace LuanSC.Data.Levels
         public List<EffectDefinition> StartEffects { get; init; } = new();
 
         /// <summary>
+        /// Items lying on the arena floor at the start. Each one needs a Position.
+        /// </summary>
+        public List<ItemDefinition> Items { get; init; } = new();
+
+        /// <summary>
         /// Extra ways for the fight to end. All friends dead or all enemies dead always applies, so don't list those.
         /// </summary>
         public List<ConditionDefinition> Conditions { get; init; } = new();
@@ -60,6 +65,9 @@ namespace LuanSC.Data.Levels
 
                 objects.Add(obj);
             }
+
+            foreach (ItemDefinition item in Items)
+                objects.Add(new ItemGameObject(IdDictionary.Item(item.Id), item.Count) { Position = item.Position });
 
             return objects;
         }
@@ -109,6 +117,20 @@ namespace LuanSC.Data.Levels
 
             if (unit.Spells.Count > 0)
                 obj.AddComponent(new SpellbookComponent(unit.Spells.Select(IdDictionary.Spell).ToArray()));
+
+            if (unit.Items.Count > 0)
+            {
+                // players already have an empty one
+                InventoryComponent bag = obj.GetComponent<InventoryComponent>();
+                if (bag is null)
+                {
+                    bag = new InventoryComponent();
+                    obj.AddComponent(bag);
+                }
+
+                foreach (ItemDefinition item in unit.Items)
+                    bag.Add(IdDictionary.Item(item.Id), item.Count);
+            }
 
             return obj;
         }

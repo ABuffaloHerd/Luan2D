@@ -19,6 +19,11 @@ public interface ICombatContext
     void PlayAnimation(AnimatedEffect animation);
 
     /// <summary>
+    /// Adds an object to the arena mid fight, e.g. an item dropped on the floor. Set its Position first.
+    /// </summary>
+    void Spawn(GameObject obj);
+
+    /// <summary>
     /// The round being played, starting at 1.
     /// </summary>
     int Round { get; }

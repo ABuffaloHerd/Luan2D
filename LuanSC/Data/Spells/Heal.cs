@@ -22,10 +22,24 @@ public class Heal : CastableSpell
         Amount = amount;
     }
 
+    // refused rather than wasted, so a potion isn't used up on nothing
+    public override string Refusal(GameObject caster, Point target, ICombatContext context)
+    {
+        GameObject patient = PatientAt(target, context);
+        if (patient is null) return "There's nobody there to heal.";
+
+        HPComponent hp = patient.GetComponent<HPComponent>();
+        if (hp.Current >= hp.Max) return $"{patient.Name} is already at full health.";
+
+        return base.Refusal(caster, target, context);
+    }
+
+    private static GameObject PatientAt(Point target, ICombatContext context)
+        => context.Objects.FirstOrDefault(obj => obj.Position == target && obj.GetComponent<HPComponent>() is { IsAlive: true });
+
     public override void Resolve(GameObject caster, Point target, ICombatContext context)
     {
-        GameObject patient = context.Objects.FirstOrDefault(obj =>
-            obj.Position == target && obj.GetComponent<HPComponent>() is { IsAlive: true });
+        GameObject patient = PatientAt(target, context);
 
         if (patient is null)
         {

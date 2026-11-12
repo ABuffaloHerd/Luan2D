@@ -252,6 +252,63 @@ public static class LevelRegistry
         };
     }
 
+    [Battle("Item Test", BattleCategory.TEST, Order = 6)]
+    public static CombatSettings ItemTest()
+    {
+        static UnitDefinition Dummy(int x, int y) => new()
+        {
+            Kind = UnitKind.ENEMY,
+            Name = "Target Dummy",
+            UnitType = UnitType.MECHANICAL,
+            Glyph = 'T',
+            Colour = Color.White,
+            Position = new(x, y),
+            Hp = 100,
+            Speed = 50,
+        };
+
+        return new()
+        {
+            Units =
+            [
+                new UnitDefinition
+                {
+                    Kind = UnitKind.PLAYER,
+                    Name = "Mariah",
+                    UnitType = UnitType.HUMAN,
+                    Glyph = 'M',
+                    Colour = Color.LightBlue,
+                    Position = new(5, 10),
+                    Hp = 200,
+                    Speed = 90,
+                    Items = [new("Potion", 2), new("Grenade", 3), new("Flare", 2)],
+                    ActionLimits = { [ActionType.MOVE] = 40 }
+                },
+
+                // grenade practice. Stand close to get hurt, then the potion has something to heal
+                Dummy(10, 10),
+                Dummy(11, 10),
+                Dummy(10, 11),
+
+                // a flare can't land on this
+                new UnitDefinition { Kind = UnitKind.WALL, Position = new(5, 7) },
+            ],
+
+            // walk over them. Two charms, two armour effects
+            Items =
+            [
+                new("Potion") { Position = new(5, 13) },
+                new("ArmourCharm") { Position = new(7, 13) },
+                new("ArmourCharm") { Position = new(9, 13) },
+                new("LitFlare") { Position = new(11, 13) }, // can't be picked up
+            ],
+
+            Width = 45,
+            Height = 45,
+            Description = "Potions, grenades and flares in the bag, more on the floor to walk over. One item per turn. A potion at full health is refused, so blow yourself up a little first.",
+        };
+    }
+
     [Battle("Condition Test", BattleCategory.TEST, Order = 1)]
     public static CombatSettings ConditionTest() => new()
     {

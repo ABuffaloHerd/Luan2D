@@ -67,6 +67,9 @@ public class FormComponent : IComponent
         foreach (IComponent component in stashed)
             Owner.Components.Add(component); // still owned by them from before
 
+        // Enter cleared every effect, the ones from held items come back with the items
+        Owner.GetComponent<InventoryComponent>()?.RefreshHeld();
+
         Owner.Name = originalName;
         Owner.UnitType = originalUnitType;
         SetGlyph(Owner, originalGlyph);

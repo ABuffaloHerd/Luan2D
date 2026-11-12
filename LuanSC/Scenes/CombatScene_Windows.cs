@@ -9,6 +9,7 @@ using LuanSC.Data.Components.Effects;
 using LuanSC.Data.Spells;
 using LuanSC.Objects;
 using LuanSC.Objects.Weapons;
+using LuanSC.Objects.Items;
 
 namespace LuanSC.Scenes;
 
@@ -36,6 +37,7 @@ public partial class CombatScene
         if (caster?.GetComponent<ControllableComponent>() is null) return;
 
         SpellbookComponent book = caster.GetComponent<SpellbookComponent>();
+        InventoryComponent bag = caster.GetComponent<InventoryComponent>();
 
         // might need to make this a class var
         Window spellbook = new Window(90, 40)
@@ -70,6 +72,7 @@ public partial class CombatScene
             BuildSpellTab("Spells", ActionType.SPELL, caster, book, contentWidth, contentHeight, Cast),
             BuildSpellTab("Skills", ActionType.SKILL, caster, book, contentWidth, contentHeight, Cast),
             BuildSpellTab("Special", ActionType.SPECIAL, caster, book, contentWidth, contentHeight, Cast),
+            BuildItemTab("Items", caster, bag, contentWidth, contentHeight, Cast)
         ], contentWidth, contentHeight)
         {
             Position = new(1, 1)
@@ -106,28 +109,85 @@ public partial class CombatScene
 
         int y = 0;
         foreach (ISpell spell in spells)
+            y = AddSpellRow(panel, spell, caster, spell.Name, 0, y, width, cast);
+
+        return new TabItem(header, panel);
+    }
+
+    /// <summary>
+    /// The Items tab. Every stack the caster carries with its glyph in front: a button for the ones that can be used,
+    /// plain text for the ones that only work while held.
+    /// </summary>
+    private static TabItem BuildItemTab(string header, GameObject caster, InventoryComponent bag, int width, int height, Action<ISpell> cast)
+    {
+        const int Indent = 2; // room for the glyph and a gap
+
+        Panel panel = new(width, height);
+        width -= 2;
+
+        List<(Item Item, int Count)> items = bag?.Items.ToList() ?? new();
+        if (items.Count == 0)
         {
-            Button button = new(width, 1)
+            panel.Add(new Label("Nothing here.") { Position = new(1, 1) });
+            return new TabItem(header, panel);
+        }
+
+        int y = 0;
+        foreach ((Item item, int count) in items)
+        {
+            // the same glyph and colour it has on the arena floor
+            panel.Add(new Label(1) { DisplayText = item.Glyph.ToString(), Position = new(0, y), TextColor = item.Colour });
+
+            string text = count > 1 ? $"{item.Name} x{count}" : item.Name;
+
+            if (item.Use is not null)
             {
-                Text = spell.Name,
-                Position = new(0, y),
-                IsEnabled = spell.CanCast(caster)
-            };
-            button.Click += (sender, args) => cast(spell);
-            panel.Add(button);
+                y = AddSpellRow(panel, new ItemUse(item), caster, text, Indent, y, width, cast);
+                continue;
+            }
 
-            string costs = spell.Costs.Count > 0
-                ? string.Join(", ", spell.Costs.Select(c => $"{c.Amount} {c.Type}"))
-                : "Free";
-            string targeting = spell.Targeting == Targeting.CURSOR ? $"range {spell.Range}" : "in front";
-
-            panel.Add(new Label(width) { DisplayText = $" {costs}, {targeting}", Position = new(0, y + 1), TextColor = Color.Gray });
-            panel.Add(new Label(width) { DisplayText = $" {spell.Description}", Position = new(0, y + 2), TextColor = Color.DarkGray });
-
+            // nothing to press
+            string note = item.Held is not null ? "Works while held" : "Can't be used";
+            panel.Add(new Label(width - Indent) { DisplayText = text, Position = new(Indent, y) });
+            panel.Add(new Label(width - Indent) { DisplayText = $" {note}", Position = new(Indent, y + 1), TextColor = Color.Gray });
+            panel.Add(new Label(width - Indent) { DisplayText = $" {item.Description}", Position = new(Indent, y + 2), TextColor = Color.DarkGray });
             y += 4;
         }
 
         return new TabItem(header, panel);
+    }
+
+    /// <summary>
+    /// One row of a tab: a button, then the cost and the description under it. Greyed out if it can't be cast right now.
+    /// </summary>
+    /// <param name="text">What the button says, usually the spell's name.</param>
+    /// <param name="x">Left edge of the row. The row runs from there to width.</param>
+    /// <returns>The y for the next row.</returns>
+    private static int AddSpellRow(Panel panel, ISpell spell, GameObject caster, string text, int x, int y, int width, Action<ISpell> cast)
+    {
+        Button button = new(width - x, 1)
+        {
+            Text = text,
+            Position = new(x, y),
+            IsEnabled = spell.CanCast(caster)
+        };
+        button.Click += (sender, args) => cast(spell);
+        panel.Add(button);
+
+        string costs = spell.Costs.Count > 0
+            ? string.Join(", ", spell.Costs.Select(c => $"{c.Amount} {c.Type}"))
+            : "Free";
+        string targeting = spell.Targeting switch
+        {
+            Targeting.CURSOR => $"range {spell.Range}",
+            Targeting.SELF => "self",
+            _ => "in front"
+        };
+
+        panel.Add(new Label(width - x) { DisplayText = $" {costs}, {targeting}", Position = new(x, y + 1), TextColor = Color.Gray });
+        panel.Add(new Label(width - x) { DisplayText = $" {spell.Description}", Position = new(x, y + 2), TextColor = Color.DarkGray });
+
+        return y + 4;
     }
 
     // the post build step copies Resources next to the exe
@@ -236,6 +296,24 @@ public partial class CombatScene
         {
             panel.Add(new Label(width) { DisplayText = text, Position = new(1, y), TextColor = colour ?? Color.White });
             y++;
+        }
+
+        // an item on the floor has none of the unit stats, it gets its own lines
+        if (obj is ItemGameObject drop)
+        {
+            Item item = drop.Item;
+
+            Line($"{item.Glyph} {item.Name}", item.Colour);
+            if (drop.Count > 1) Line($"Count: {drop.Count}");
+
+            y++;
+            Line(item.Description);
+
+            y++;
+            if (item.Use is not null) Line(item.Consumable ? "Used up when used." : "Can be used any number of times.", Color.Gray);
+            if (item.Held is not null) Line("Works while held.", Color.Gray);
+            Line(item.CanPickUp ? "Walk over it to pick it up." : "Can't be picked up.", Color.Gray);
+            return;
         }
 
         Line($"Name: {obj.Name}");
