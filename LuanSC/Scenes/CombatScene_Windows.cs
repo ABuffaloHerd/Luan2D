@@ -298,6 +298,24 @@ public partial class CombatScene
             y++;
         }
 
+        // an item on the floor has none of the unit stats, it gets its own lines
+        if (obj is ItemGameObject drop)
+        {
+            Item item = drop.Item;
+
+            Line($"{item.Glyph} {item.Name}", item.Colour);
+            if (drop.Count > 1) Line($"Count: {drop.Count}");
+
+            y++;
+            Line(item.Description);
+
+            y++;
+            if (item.Use is not null) Line(item.Consumable ? "Used up when used." : "Can be used any number of times.", Color.Gray);
+            if (item.Held is not null) Line("Works while held.", Color.Gray);
+            Line(item.CanPickUp ? "Walk over it to pick it up." : "Can't be picked up.", Color.Gray);
+            return;
+        }
+
         Line($"Name: {obj.Name}");
         Line($"Type: {obj.UnitType.ToString().Replace(", ", "/")}");
 

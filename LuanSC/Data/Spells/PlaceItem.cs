@@ -16,7 +16,6 @@ public class PlaceItem : CastableSpell
         : base(name, description, ActionType.ITEM, costs, Targeting.CURSOR, range, new Pattern().Mark(0, 0))
     {
         Create = create;
-        UnitType = UnitType.ITEM;
     }
 
     public override string Refusal(GameObject caster, Point target, ICombatContext context)

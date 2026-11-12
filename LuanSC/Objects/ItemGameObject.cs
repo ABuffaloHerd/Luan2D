@@ -16,6 +16,7 @@ public class ItemGameObject : GameObject
         : base(new ColoredGlyph(item.Colour, Color.Transparent, item.Glyph), MagicNumbers.FLOOR_INDEX)
     {
         Item = item;
+        UnitType = Data.UnitType.ITEM;
         Count = Math.Max(count, 1);
         Name = Count > 1 ? $"{item.Name} x{Count}" : item.Name;
     }
