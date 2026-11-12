@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LuanSC.Data
+namespace LuanSC.Data.Levels
 {
     /// <summary>
     /// Describes a combat scenario. Only data, so the same settings can start any number of fights.

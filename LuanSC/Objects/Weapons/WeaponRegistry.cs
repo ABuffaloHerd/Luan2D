@@ -57,9 +57,21 @@ namespace LuanSC.Objects.Weapons
             p.Mark(-1, -2);
 
             Weapon s = new Weapon("Shotgun", 6, p);
-            s.Abilities.Add(new BlastAttack(s.Damage));
+            s.Abilities.Add(new ShotgunAttack(s.Damage));
             s.Costs.Add(new ResourceCost(ResourceType.AMMO, 1)); // a shell per shot, Reload to refill
             return s;
+        }
+
+        // Hits the nearest thing ahead and explodes, or explodes at the end of the range. Mind your own feet
+        public static Weapon RocketLauncher()
+        {
+            Pattern p = new();
+            p.Mark(0, -1).Mark(0, -2).Mark(0, -3).Mark(0, -4).Mark(0, -5);
+
+            Weapon r = new Weapon("Rocket Launcher", 30, p);
+            r.Abilities.Add(new ExplosionAttack(r.Damage, radius: 2, core: 0, edgePercent: 25)); // 30, 19, 8
+            r.Costs.Add(new ResourceCost(ResourceType.AMMO, 1)); // a rocket per shot, Reload to refill
+            return r;
         }
 
         public static Weapon Crossbow()

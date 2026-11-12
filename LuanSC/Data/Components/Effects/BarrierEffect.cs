@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using LuanSC.Data.Combat;
 
 namespace LuanSC.Data.Components.Effects;
 

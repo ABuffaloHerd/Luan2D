@@ -11,6 +11,8 @@ using System.Text;
 using LuanSC.Data.Components.AI;
 using System.Diagnostics;
 using System.Security.AccessControl;
+using LuanSC.Data.Levels;
+using LuanSC.Data.Combat;
 
 namespace LuanSC.Scenes
 {
@@ -56,12 +58,19 @@ namespace LuanSC.Scenes
         {
             // objects in gameObjects sorted by speed
             List<GameObject> ordered = gameObjects
-                .Where(e => e.GetComponent<SpeedComponent>() is not null)
+                .Where(TakesTurns)
                 .OrderByDescending(e => e.GetComponent<SpeedComponent>().Speed)
                 .ToList();
 
             queue = new Queue<GameObject>(ordered);
         }
+
+        /// <summary>
+        /// Needs speed and something to drive it, an AI or the player. A target dummy has speed but no AI, so it never gets a turn.
+        /// </summary>
+        private static bool TakesTurns(GameObject obj)
+            => obj.GetComponent<SpeedComponent>() is not null
+            && (obj.GetComponent<AIComponent>() is not null || obj.GetComponent<ControllableComponent>() is not null);
 
         private void StartNextTurn()
         {
@@ -168,32 +177,47 @@ namespace LuanSC.Scenes
         /// </summary>
         private void Cull()
         {
-            // copy first, RemoveGameObject changes gameObjects
-            List<GameObject> dead = gameObjects
-                .Where(obj => obj.GetComponent<HPComponent>() is { IsAlive: false })
-                .ToList();
-
-            foreach (GameObject obj in dead)
+            // keep going until nobody's left, a death listener can kill more units on the way out
+            List<GameObject> dead;
+            while ((dead = FindDead()).Count > 0)
             {
-                if (!gameObjects.Contains(obj)) continue; // already vanished with their owner
-
-                // a broken form throws its owner back out instead of killing them.
-                // The message is the same for every form for now, change it here.
-                if (obj.GetComponent<FormComponent>() is FormComponent form)
+                foreach (GameObject obj in dead)
                 {
-                    string formName = obj.Name;
-                    form.Revert();
+                    if (!gameObjects.Contains(obj)) continue; // already vanished with their owner
 
-                    GameEvents.Publish(new CombatEvent.GenericMessage($"The {formName} is destroyed! {obj.Name} is thrown clear."));
-                    RefreshTurnOrder();
-                    continue;
+                    // a broken form throws its owner back out instead of killing them.
+                    // The message is the same for every form for now, change it here.
+                    if (obj.GetComponent<FormComponent>() is FormComponent form)
+                    {
+                        string formName = obj.Name;
+                        form.Revert();
+
+                        GameEvents.Publish(new CombatEvent.GenericMessage($"The {formName} is destroyed! {obj.Name} is thrown clear."));
+                        RefreshTurnOrder();
+                        continue;
+                    }
+
+                    GameEvents.Publish(new CombatEvent.EntityDied(obj, obj.GetComponent<HPComponent>().LastHit));
+
+                    // before removing them, so their summons are still around to get hit
+                    foreach (IDeathListener listener in obj.Components.OfType<IDeathListener>().ToList())
+                    {
+                        listener.OnDeath(this);
+                    }
+
+                    RemoveGameObject(obj);
                 }
-
-                GameEvents.Publish(new CombatEvent.EntityDied(obj, obj.GetComponent<HPComponent>().LastHit));
-                RemoveGameObject(obj);
             }
 
             CheckConditions();
+        }
+
+        // a copy, RemoveGameObject changes gameObjects
+        private List<GameObject> FindDead()
+        {
+            return gameObjects
+                .Where(obj => obj.GetComponent<HPComponent>() is { IsAlive: false })
+                .ToList();
         }
 
         private static ActionType? ActionTypeOf(TurnAction action)
@@ -282,6 +306,10 @@ namespace LuanSC.Scenes
             AIComponent ai = currentControlledGameObject.GetComponent<AIComponent>();
             if (ai is null) return;
 
+            // hold Tab to fast forward. Scaling the time shortens the wait for the blink and the wait between actions
+            if (GameHost.Instance.Keyboard.IsKeyDown(SadConsole.Input.Keys.Tab))
+                delta *= GameSettings.FAST_FORWARD_SPEED;
+
             aiTimer += delta;
             if (aiTimer < ai.ActionDelay) return;
             aiTimer = TimeSpan.Zero;
@@ -293,7 +321,19 @@ namespace LuanSC.Scenes
                 aiPlan.Enqueue(new TurnAction.EndTurn()); // the plan always ends the turn
             }
 
-            Execute(currentControlledGameObject, aiPlan.Dequeue());
+            // Face and EndTurn show nothing, so they don't get a delay of their own.
+            // Face runs with the action after it, EndTurn runs with the action before it.
+            GameObject actor = currentControlledGameObject;
+            while (true)
+            {
+                TurnAction action = aiPlan.Dequeue();
+                Execute(actor, action);
+
+                // the turn ended or the actor died, the plan is gone
+                if (fightResult is not null || currentControlledGameObject != actor || aiPlan is null || aiPlan.Count == 0) break;
+
+                if (action is not TurnAction.Face && aiPlan.Peek() is not TurnAction.EndTurn) break;
+            }
         }
 
         public bool IsWalkable(Point targetPos)

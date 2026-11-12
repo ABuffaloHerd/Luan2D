@@ -14,6 +14,10 @@
     // so at 0.1 a hit under 10 gives nothing, and neither does a blocked one. That's intended.
     public const float OD_CHARGE_RATE = 0.1f;
 
+    // How many times faster AI turns run while Tab is held. 1 is normal speed.
+    // Each frame runs one AI tick at most, so very high values all end up at one action per frame.
+    public const float FAST_FORWARD_SPEED = 4f;
+
     public static string GetFont(this FONTS font)
         => font switch
         {

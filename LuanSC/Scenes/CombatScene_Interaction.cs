@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
+using LuanSC.Data.Combat;
 
 namespace LuanSC.Scenes
 {

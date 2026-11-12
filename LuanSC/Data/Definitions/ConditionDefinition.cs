@@ -1,3 +1,4 @@
+using LuanSC.Data.Combat;
 namespace LuanSC.Data.Definitions;
 
 /// <summary>

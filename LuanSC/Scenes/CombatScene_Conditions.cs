@@ -3,6 +3,7 @@ using SadConsole.UI;
 using SadConsole.UI.Controls;
 using System;
 using System.Collections.Generic;
+using LuanSC.Data.Combat;
 
 namespace LuanSC.Scenes;
 

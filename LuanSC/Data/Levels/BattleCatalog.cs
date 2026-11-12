@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace LuanSC.Data;
+namespace LuanSC.Data.Levels;
 
 /// <summary>
 /// The sections of the battle selection screen, shown in this order. Empty ones are left out.
@@ -47,8 +47,14 @@ public static class BattleCatalog
 
         foreach (MethodInfo method in typeof(LevelRegistry).GetMethods(BindingFlags.Public | BindingFlags.Static))
         {
-            if (method.GetCustomAttribute<BattleAttribute>() is BattleAttribute tag)
-                tagged.Add((method, tag));
+            if (method.GetCustomAttribute<BattleAttribute>() is not BattleAttribute tag) continue;
+
+#if !DEBUG
+            // test levels are for debug builds only
+            if (tag.Category == BattleCategory.TEST) continue;
+#endif
+
+            tagged.Add((method, tag));
         }
 
         return tagged

@@ -60,7 +60,7 @@ public sealed record UnitDefinition
     public List<string> Spells { get; init; } = new();
 
     /// <summary>
-    /// Enemies only. Null means idle.
+    /// Enemies only. Null means no AI, so the unit never takes a turn (target dummies). "Idle" takes turns and does nothing.
     /// </summary>
     public AiDefinition Ai { get; init; }
 
@@ -99,6 +99,7 @@ public sealed record ResourceDefinition(ResourceType Type)
 /// <summary>
 /// Value is whatever number the effect takes: damage for Poison, percent for Empower, Weaken and Vulnerable, amount for Armour,
 /// percent for Elemental (positive weakness, negative resistance).
+/// Volatile1, Volatile2 and Volatile3 are presets and ignore Value: 40 dmg radius 2, 80 dmg radius 4, 160 dmg radius 8.
 /// </summary>
 public sealed record EffectDefinition(string Id, int Duration, int Value = 0)
 {
@@ -110,5 +111,31 @@ public sealed record EffectDefinition(string Id, int Duration, int Value = 0)
 
 /// <summary>
 /// Minion is a summon ID, only used by Summoner.
+/// Spawner, three random units every 3 turns. Spawns run off SPELL actions, one per unit, so give it enough:
+///   Ai = new("Spawner") { Spawns = ["Skeleton", "Zombie"], Interval = 3, Count = 3 },
+///   ActionLimits = { [ActionType.SPELL] = 3 },
 /// </summary>
-public sealed record AiDefinition(string Behavior, string Minion = null);
+public sealed record AiDefinition(string Behavior, string Minion = null)
+{
+    /// <summary>
+    /// Spawner only. Summon IDs to pick from at random, list one twice to make it twice as likely.
+    /// </summary>
+    public List<string> Spawns { get; init; } = new();
+
+    /// <summary>
+    /// Spawner only. Its own turns between spawns, 3 spawns on turns 1, 4, 7.
+    /// </summary>
+    public int Interval { get; init; } = 1;
+
+    /// <summary>
+    /// Spawner only. Its own turns to wait before the first spawn, 0 spawns on its first turn.
+    /// </summary>
+    public int InitialDelay { get; init; }
+
+    /// <summary>
+    /// Spawner only. Units per spawn, each picked at random, at most 4 (one per adjacent cell).
+    /// Every unit costs one SPELL action and units only get one by default, so raise the limit to match,
+    /// e.g. Count = 3 with ActionLimits = { [ActionType.SPELL] = 3 }. Otherwise it spawns as many as its SPELL actions allow.
+    /// </summary>
+    public int Count { get; init; } = 1;
+}

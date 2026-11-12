@@ -6,6 +6,7 @@ using LuanSC.Objects;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using LuanSC.Data.Combat;
 
 namespace LuanSC.Scenes;
 
@@ -49,7 +50,7 @@ public partial class CombatScene
 
         GameEvents.Publish(new CombatEvent.GenericMessage(message));
         cast.Spell.Resolve(caster, target, this);
-
+        
         RefreshTurnOrder(); // transforms rename the caster
         return true;
     }

@@ -18,7 +18,7 @@ namespace LuanSC.Objects
             AddComponent(new TeamComponent(Team.ENEMY));
             AddComponent(new WeaponComponent(WeaponRegistry.Hands()));
             AddComponent(ActionComponent.CreateDefault());
-            AddComponent(new AIComponent(behavior ?? new IdleBehavior()));
+            if (behavior is not null) AddComponent(new AIComponent(behavior)); // no AI, no turns
         }
     }
 }

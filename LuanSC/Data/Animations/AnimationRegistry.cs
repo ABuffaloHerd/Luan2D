@@ -157,29 +157,59 @@ public static class AnimationRegistry
     public static AnimatedEffect Sparkle(Point origin, int radius = 2, Color? color = null, float density = 0.5f, int frames = 12,
         TimeSpan? frameTime = null, int? seed = null)
     {
-        Color c = color ?? Color.DodgerBlue;
+        // the same cells SquareBlast covers
+        IEnumerable<Point> diamond = Rings(radius, offset => Math.Abs(offset.X) + Math.Abs(offset.Y)).SelectMany(ring => ring);
+
+        return SparkleOver("Sparkle", origin, diamond, color ?? Color.DodgerBlue, density, frames, frameTime, seed);
+    }
+
+    /// <summary>
+    /// Sparkles twinkling at random over any set of cells, e.g. a weapon's range. Same twinkle as Sparkle.
+    /// </summary>
+    /// <param name="origin">Arena cell the offsets are measured from, e.g. the attacker.</param>
+    /// <param name="cells">Offsets from origin. Rotate a Pattern first: weapon.Range.GetRotated(owner.Direction).</param>
+    /// <param name="color">The colour a sparkle starts and ends on. Defaults to yellow.</param>
+    /// <param name="density">Share of cells that sparkle, 0 to 1. Each picked cell twinkles once.</param>
+    /// <param name="frames">How long the whole effect runs, in frames. At least as long as one twinkle (5).</param>
+    /// <param name="frameTime">How long each frame is held. Defaults to 60ms.</param>
+    /// <param name="seed">Fixes which cells sparkle and when. Random every time if left out.</param>
+    public static AnimatedEffect PatternSparkle(Point origin, IEnumerable<Point> cells, Color? color = null, float density = 1f, int frames = 8,
+        TimeSpan? frameTime = null, int? seed = null)
+    {
+        return SparkleOver("Pattern Sparkle", origin, cells, color ?? Color.Yellow, density, frames, frameTime, seed);
+    }
+
+    /// <summary>
+    /// Shared by the sparkles. offsets are relative to origin and can be any shape.
+    /// </summary>
+    private static AnimatedEffect SparkleOver(string name, Point origin, IEnumerable<Point> offsets, Color c, float density, int frames,
+        TimeSpan? frameTime, int? seed)
+    {
         TimeSpan duration = frameTime ?? TimeSpan.FromMilliseconds(60);
         Random random = seed is int s ? new Random(s) : Random.Shared;
+        List<Point> cells = offsets.Distinct().ToList();
 
         // glyph numbers in the font, not characters: 250 is a middle dot, 15 is the little sun in Bisasam. Other fonts may differ
         char[] glyphs = [(char)250, '*', (char)15, '*', (char)250];
         float[] whiteness = [0f, 0.5f, 1f, 0.5f, 0f]; // how far each step shades from c towards white
         frames = Math.Max(frames, glyphs.Length);
 
-        int size = radius * 2 + 1;
-        AnimatedEffect sparkle = new("Sparkle", size, size)
+        // one box around every cell and the origin, with the origin at its Center so the effect lines up with the arena
+        Point min = new(Math.Min(0, cells.Select(p => p.X).DefaultIfEmpty().Min()), Math.Min(0, cells.Select(p => p.Y).DefaultIfEmpty().Min()));
+        Point max = new(Math.Max(0, cells.Select(p => p.X).DefaultIfEmpty().Max()), Math.Max(0, cells.Select(p => p.Y).DefaultIfEmpty().Max()));
+
+        AnimatedEffect sparkle = new(name, max.X - min.X + 1, max.Y - min.Y + 1)
         {
-            Center = new Point(radius, radius),
+            Center = new Point(-min.X, -min.Y),
             Cell = origin,
             Repeat = false
         };
 
-        // pick which diamond cells sparkle and the frame each one starts on, so the twinkle always finishes in time
+        // pick which cells sparkle and the frame each one starts on, so the twinkle always finishes in time
         List<(Point Offset, int Start)> sparks = new();
-        foreach (List<Point> ring in Rings(radius, offset => Math.Abs(offset.X) + Math.Abs(offset.Y)))
-            foreach (Point offset in ring)
-                if (random.NextSingle() < density)
-                    sparks.Add((offset, random.Next(frames - glyphs.Length + 1)));
+        foreach (Point offset in cells)
+            if (random.NextSingle() < density)
+                sparks.Add((offset, random.Next(frames - glyphs.Length + 1)));
 
         for (int f = 0; f < frames; f++)
         {
@@ -194,7 +224,7 @@ public static class AnimationRegistry
 
                 float w = whiteness[step];
                 Color shade = new((int)(c.R + (255 - c.R) * w), (int)(c.G + (255 - c.G) * w), (int)(c.B + (255 - c.B) * w));
-                frame.SetCellAppearance(radius + offset.X, radius + offset.Y, new ColoredGlyph(shade, Color.Transparent, glyphs[step]));
+                frame.SetCellAppearance(offset.X - min.X, offset.Y - min.Y, new ColoredGlyph(shade, Color.Transparent, glyphs[step]));
             }
         }
 

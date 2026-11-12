@@ -32,6 +32,21 @@ public static class SummonRegistry
         return s;
     }
 
+    // AI controlled. Slower and tougher than a skeleton, same idea.
+    public static SummonedGameObject Zombie(GameObject owner)
+    {
+        SummonedGameObject z = new(new ColoredGlyph(OwnerColor(owner), Color.Transparent, 'z'), owner, MagicNumbers.GAMEOBJECT_INDEX);
+        z.Name = "Zombie";
+        z.UnitType = UnitType.UNDEAD;
+        z.GetComponent<HPComponent>().Max = 50;
+
+        z.AddComponent(new SpeedComponent(50));
+        z.AddComponent(new WeaponComponent(WeaponRegistry.Hands()));
+        z.AddComponent(ActionComponent.CreateDefault());
+        z.AddComponent(new AIComponent(new ZombieBehavior()));
+        return z;
+    }
+
     // Player controlled testificate
     public static SummonedGameObject Familiar(GameObject owner)
     {

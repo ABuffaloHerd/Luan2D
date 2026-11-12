@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Direction = LuanSC.Data.Direction;
+using LuanSC.Data.Combat;
 
 namespace LuanSC.Scenes;
 

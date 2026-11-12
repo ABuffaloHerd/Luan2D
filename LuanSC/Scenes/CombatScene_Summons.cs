@@ -5,6 +5,7 @@ using LuanSC.Objects;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using LuanSC.Data.Combat;
 
 namespace LuanSC.Scenes;
 
@@ -49,14 +50,14 @@ public partial class CombatScene
     }
 
     /// <summary>
-    /// Adds an object mid fight. If it has speed it slots into the rest of this round.
+    /// Adds an object mid fight. If it takes turns it slots into the rest of this round.
     /// </summary>
     private void AddGameObject(GameObject obj)
     {
         gameObjects.Add(obj);
         entityManager.Add(obj);
 
-        if (obj.GetComponent<SpeedComponent>() is null) return;
+        if (!TakesTurns(obj)) return;
 
         // stable sort, so on a speed tie the newcomer goes last
         queue = new Queue<GameObject>(queue
